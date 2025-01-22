@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Home.PersonalHabitFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/betaLogo3"
+            android:layout_width="240dp"
+            android:layout_height="122dp"
+            android:layout_marginBottom="68dp"
+            android:animation="@anim/fade_in_animation"
+            app:layout_constraintBottom_toTopOf="@+id/upcomingDescription1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/betalogo" />
+
+        <TextView
+            android:id="@+id/upcomingDescription1"
+            android:layout_width="377dp"
+            android:layout_height="126dp"
+            android:animation="@anim/fade_in_lift"
+            android:fontFamily="@font/lexend"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.529"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.932" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

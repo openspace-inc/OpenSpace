@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Iaso"
+        tools:targetApi="31">
+        <activity
+            android:name=".Introduction.WaitList"
+            android:exported="false" />
+        <activity
+            android:name=".Profile"
+            android:exported="false" />
+        <activity
+            android:name=".Projects"
+            android:exported="false" />
+        <activity
+            android:name=".AddDynamicHabit"
+            android:exported="false" />
+        <activity
+            android:name=".PersonalPage.PersonalPage"
+            android:exported="false" />
+        <activity
+            android:name=".Introduction.WelcomeActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".Introduction.WelcomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ToDoList.FullTaskView"
+            android:exported="false" />
+        <activity
+            android:name=".ToDoList.TaskLister"
+            android:exported="false" />
+        <activity
+            android:name=".Home.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Home.Store"
+            android:exported="false" />
+        <activity
+            android:name=".HabitCompletion"
+            android:exported="false" />
+        <activity
+            android:name=".Fitness.Exercise"
+            android:exported="false" />
+        <activity
+            android:name=".Health.Health"
+            android:exported="false" />
+        <activity
+            android:name=".Home.Settings"
+            android:exported="false" />
+        <activity
+            android:name=".Introduction.WelcomeActivity3"
+            android:exported="false" />
+        <activity
+            android:name=".Home.SplashScreen"
+            android:exported="true"
+            android:theme="@style/Theme.Design.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+    </application>
+
+</manifest>

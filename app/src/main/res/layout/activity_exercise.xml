@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Fitness.Exercise">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/imageButton5"
+            android:layout_width="66dp"
+            android:layout_height="63dp"
+            android:background="@null"
+            android:contentDescription="Click here"
+            android:onClick="transferToExercise"
+            android:scaleType="fitCenter"
+            android:src="@drawable/exercisecoloredimagetext" />
+
+        <ImageButton
+            android:id="@+id/imageButton3"
+            android:layout_width="53dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:contentDescription="Click here"
+            android:onClick="transferToPersonal"
+            android:scaleType="fitCenter"
+            android:src="@drawable/personimagetext" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="57dp"
+            android:layout_height="60dp"
+            android:background="@null"
+            android:contentDescription="Click here"
+            android:onClick="transferToHealth"
+            android:scaleType="fitCenter"
+            android:src="@drawable/healthimagetext" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/tabBar"
+        android:layout_width="413dp"
+        android:layout_height="67dp"
+        android:contentDescription="BreakFast Summary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/titleBar"
+        android:layout_width="413dp"
+        android:layout_height="81dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="9dp"
+            android:background="@null"
+            android:contentDescription="Click here"
+            android:scaleType="fitCenter"
+            android:src="@drawable/iasologo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.357" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ExercisePage"
+        android:layout_width="409dp"
+        android:layout_height="581dp"
+        app:layout_constraintBottom_toTopOf="@+id/tabBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleBar"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TextView
+            android:id="@+id/upcoming1"
+            android:layout_width="352dp"
+            android:layout_height="129dp"
+            android:fontFamily="@font/lexend"
+            android:text="TextView"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            android:animation="@anim/fade_in_lift"/>
+
+        <ImageView
+            android:id="@+id/betaLogo"
+            android:layout_width="240dp"
+            android:layout_height="122dp"
+            android:layout_marginBottom="140dp"
+            app:layout_constraintBottom_toTopOf="@+id/upcoming1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/betalogo"
+            android:animation="@anim/fade_in_animation"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
