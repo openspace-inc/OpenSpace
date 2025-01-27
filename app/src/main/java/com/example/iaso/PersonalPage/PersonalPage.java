@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,13 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.iaso.AddDynamicHabit;
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.R;
+import com.example.iaso.ToDoList.RecyclerViewInterface;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class PersonalPage extends AppCompatActivity {
+public class PersonalPage extends AppCompatActivity implements RecyclerViewInterface {
 
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
     SharedPreferences dynamicHabits;
@@ -94,7 +96,7 @@ public class PersonalPage extends AppCompatActivity {
             displayPersonalHabits.setVisibility(View.INVISIBLE);
         }
         else {
-            PersonalHabit_RecyclerViewAdapter recyclerViewAdapter = new PersonalHabit_RecyclerViewAdapter(this, dynamicHabitList);
+            PersonalHabit_RecyclerViewAdapter recyclerViewAdapter = new PersonalHabit_RecyclerViewAdapter(this, dynamicHabitList, this);
             displayPersonalHabits.setAdapter(recyclerViewAdapter);
             displayPersonalHabits.setLayoutManager(new LinearLayoutManager(this));
         }
@@ -107,4 +109,16 @@ public class PersonalPage extends AppCompatActivity {
         Title.setText(title);
     }
 
+    //Storing data for habits should be conducted here.
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(this, "Hello, this is a Toast!", Toast.LENGTH_SHORT).show();
+
+    }
+
+    //Shows data analytics on a long press.
+    @Override
+    public void onItemLongClick(int position) {
+
+    }
 }
