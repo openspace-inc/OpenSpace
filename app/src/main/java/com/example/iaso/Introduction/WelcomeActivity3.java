@@ -17,6 +17,7 @@ import androidx.cardview.widget.CardView;
 
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.PersonalPage.DynamicHabit;
+import com.example.iaso.PersonalPage.dataStorage;
 import com.example.iaso.R;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -26,11 +27,13 @@ import java.util.ArrayList;
 
 public class WelcomeActivity3 extends AppCompatActivity {
 
-    SharedPreferences userData;
+    SharedPreferences userData; //general information about the user
     SharedPreferences personalHabits;
+    SharedPreferences userStorage;
     CardView a;
 
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
+    public ArrayList<dataStorage> storage = new ArrayList<>(); //Storage for habits
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,11 +201,40 @@ public class WelcomeActivity3 extends AppCompatActivity {
 
         //Call to create dynamicHabit List for personal page.
         dynamicHabits();
+        //initialize storage for users
+        initalizeUserStorage();
 
         startActivity(b);
 
     }
 
+    //implement userStorage for all habits.
+    public void initalizeUserStorage(){
+        //Create userStorage arraylst for the app
+        userStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor dataStorage = userStorage.edit();
+
+
+        String json = userStorage.getString("userStorageList",null);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+        storage = gson.fromJson(json,type);
+
+
+        if (storage == null) {
+            storage = new ArrayList<dataStorage>();
+        }
+        else {
+            String x = "just a placer";
+        }
+
+        //Turning ArrayList into JSON and then applying.
+        json = gson.toJson(storage);
+        dataStorage.putString("userStorageList", json);
+        dataStorage.apply();
+    }
+
+    //implement dynamicHabits for the user
     public void dynamicHabits(){
         //Create dynamicHabit List for personal page.
         personalHabits = getSharedPreferences("PersonalHabits", Context.MODE_PRIVATE);
@@ -227,6 +259,5 @@ public class WelcomeActivity3 extends AppCompatActivity {
         dynamicHabitEditor.putString("personalHabitList", json);
         dynamicHabitEditor.apply();
     }
-
 
 }

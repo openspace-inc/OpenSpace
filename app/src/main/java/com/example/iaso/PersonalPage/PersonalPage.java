@@ -83,7 +83,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         });
     }
 
-    //Recieve SharedPrefs
+    //Recieve SharedPrefs and check if there is anything in there
     private void setUpPersonalHabits() {
         dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_MULTI_PROCESS);
         String json = dynamicHabits.getString("personalHabitList",null);
@@ -112,8 +112,13 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     //Storing data for habits should be conducted here.
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(this, "Hello, this is a Toast!", Toast.LENGTH_SHORT).show();
-
+        if (dynamicHabitList == null) {
+            tasksEmpty();
+        }
+        else {
+            String name = dynamicHabitList.get(position).getName3();
+            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+        }
     }
 
     //Shows data analytics on a long press.
