@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -31,13 +32,15 @@ import java.util.ArrayList;
 public class PersonalPage extends AppCompatActivity implements RecyclerViewInterface {
 
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
+    public ArrayList<dataStorage> dataStorageList = new ArrayList<dataStorage>();
+
     SharedPreferences dynamicHabits;
-    public ArrayList<DynamicHabit> personalHabitsList = new ArrayList<DynamicHabit>();
+    SharedPreferences dataStorage;
 
     RecyclerView displayPersonalHabits;
+
     ImageButton exitButton;
 
-    SharedPreferences personalHabits1;
 
 
     @Override
@@ -74,13 +77,50 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         //Exit the activity
         exitButton = findViewById(R.id.exitButtonForPersonalPage);
 
-            exitButton.setOnClickListener(new View.OnClickListener() {
+        exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent b = new Intent(PersonalPage.this, MainActivity.class);
                 startActivity(b);
             }
         });
+    }
+
+    //Adds data storage object to sharedprefs
+    private void addToDataStorage(dataStorage newData) {
+        //initalize data storage
+        dataStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE); //brought in file
+        SharedPreferences.Editor dataEditor = dataStorage.edit(); //allowed editing of file
+
+        String json = dataStorage.getString("userStorageList",null);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+        dataStorageList = gson.fromJson(json,type); //filled arraylist with stored data
+
+        //debugging control: (displays data stored)
+        for (dataStorage x : dataStorageList) {
+            Log.d("ArrayListCheck", "Person Name: " + x.getName()); // Appears in Logcat
+            Log.d("ArrayListCheck", "Person Type: " + x.getType());
+            Log.d("ArrayListCheck", "Person Hours: " + x.getHours());
+        }
+
+        //prevents runtime errors
+        if (dataStorageList == null) {
+            dataStorageList = new ArrayList<dataStorage>();
+        }
+        else {
+            String x = "just a placer";
+        }
+
+        dataStorageList.add(newData);
+        String updatedJson = gson.toJson(dataStorageList);
+
+        // Step 6: Save the updated JSON string back into SharedPreferences
+        dataEditor.putString("userStorageList", updatedJson);
+        dataEditor.apply();
+
+        //debugging confirm that the habit has been stored
+        Toast.makeText(getApplicationContext(), "Success. added the data", Toast.LENGTH_SHORT).show();
     }
 
     //Recieve SharedPrefs and check if there is anything in there
@@ -116,8 +156,13 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             tasksEmpty();
         }
         else {
+            //initalize variables that need to be stored
             String name = dynamicHabitList.get(position).getName3();
-            Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+            int time = dynamicHabitList.get(position).getTime();
+
+            dataStorage newData = new dataStorage(name, "Project", time);
+            addToDataStorage(newData);  //on return make sure that this is working. check by printing out the arraylist t
+            //that stores all datastorage.
         }
     }
 
