@@ -96,6 +96,21 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
                 }
             });
 
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if(recyclerViewInterface != null){
+                        int pos = getAdapterPosition();
+
+                        if(pos != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.onItemLongClick(pos);
+                        }
+                    }
+
+                    return true;
+                }
+            });
+
         }
     }
 }

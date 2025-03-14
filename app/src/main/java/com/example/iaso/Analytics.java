@@ -1,6 +1,9 @@
 package com.example.iaso;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,8 +11,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.iaso.PersonalPage.dataStorage;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 public class Analytics extends AppCompatActivity {
 
+    String name1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,6 +32,69 @@ public class Analytics extends AppCompatActivity {
             return insets;
         });
 
+        //project name
+        name1 = getIntent().getStringExtra("project_name");
+        TextView name = findViewById(R.id.name);
+        name.setText(name1);
 
+
+        totalHours();
+        //totalHoursThisWeek();
+
+        //set up recyclerview
+        //dataPull();
+    }
+
+    ArrayList<dataStorage> openSharedPref(){
+        ArrayList<dataStorage> storage = new ArrayList<>();
+
+        //Create userStorage arraylst for the app
+        SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor dataStorage = userStorage.edit();
+
+
+        String json = userStorage.getString("userStorageList",null);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+        storage = gson.fromJson(json,type);
+
+
+        if (storage == null) {
+            storage = new ArrayList<dataStorage>();
+        }
+        else {
+            String x = "just a placer";
+        }
+
+        return storage;
+    }
+
+    void applySharedPref(ArrayList<dataStorage> dataArrayList){
+        SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE);
+        SharedPreferences.Editor dataStorage = userStorage.edit();
+
+        //get ArrayList from shared preferences
+        String json = userStorage.getString("userStorageList",null);
+        Gson gson = new Gson();
+
+        //Turning ArrayList into JSON and then applying.
+        json = gson.toJson(dataArrayList);
+        dataStorage.putString("userStorageList", json);
+        dataStorage.apply();
+    }
+
+    void totalHours(){
+        //initalize shared preferences
+        ArrayList<dataStorage> storage= openSharedPref();
+        double hours = 0;
+
+        for (dataStorage x : storage){
+            if (x.getName().equals(name1)) {
+                hours += x.getHours();
+            }
+        }
+
+        TextView totalHours = findViewById(R.id.totalHours);
+        totalHours.setText(hours + " hours");
     }
 }

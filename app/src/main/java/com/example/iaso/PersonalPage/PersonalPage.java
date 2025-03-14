@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iaso.AddDynamicHabit;
+import com.example.iaso.Analytics;
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.RecyclerViewInterface;
@@ -149,6 +150,12 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         Title.setText(title);
     }
 
+    void callAnalyticsClass(int position){
+        Intent b = new Intent(PersonalPage.this, Analytics.class);
+        b.putExtra("project_name", dataStorageList.get(position).getName());
+        startActivity(b);
+    }
+
     //Storing data for habits should be conducted here.
     @Override
     public void onItemClick(int position) {
@@ -169,6 +176,6 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     //Shows data analytics on a long press.
     @Override
     public void onItemLongClick(int position) {
-
+         callAnalyticsClass(position);
     }
 }
