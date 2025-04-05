@@ -32,17 +32,15 @@ import java.util.ArrayList;
 
 public class PersonalPage extends AppCompatActivity implements RecyclerViewInterface {
 
-    public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
-    public ArrayList<dataStorage> dataStorageList = new ArrayList<dataStorage>();
-
+    public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>(); //Stores List Of Projects
     SharedPreferences dynamicHabits;
+
+    public ArrayList<dataStorage> dataStorageList = new ArrayList<dataStorage>(); //Stores Recorded Data Of Projects
     SharedPreferences dataStorage;
 
     RecyclerView displayPersonalHabits;
 
     ImageButton exitButton;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +60,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         //Initialize recycler view
         displayPersonalHabits = findViewById(R.id.personalHabitDisplayRecyclerView);
 
-        //Recieve SharedPrefs
+        //Recieve sharedpref for projects - apply to recyclerview
         setUpPersonalHabits();
 
         //Press to add habit
@@ -77,7 +75,6 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
         //Exit the activity
         exitButton = findViewById(R.id.exitButtonForPersonalPage);
-
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,9 +84,8 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         });
     }
 
-    //Adds data storage object to sharedprefs
+    //Add a data entry to the dataStorage sharedPref
     private void addToDataStorage(dataStorage newData) {
-        //initalize data storage
         dataStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE); //brought in file
         SharedPreferences.Editor dataEditor = dataStorage.edit(); //allowed editing of file
 
@@ -98,14 +94,14 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
         dataStorageList = gson.fromJson(json,type); //filled arraylist with stored data
 
-        //debugging control: (displays data stored)
+        //Debugging control: (displays data stored)
         for (dataStorage x : dataStorageList) {
             Log.d("ArrayListCheck", "Person Name: " + x.getName()); // Appears in Logcat
             Log.d("ArrayListCheck", "Person Type: " + x.getType());
             Log.d("ArrayListCheck", "Person Hours: " + x.getHours());
         }
 
-        //prevents runtime errors
+        //Prevents runtime errors
         if (dataStorageList == null) {
             dataStorageList = new ArrayList<dataStorage>();
         }
@@ -113,18 +109,19 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             String x = "just a placer";
         }
 
+        //Addition of data entry to storage
         dataStorageList.add(newData);
         String updatedJson = gson.toJson(dataStorageList);
 
-        // Step 6: Save the updated JSON string back into SharedPreferences
+        //Save the updated JSON string back into SharedPreferences
         dataEditor.putString("userStorageList", updatedJson);
         dataEditor.apply();
 
-        //debugging confirm that the habit has been stored
+        //Debugging confirm that the habit has been stored
         Toast.makeText(getApplicationContext(), "Success. added the data", Toast.LENGTH_SHORT).show();
     }
 
-    //Recieve SharedPrefs and check if there is anything in there
+    //Open sharedpref for the projects and apply to recyclerview
     private void setUpPersonalHabits() {
         dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_MULTI_PROCESS);
         String json = dynamicHabits.getString("personalHabitList",null);
@@ -150,13 +147,14 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         Title.setText(title);
     }
 
+    //Upon long pressing project, call the analytics page
     void callAnalyticsClass(int position){
         Intent b = new Intent(PersonalPage.this, Analytics.class);
         b.putExtra("project_name", dataStorageList.get(position).getName());
         startActivity(b);
     }
 
-    //Storing data for habits should be conducted here.
+    //Call storage of data entry
     @Override
     public void onItemClick(int position) {
         if (dynamicHabitList == null) {
@@ -173,7 +171,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         }
     }
 
-    //Shows data analytics on a long press.
+    //Call analytics page
     @Override
     public void onItemLongClick(int position) {
          callAnalyticsClass(position);

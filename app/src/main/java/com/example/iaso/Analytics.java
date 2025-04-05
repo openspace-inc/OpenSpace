@@ -37,7 +37,6 @@ public class Analytics extends AppCompatActivity {
         TextView name = findViewById(R.id.name);
         name.setText(name1);
 
-
         totalHours();
         //totalHoursThisWeek();
 
