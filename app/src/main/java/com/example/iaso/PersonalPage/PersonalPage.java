@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+//This page is to display all personal projects the user has through a recyclerview interface
 public class PersonalPage extends AppCompatActivity implements RecyclerViewInterface {
 
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>(); //Stores List Of Projects
@@ -60,7 +61,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         //Initialize recycler view
         displayPersonalHabits = findViewById(R.id.personalHabitDisplayRecyclerView);
 
-        //Recieve sharedpref for projects - apply to recyclerview
+        //Recieve sharedpref for projects - apply to recyclerview (auto set up dynamichabits sharedpref)
         setUpPersonalHabits();
 
         //Press to add habit
@@ -150,7 +151,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     //Upon long pressing project, call the analytics page
     void callAnalyticsClass(int position){
         Intent b = new Intent(PersonalPage.this, Analytics.class);
-        b.putExtra("project_name", dataStorageList.get(position).getName());
+        b.putExtra("project_name", dynamicHabitList.get(position).getName3());
         startActivity(b);
     }
 
@@ -161,13 +162,13 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             tasksEmpty();
         }
         else {
-            //initalize variables that need to be stored
+            //Adds new entry to dataStorage ArrayList
             String name = dynamicHabitList.get(position).getName3();
             int time = dynamicHabitList.get(position).getTime();
 
             dataStorage newData = new dataStorage(name, "Project", time);
-            addToDataStorage(newData);  //on return make sure that this is working. check by printing out the arraylist t
-            //that stores all datastorage.
+            addToDataStorage(newData);
+
         }
     }
 

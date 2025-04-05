@@ -1,8 +1,10 @@
 package com.example.iaso;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -11,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.PersonalPage.dataStorage;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -18,6 +21,7 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+//This page is to bring in all data from a specific project and display that data in a meaningful way through libraries
 public class Analytics extends AppCompatActivity {
 
     String name1;
@@ -32,10 +36,15 @@ public class Analytics extends AppCompatActivity {
             return insets;
         });
 
-        //project name
         name1 = getIntent().getStringExtra("project_name");
         TextView name = findViewById(R.id.name);
         name.setText(name1);
+
+        Button exitButton = findViewById(R.id.backbutton234);
+        exitButton.setOnClickListener(view -> {
+            Intent b = new Intent(Analytics.this, PersonalPage.class);
+            startActivity(b);
+        });
 
         totalHours();
         //totalHoursThisWeek();
@@ -44,6 +53,7 @@ public class Analytics extends AppCompatActivity {
         //dataPull();
     }
 
+    //opens sharedpref for data storage and returns the arraylist
     ArrayList<dataStorage> openSharedPref(){
         ArrayList<dataStorage> storage = new ArrayList<>();
 
@@ -68,6 +78,7 @@ public class Analytics extends AppCompatActivity {
         return storage;
     }
 
+    //not in use currently - supposed to store sharedpref and close it
     void applySharedPref(ArrayList<dataStorage> dataArrayList){
         SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE);
         SharedPreferences.Editor dataStorage = userStorage.edit();
@@ -82,6 +93,7 @@ public class Analytics extends AppCompatActivity {
         dataStorage.apply();
     }
 
+    //Displays total hours worked toward this project
     void totalHours(){
         //initalize shared preferences
         ArrayList<dataStorage> storage= openSharedPref();
