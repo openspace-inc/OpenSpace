@@ -1,48 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splashscreen"
+    android:background="@color/white"
     android:gravity="center"
     android:orientation="vertical"
     tools:context=".Home.MainActivity">
 
+    <ImageView
+        android:id="@+id/topGradient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/topgradient2" />
+
+    <ImageView
+        android:id="@+id/BottomGradient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-65dp"
+        android:adjustViewBounds="true"
+        android:rotation="180"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/topgradient2" />
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottieloading"
-        android:layout_width="228dp"
-        android:layout_height="150dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="76dp"
-        android:layout_marginTop="370dp"
-        android:layout_marginEnd="74dp"
-        android:layout_marginBottom="211dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.5"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/loadingicon" />
 
     <TextView
-        android:id="@+id/dynamicText"
+        android:id="@+id/iasoinc"
         android:layout_width="wrap_content"
-        android:layout_height="110dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="578dp"
-        android:layout_marginEnd="34dp"
-        android:layout_marginBottom="43dp"
-        android:fontFamily="@font/urbaneroundedbold"
-        android:text="Dynamic Texts"
-        android:textAlignment="center"
-        android:textColor="#000000"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="35dp"
+        android:fontFamily="@font/neuehaas65"
+        android:textColor="@color/black"
+        android:text="Iaso Inc."
+        android:textSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

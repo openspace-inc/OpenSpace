@@ -1,20 +1,19 @@
 package com.example.iaso.Home;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.WindowManager;
-import android.widget.TextView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.example.iaso.R;
 
-import java.util.Random;
-
 import java.util.ArrayList;
-import android.os.Handler;
+import java.util.Random;
 
 public class SplashScreen extends AppCompatActivity {
 
@@ -23,6 +22,7 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_splash_screen);
 
         new Handler().postDelayed(new Runnable() {
@@ -42,7 +42,7 @@ public class SplashScreen extends AppCompatActivity {
         animationView.playAnimation();
 
         //Set Dynamic Subtitling Text
-        setDynamicText();
+        //setDynamicText();
 
         //Fullscreen Code
         if (Build.VERSION.SDK_INT > 16) {
@@ -53,7 +53,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     public void setDynamicText(){
-        TextView dynamicText = findViewById(R.id.dynamicText);
+        //TextView dynamicText = findViewById(R.id.dynamicText);
         String dynamic;
         ArrayList<String> x = new ArrayList<>();
         x.add("Start Your Rise");
@@ -69,7 +69,7 @@ public class SplashScreen extends AppCompatActivity {
         int size = x.size();
         int randomNumber = random.nextInt((size - 0) + 1);
         dynamic = x.get(randomNumber);
-        dynamicText.setText(dynamic);
+        //dynamicText.setText(dynamic);
 
     }
 

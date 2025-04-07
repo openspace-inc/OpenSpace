@@ -307,9 +307,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/tabBar"
-        android:layout_width="413dp"
-        android:layout_height="67dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="0dp"
+        android:layout_height="85dp"
+        android:layout_marginBottom="5dp"
         android:contentDescription="BreakFast Summary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -318,53 +318,69 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
-        <ImageButton
-            android:id="@+id/imageButton5"
-            android:layout_width="66dp"
-            android:layout_height="63dp"
-            android:background="@null"
-            android:contentDescription="Click here"
-            android:onClick="goToExercise"
-            android:scaleType="fitCenter"
-            android:src="@drawable/exerciseimagetext"
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="15dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.751"
+            app:layout_constraintHeight_percent="0.8"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintWidth_percent="0.85">
 
-        <ImageButton
-            android:id="@+id/imageButton3"
-            android:layout_width="53dp"
-            android:layout_height="60dp"
-            android:background="@null"
-            android:contentDescription="Click here"
-            android:onClick="transferToPersonal"
-            android:scaleType="fitCenter"
-            android:src="@drawable/personcoloredimagetext"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.933" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
 
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="57dp"
-            android:layout_height="60dp"
-            android:background="@null"
-            android:contentDescription="Click here"
-            android:onClick="goToHealth"
-            android:scaleType="fitCenter"
-            android:src="@drawable/healthimagetext"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.253"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.933" />
+                <ImageButton
+                    android:id="@+id/imageButton2"
+                    android:layout_width="57dp"
+                    android:layout_height="60dp"
+                    android:background="@null"
+                    android:contentDescription="Click here"
+                    android:onClick="goToHealth"
+                    android:scaleType="fitCenter"
+                    android:layout_marginStart="30dp"
+                    android:src="@drawable/healthimagetext"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/imageButton5"
+                    android:layout_width="66dp"
+                    android:layout_height="63dp"
+                    android:background="@null"
+                    android:contentDescription="Click here"
+                    android:onClick="goToExercise"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/exerciseimagetext"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageButton3"
+                    app:layout_constraintStart_toEndOf="@+id/imageButton2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/imageButton3"
+                    android:layout_width="53dp"
+                    android:layout_height="60dp"
+                    android:background="@null"
+                    android:layout_marginEnd="30dp"
+                    android:contentDescription="Click here"
+                    android:onClick="transferToPersonal"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/personcoloredimagetext"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

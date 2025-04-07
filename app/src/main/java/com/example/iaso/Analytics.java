@@ -105,7 +105,7 @@ public class Analytics extends AppCompatActivity {
             }
         }
 
-        TextView totalHours = findViewById(R.id.totalHours);
-        totalHours.setText(hours + " hours");
+        TextView totalHours = findViewById(R.id.amountOfHours);
+        totalHours.setText(hours + "");
     }
 }
