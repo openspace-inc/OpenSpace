@@ -42,7 +42,7 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
     public void onBindViewHolder(@NonNull PersonalHabit_RecyclerViewAdapter.MyViewHolder holder, int position) {
         DynamicHabit habit = dynamicHabitList.get(position); // Get the habit at the current position
         holder.habitName.setText(habit.getName3());
-        holder.streakCount.setText(String.valueOf(habit.getStreak3()) + " days"); // Convert int to String
+        //holder.streakCount.setText(String.valueOf(habit.getStreak3()) + " days"); // Convert int to String
         holder.time.setText(String.valueOf(habit.getTime()));
 
 
@@ -56,7 +56,7 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
 
         //Edit this to go from blocks to check marks
         holder.check.setImageResource(R.drawable.block1);
-        holder.streak.setImageResource(R.drawable.streakv1);
+        //holder.streak.setImageResource(R.drawable.streakv1);
         holder.habitImage.setImageResource(habit.getImageResId());
     }
 
@@ -69,19 +69,17 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
     //Class that I created (Like onCreate Method)👇🏼
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView check, streak, habitImage;
-        TextView habitName, streakCount, habitCount, blockCount, time;
+        ImageView check, habitImage;
+        TextView habitName, blockCount, time;
 
         public MyViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
             super(itemView);
 
             habitName = itemView.findViewById(R.id.habitText);
-            streakCount = itemView.findViewById(R.id.streakCount);
+            habitImage = itemView.findViewById(R.id.imageView18);
             blockCount = itemView.findViewById(R.id.blockCount);
             check = itemView.findViewById(R.id.blockImage);
-            streak = itemView.findViewById(R.id.streakImage);
             time = itemView.findViewById(R.id.commitmentTime);
-            habitImage = itemView.findViewById(R.id.dynamicHabitImage);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

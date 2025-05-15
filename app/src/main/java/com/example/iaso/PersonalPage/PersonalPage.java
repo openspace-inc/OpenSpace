@@ -55,7 +55,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         });
 
         TextView Title = findViewById(R.id.PersonalPageHeader);
-        String title = "Personal";
+        String title = "Your Projects";
         Title.setText(title);
 
         //Initialize recycler view

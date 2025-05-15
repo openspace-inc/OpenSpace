@@ -5,100 +5,118 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="15dp"
-        android:background="@color/tan"
-        app:cardCornerRadius="15dp"
-        app:cardElevation="8dp"
+    <ImageView
+        android:id="@+id/imageView17"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/dotted_circle" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="0dp"
+        android:layout_height="135dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:elevation="10dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toEndOf="@+id/imageView17"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/gray"
+        app:strokeWidth="2dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF">
+            app:cardBackgroundColor="@android:color/transparent">
 
-            <TextView
-                android:id="@+id/habitText"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/urbaneroundedbold"
-                android:text="TextView"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/commitmentTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="24dp"
-                app:layout_constraintVertical_bias="0.3"
-                android:fontFamily="@font/neuehaasbold"
-                android:text="76"
-                android:textSize="45sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Minutes"
-                app:layout_constraintEnd_toEndOf="@+id/commitmentTime"
-                app:layout_constraintStart_toStartOf="@+id/commitmentTime"
-                app:layout_constraintTop_toBottomOf="@+id/commitmentTime" />
-
-            <TextView
-                android:id="@+id/streakCount"
-                android:layout_width="wrap_content"
-                android:layout_height="29dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical"
-                android:text="TextView"
-                android:textAlignment="viewStart"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/habitText" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="0dp" />
 
             <ImageView
-                android:id="@+id/dynamicHabitImage"
-                android:layout_width="54dp"
-                android:layout_height="43dp"
+                android:id="@+id/imageView18"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/calmshades"
+                android:clipToOutline="true"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/commitmentTime"
-                app:layout_constraintStart_toEndOf="@+id/habitText"
+                android:translationX="-96dp"
+                app:layout_constraintStart_toStartOf="@id/guideline_right"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/streakv1" />
+                app:srcCompat="@drawable/calmshades" />
 
-            <ImageView
-                android:id="@+id/streakImage"
-                android:layout_width="54dp"
-                android:layout_height="43dp"
-                android:layout_marginStart="-12dp"
-                android:layout_marginBottom="8dp"
-                android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="@+id/streakCount"
-                app:layout_constraintStart_toEndOf="@+id/streakCount"
-                app:layout_constraintTop_toTopOf="@+id/streakCount"
-                app:srcCompat="@drawable/streakv1" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="96dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+
+                <ImageView
+                    android:id="@+id/imageView19"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/habitText"
+                    app:srcCompat="@drawable/rocket" />
+
+                <TextView
+                    android:id="@+id/commitmentTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/neuehaas65"
+                    android:text="76"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView19"
+                    app:layout_constraintStart_toEndOf="@+id/imageView19"
+                    app:layout_constraintTop_toTopOf="@+id/imageView19" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:fontFamily="@font/neuehaas25"
+                    android:text="Minutes"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/commitmentTime"
+                    app:layout_constraintStart_toEndOf="@+id/commitmentTime"
+                    app:layout_constraintTop_toTopOf="@+id/commitmentTime" />
+
+                <TextView
+                    android:id="@+id/habitText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:text="TextView"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <ImageView
                 android:id="@+id/blockImage"
@@ -115,7 +133,7 @@
                 android:id="@+id/blockCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/lexend"
+                android:fontFamily="@font/neuehaas45"
                 android:text="TextView"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/blockImage"
@@ -123,6 +141,6 @@
                 app:layout_constraintTop_toTopOf="@+id/blockImage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
