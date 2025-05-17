@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +49,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         setContentView(R.layout.activity_personal_page);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
@@ -65,7 +64,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         setUpPersonalHabits();
 
         //Press to add habit
-        Button addContract = findViewById(R.id.addHabitButton);
+        ImageButton addContract = findViewById(R.id.addHabitButton);
         Intent b = new Intent(this, AddDynamicHabit.class);
         addContract.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +80,16 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             public void onClick(View view) {
                 Intent b = new Intent(PersonalPage.this, MainActivity.class);
                 startActivity(b);
+            }
+        });
+
+        //transfer to health page
+        ImageButton imageButton2 = findViewById(R.id.imageButton2);
+
+        imageButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -152,6 +161,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     void callAnalyticsClass(int position){
         Intent b = new Intent(PersonalPage.this, Analytics.class);
         b.putExtra("project_name", dynamicHabitList.get(position).getName3());
+        b.putExtra("project_description", dynamicHabitList.get(position).getDescription());
         startActivity(b);
     }
 
@@ -177,4 +187,11 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     public void onItemLongClick(int position) {
          callAnalyticsClass(position);
     }
+
+    //transfer to hub page
+    public void goToHub(View view) {
+        Intent b = new Intent(this, MainActivity.class);
+        startActivity(b);
+    }
+
 }

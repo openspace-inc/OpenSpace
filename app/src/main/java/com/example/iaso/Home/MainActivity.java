@@ -106,6 +106,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton imageButton2 = findViewById(R.id.imageButton2);
+
+        imageButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         //Create Habits
 
         //Set IntroText
@@ -264,6 +273,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToDoList(View v){
         Intent b = new Intent(this, TaskLister.class);
+        startActivity(b);
+    }
+
+    public void goToPersonalPage(View v){
+        Intent b = new Intent(this, PersonalPage.class);
         startActivity(b);
     }
 

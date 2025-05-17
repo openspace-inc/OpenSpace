@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +25,7 @@ import java.util.ArrayList;
 public class Analytics extends AppCompatActivity {
 
     String name1;
+    String project_description;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,15 +33,18 @@ public class Analytics extends AppCompatActivity {
         setContentView(R.layout.activity_analytics);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
 
         name1 = getIntent().getStringExtra("project_name");
+        project_description = getIntent().getStringExtra("project_description");
         TextView name = findViewById(R.id.name);
         name.setText(name1);
+        TextView description = findViewById(R.id.description);
+        description.setText(project_description);
 
-        Button exitButton = findViewById(R.id.backbutton234);
+        ImageButton exitButton = findViewById(R.id.backbutton234);
         exitButton.setOnClickListener(view -> {
             Intent b = new Intent(Analytics.this, PersonalPage.class);
             startActivity(b);
@@ -96,7 +100,7 @@ public class Analytics extends AppCompatActivity {
     //Displays total hours worked toward this project
     void totalHours(){
         //initalize shared preferences
-        ArrayList<dataStorage> storage= openSharedPref();
+        ArrayList<dataStorage> storage = openSharedPref();
         double hours = 0;
 
         for (dataStorage x : storage){

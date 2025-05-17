@@ -142,7 +142,8 @@ public class Health extends AppCompatActivity {
 
         //Coming Soon Text
         TextView comingSoon = findViewById(R.id.comingSoonText);
-        comingSoon.setText("Streaks, Personalized Health, And FAR More Coming Soon");
+        comingSoon.setText("This is where projects involving time invested in health related" +
+                " activities like exercise and dieting will take place. This page in development. Come back later.");
 
         Animation fadeInLiftAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_lift);
         comingSoon.startAnimation(fadeInLiftAnimation);
