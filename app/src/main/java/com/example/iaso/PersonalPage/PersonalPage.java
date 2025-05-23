@@ -6,12 +6,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -32,6 +35,11 @@ import java.util.ArrayList;
 //This page is to display all personal projects the user has through a recyclerview interface
 public class PersonalPage extends AppCompatActivity implements RecyclerViewInterface {
 
+
+    //used to run animation only once
+    private static boolean hasPlayedAnimation = false;
+    CardView achievementCard;
+
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>(); //Stores List Of Projects
     SharedPreferences dynamicHabits;
 
@@ -41,6 +49,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     RecyclerView displayPersonalHabits;
 
     ImageButton exitButton;
+    TextView emptyText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +62,30 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             return insets;
         });
 
+        emptyText = findViewById(R.id.textView19);
+
         TextView Title = findViewById(R.id.PersonalPageHeader);
         String title = "Your Projects";
         Title.setText(title);
 
+        //set the achievement cardview to invisible
+        achievementCard = findViewById(R.id.AchievementPage);
+        achievementCard.setVisibility(View.INVISIBLE);
+
+
         //Initialize recycler view
         displayPersonalHabits = findViewById(R.id.personalHabitDisplayRecyclerView);
+
+        if (!hasPlayedAnimation){
+            Animation upwardsFade = AnimationUtils.loadAnimation(this, R.anim.fade_in_lift);
+            displayPersonalHabits.startAnimation(upwardsFade);
+
+            Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
+            fadeInAnimation.setStartOffset(300);
+            Title.startAnimation(fadeInAnimation);
+
+            hasPlayedAnimation = true;
+        }
 
         //Recieve sharedpref for projects - apply to recyclerview (auto set up dynamichabits sharedpref)
         setUpPersonalHabits();
@@ -70,6 +97,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             @Override
             public void onClick(View view) {
                 startActivity(b);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
 
@@ -109,6 +137,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             Log.d("ArrayListCheck", "Person Name: " + x.getName()); // Appears in Logcat
             Log.d("ArrayListCheck", "Person Type: " + x.getType());
             Log.d("ArrayListCheck", "Person Hours: " + x.getHours());
+            Log.d("ArrayListCheck", "Date:" + x.getDate());
         }
 
         //Prevents runtime errors
@@ -122,6 +151,13 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         //Addition of data entry to storage
         dataStorageList.add(newData);
         String updatedJson = gson.toJson(dataStorageList);
+
+        achievementCard.setVisibility(View.VISIBLE);
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_lift);
+        fadeInAnimation.setStartOffset(300);
+        achievementCard.startAnimation(fadeInAnimation);
+        TextView minutesText = findViewById(R.id.minutesText);
+        minutesText.setText(String.valueOf(newData.getHours()));
 
         //Save the updated JSON string back into SharedPreferences
         dataEditor.putString("userStorageList", updatedJson);
@@ -139,22 +175,17 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         Type type = new TypeToken<ArrayList<DynamicHabit>>(){}.getType();
         dynamicHabitList = gson.fromJson(json,type);
 
-        if (dynamicHabitList == null) {
-            tasksEmpty();
+        if (dynamicHabitList == null || dynamicHabitList.isEmpty()) {
+            emptyText.setVisibility(View.VISIBLE);
+            emptyText.setText("No Projects To Display. Build one using the square button above");
             displayPersonalHabits.setVisibility(View.INVISIBLE);
         }
         else {
+            emptyText.setVisibility(View.INVISIBLE);
             PersonalHabit_RecyclerViewAdapter recyclerViewAdapter = new PersonalHabit_RecyclerViewAdapter(this, dynamicHabitList, this);
             displayPersonalHabits.setAdapter(recyclerViewAdapter);
             displayPersonalHabits.setLayoutManager(new LinearLayoutManager(this));
         }
-    }
-
-    //Run if nothing in sharedprefs
-    private void tasksEmpty() {
-        TextView Title = findViewById(R.id.PersonalPageHeader);
-        String title = "No Personal Habits Available. Sorry";
-        Title.setText(title);
     }
 
     //Upon long pressing project, call the analytics page
@@ -169,7 +200,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     @Override
     public void onItemClick(int position) {
         if (dynamicHabitList == null) {
-            tasksEmpty();
+            Toast.makeText(getApplicationContext(), "No projects to display", Toast.LENGTH_SHORT).show();
         }
         else {
             //Adds new entry to dataStorage ArrayList
@@ -178,7 +209,6 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
             dataStorage newData = new dataStorage(name, "Project", time);
             addToDataStorage(newData);
-
         }
     }
 
@@ -192,6 +222,12 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     public void goToHub(View view) {
         Intent b = new Intent(this, MainActivity.class);
         startActivity(b);
+        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
+    }
+
+    //this piece of code doesn't work
+    public void exitAchievementText(View view){
+        achievementCard.setVisibility(View.INVISIBLE);
     }
 
 }

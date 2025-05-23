@@ -17,6 +17,8 @@ import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.PersonalPage.dataStorage;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.robinhood.spark.SparkAdapter;
+import com.robinhood.spark.SparkView;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -55,6 +57,48 @@ public class Analytics extends AppCompatActivity {
 
         //set up recyclerview
         //dataPull();
+
+        //build spark graph
+        buildSparkGraph(name1);
+    }
+
+    void buildSparkGraph(String projectName) {
+        SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
+        ArrayList<dataStorage> data = openSharedPref();
+
+        //filter data
+        double tempTime = 0;
+        int lastDate = data.get(0).getDate();
+        ArrayList<dataStorage> filteredData = new ArrayList<>();
+
+        //Advanced loop to filter data
+        for (int y = 0; y < data.size(); y++){
+            dataStorage x = data.get(y);
+
+            if (projectName != null && projectName.equals(x.getName())){
+
+                //date not same add object
+                if (lastDate != x.getDate()){
+                    dataStorage temp = new dataStorage(data.get(y-1).getName(), data.get(y-1).getType(), tempTime, data.get(y-1).getDate());
+                    filteredData.add(temp);
+
+                    lastDate = x.getDate();
+                    tempTime = x.getHours();
+
+                    continue;
+                }
+                //if date same wait
+                else {
+                    tempTime += x.getHours();
+                }
+
+                dataStorage temp = new dataStorage(x.getName(), x.getType(), tempTime, x.getDate());
+                filteredData.add(temp);
+            }
+        }
+
+        MyAdapter adapter = new MyAdapter(filteredData);
+        sparkView.setAdapter(adapter);
     }
 
     //opens sharedpref for data storage and returns the arraylist
@@ -110,6 +154,36 @@ public class Analytics extends AppCompatActivity {
         }
 
         TextView totalHours = findViewById(R.id.amountOfHours);
-        totalHours.setText(hours + "");
+        totalHours.setText(String.format("%.2f", hours / 60));
     }
+
+    public class MyAdapter extends SparkAdapter {
+         private final ArrayList<dataStorage> data; //data type being fed in
+     
+         
+         public MyAdapter(ArrayList<dataStorage> data) {
+             this.data = data;
+         }
+     
+         @Override
+         public int getCount() {
+             return data.size();
+         }
+     
+         @Override
+         public Object getItem(int index) {
+            return data.get(index);
+         }
+     
+         @Override
+         public float getY(int index) {
+           return (float) data.get(index).getHours();
+         }
+
+         @Override
+        public float getX(int index){
+             return (float) data.get(index).getDate();
+         }
+    }
+
 }

@@ -264,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToHealth(View v){
         Intent b = new Intent(this, Health.class);
         startActivity(b);
+        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
     }
 
     public void goToWelcomeTESTER(View v){
@@ -279,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToPersonalPage(View v){
         Intent b = new Intent(this, PersonalPage.class);
         startActivity(b);
+        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
     }
 
 
@@ -286,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToExercise(View v){
         Intent b = new Intent(this, PersonalPage.class);
         startActivity(b);
+        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
     }
 
     //Send User To Store Activity
