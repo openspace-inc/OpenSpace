@@ -71,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
                 .putBoolean("isFirstRun", false).apply();
 
+        //set pro text to invisible as default
+        CardView welcomeToPro = findViewById(R.id.welcomeToPro);
+        welcomeToPro.setVisibility(View.INVISIBLE);
+
         //Create Animation of ImageButtons
         ImageButton toDoList = findViewById(R.id.todolistButton);
         ImageButton toDoList2 = findViewById(R.id.circle1); //FIRE
@@ -346,6 +350,8 @@ public class MainActivity extends AppCompatActivity {
 
         //Get data to test if it is the first run
         if(firstRun){
+            CardView welcome = findViewById(R.id.welcomeToPro);
+            welcome.setVisibility(View.VISIBLE);
             timingText = "Welcome to Iaso";
             SharedPreferences.Editor editor = userData.edit();
             editor.putBoolean("firstRun", false);
@@ -418,6 +424,11 @@ public class MainActivity extends AppCompatActivity {
                 }, null, Shader.TileMode.CLAMP);
         textDisplay.getPaint().setShader(textShader);
 
+    }
+
+    public void exitProText(View view){
+        CardView welcome = findViewById(R.id.welcomeToPro);
+        welcome.setVisibility(View.GONE);
     }
 
 }
