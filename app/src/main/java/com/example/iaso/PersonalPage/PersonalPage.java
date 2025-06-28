@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.animation.ValueAnimator;
+import android.graphics.BlurMaskFilter;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -158,6 +160,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         achievementCard.startAnimation(fadeInAnimation);
         TextView minutesText = findViewById(R.id.minutesText);
         minutesText.setText(String.valueOf(newData.getHours()));
+        animateMinutesText(minutesText);
 
         //Save the updated JSON string back into SharedPreferences
         dataEditor.putString("userStorageList", updatedJson);
@@ -228,6 +231,33 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     //this piece of code doesn't work
     public void exitAchievementText(View view){
         achievementCard.setVisibility(View.INVISIBLE);
+    }
+
+    //Animates the minutes text with a blur lift effect
+    private void animateMinutesText(TextView view) {
+        float startBlur = 25f;
+        float endBlur = 0f;
+
+        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        view.setAlpha(0f);
+        view.setTranslationY(50f);
+        view.getPaint().setMaskFilter(new BlurMaskFilter(startBlur, BlurMaskFilter.Blur.NORMAL));
+
+        ValueAnimator blurAnimator = ValueAnimator.ofFloat(startBlur, endBlur);
+        blurAnimator.setDuration(600);
+        blurAnimator.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            view.getPaint().setMaskFilter(new BlurMaskFilter(value, BlurMaskFilter.Blur.NORMAL));
+            view.invalidate();
+        });
+
+        view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(600)
+                .start();
+
+        blurAnimator.start();
     }
 
 }
