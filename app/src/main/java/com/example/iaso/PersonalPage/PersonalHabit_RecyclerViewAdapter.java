@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.animation.ValueAnimator;
+import android.graphics.BlurMaskFilter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,6 +46,7 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
         holder.habitName.setText(habit.getName3());
         //holder.streakCount.setText(String.valueOf(habit.getStreak3()) + " days"); // Convert int to String
         holder.time.setText(String.valueOf(habit.getTime()));
+        animateCommitmentTime(holder.time);
 
 
         int blockCountAmount = habit.getBlocks3();
@@ -64,6 +67,37 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
     public int getItemCount() {
         return dynamicHabitList.size();
 
+    }
+
+    //Animates the commitment time text with a blur lift effect
+    private void animateCommitmentTime(TextView view) {
+        float startBlur = 25f;
+        float endBlur = 0f;
+
+        view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        view.setAlpha(0f);
+        view.setTranslationY(50f);
+        view.getPaint().setMaskFilter(new BlurMaskFilter(startBlur, BlurMaskFilter.Blur.NORMAL));
+
+        ValueAnimator blurAnimator = ValueAnimator.ofFloat(startBlur, endBlur);
+        blurAnimator.setDuration(600);
+        blurAnimator.addUpdateListener(animation -> {
+            float value = (float) animation.getAnimatedValue();
+            if (value <= 0f) {
+                view.getPaint().setMaskFilter(null);
+            } else {
+                view.getPaint().setMaskFilter(new BlurMaskFilter(value, BlurMaskFilter.Blur.NORMAL));
+            }
+            view.invalidate();
+        });
+
+        view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(600)
+                .start();
+
+        blurAnimator.start();
     }
 
     //Class that I created (Like onCreate Method)👇🏼
