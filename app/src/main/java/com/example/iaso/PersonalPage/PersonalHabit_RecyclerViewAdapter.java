@@ -60,7 +60,10 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
         //Edit this to go from blocks to check marks
         holder.check.setImageResource(R.drawable.block1);
         //holder.streak.setImageResource(R.drawable.streakv1);
-        holder.habitImage.setImageResource(habit.getImageResId());
+        int resId = context.getResources().getIdentifier(habit.getImageName(), "drawable", context.getPackageName());
+        if(resId != 0){
+            holder.habitImage.setImageResource(resId);
+        }
     }
 
     @Override
