@@ -8,10 +8,10 @@ public class DynamicHabit {
     String description;
     int amount;
     int time;
-    int imageResId;
+    String imageName;
     int timeInvested;
 
-    public DynamicHabit(String name1, int streak1, String type1, String description1, int amount1, int time1, int imageResId1, int timeInvested1){
+    public DynamicHabit(String name1, int streak1, String type1, String description1, int amount1, int time1, String imageName1, int timeInvested1){
         name = name1;
         streak = streak1;
         type = type1;
@@ -19,7 +19,7 @@ public class DynamicHabit {
         blocks = 1;
         amount = amount1;
         time = time1;
-        imageResId = imageResId1;
+        imageName = imageName1;
         timeInvested = timeInvested1;
     }
 
@@ -46,8 +46,8 @@ public class DynamicHabit {
     public int getTime(){
         return time;
     }
-    public int getImageResId(){
-        return imageResId;
+    public String getImageName(){
+        return imageName;
     }
     public int getTimeInvested(){return timeInvested;}
 }

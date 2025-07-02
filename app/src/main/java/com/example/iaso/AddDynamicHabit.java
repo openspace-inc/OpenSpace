@@ -36,6 +36,10 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class AddDynamicHabit extends AppCompatActivity {
 
@@ -376,6 +380,32 @@ public class AddDynamicHabit extends AppCompatActivity {
         investmentNumber.setDisplayedValues(timeAmounts);
     }
 
+    //Generates a random image from the bank for every project built by the user.
+    private String getRandomUnusedImage(ArrayList<DynamicHabit> existingHabits){
+        String[] images = {"calmshades", "orb1", "orb2", "orb3", "orb4", "orb5", "orb6"};
+
+        Set<String> used = new HashSet<>();
+        if(existingHabits != null){
+            for(DynamicHabit habit : existingHabits){
+                used.add(habit.getImageName());
+            }
+        }
+
+        List<String> available = new ArrayList<>();
+        for(String img : images){
+            if(!used.contains(img)){
+                available.add(img);
+            }
+        }
+
+        Random random = new Random();
+        if(available.isEmpty()){
+            return images[random.nextInt(images.length)];
+        }
+
+        return available.get(random.nextInt(available.size()));
+    }
+
     public void addHabit(){
         userData = getSharedPreferences("UserData", Context.MODE_MULTI_PROCESS);
         int blockAmount = userData.getInt("userPoints", 0);
@@ -395,7 +425,8 @@ public class AddDynamicHabit extends AppCompatActivity {
             if (json == null){
                 //Create arrayList and add habits to it
                 dynamicHabitList = new ArrayList<DynamicHabit>();
-                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, amount, time, R.drawable.calmshades, 0);
+                String imageName = getRandomUnusedImage(dynamicHabitList);
+                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, amount, time, imageName, 0);
                 dynamicHabitList.add(newHabit);
 
                 String updatedJson = gson.toJson(dynamicHabitList);
@@ -416,7 +447,8 @@ public class AddDynamicHabit extends AppCompatActivity {
 
                 dynamicHabitList = gson.fromJson(json, type);
 
-                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, amount, time, R.drawable.calmshades, 0);
+                String imageName = getRandomUnusedImage(dynamicHabitList);
+                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, amount, time, imageName, 0);
                 dynamicHabitList.add(newHabit);
 
                 // Step 5: Convert the updated list back to a JSON string

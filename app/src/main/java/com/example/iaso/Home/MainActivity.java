@@ -172,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
         dynamicHabits = getSharedPreferences("DynamicHabits", Context.MODE_PRIVATE);
         SharedPreferences.Editor dynamicHabitEditor = dynamicHabits.edit();
 
-        DynamicHabit pullUpHabit = new DynamicHabit("Pull Ups", 0, "Fitness", "Strength Your UpperBack Through Pullups", 5, 15, R.drawable.calmshades, 0);
-        DynamicHabit pullUpHabit2 = new DynamicHabit("Pull Ups2", 4, "Fitness", "Strength Your UpperBack Through Pullups23", 256, 15, R.drawable.calmshades, 0);
+        DynamicHabit pullUpHabit = new DynamicHabit("Pull Ups", 0, "Fitness", "Strength Your UpperBack Through Pullups", 5, 15, "calmshades", 0);
+        DynamicHabit pullUpHabit2 = new DynamicHabit("Pull Ups2", 4, "Fitness", "Strength Your UpperBack Through Pullups23", 256, 15, "calmshades", 0);
         dynamicHabitList.add(pullUpHabit);
         dynamicHabitList.add(pullUpHabit2);
 

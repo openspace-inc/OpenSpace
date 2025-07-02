@@ -1,11 +1,11 @@
 package com.example.iaso.PersonalPage;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.BlurMaskFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.animation.ValueAnimator;
-import android.graphics.BlurMaskFilter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,8 +59,10 @@ public class PersonalHabit_RecyclerViewAdapter extends RecyclerView.Adapter<Pers
 
         //Edit this to go from blocks to check marks
         holder.check.setImageResource(R.drawable.block1);
-        //holder.streak.setImageResource(R.drawable.streakv1);
-        holder.habitImage.setImageResource(habit.getImageResId());
+        int resId = context.getResources().getIdentifier(habit.getImageName(), "drawable", context.getPackageName());
+        if(resId != 0){
+            holder.habitImage.setBackgroundResource(resId);
+        }
     }
 
     @Override
