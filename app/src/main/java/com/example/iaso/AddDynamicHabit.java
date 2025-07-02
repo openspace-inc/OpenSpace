@@ -380,6 +380,7 @@ public class AddDynamicHabit extends AppCompatActivity {
         investmentNumber.setDisplayedValues(timeAmounts);
     }
 
+    //Generates a random image from the bank for every project built by the user.
     private String getRandomUnusedImage(ArrayList<DynamicHabit> existingHabits){
         String[] images = {"calmshades", "orb1", "orb2", "orb3", "orb4", "orb5", "orb6"};
 
