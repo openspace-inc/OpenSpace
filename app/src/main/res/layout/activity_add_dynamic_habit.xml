@@ -28,7 +28,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="56dp"
         android:layout_marginEnd="32dp"
-        android:fontFamily="@font/urbaneroundedbold"
+        android:fontFamily="@font/neuehaas65"
         android:text="Title"
         android:textAlignment="center"
         android:textSize="30sp"
@@ -68,13 +68,27 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
+        android:id="@+id/information2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/neuehaas45"
+        android:gravity="center"
+        android:text="Information Here"
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/information"
+        app:layout_constraintStart_toStartOf="@+id/information"
+        app:layout_constraintTop_toBottomOf="@+id/information" />
+
+    <TextView
         android:id="@+id/information"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="30dp"
-        android:fontFamily="@font/neuehaasbold"
+        android:fontFamily="@font/neuehaas45"
         android:gravity="center"
         android:text="Information Here"
         android:textColor="@color/gray"
@@ -154,10 +168,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/neuehaasbold"
-                android:textColor="@color/gray"
+                android:fontFamily="@font/neuehaas65"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="@color/gray"
                 android:textSize="16dp" />
 
             <TextView
@@ -166,10 +180,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/neuehaasbold"
-                android:textColor="@color/gray"
+                android:fontFamily="@font/neuehaas65"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="@color/gray"
                 android:textSize="16dp" />
 
             <TextView
@@ -178,10 +192,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/neuehaasbold"
-                android:textColor="@color/gray"
+                android:fontFamily="@font/neuehaas65"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="@color/gray"
                 android:textSize="16dp" />
 
             <TextView
@@ -190,10 +204,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="16dp"
-                android:fontFamily="@font/neuehaasbold"
-                android:textColor="@color/gray"
+                android:fontFamily="@font/neuehaas65"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="@color/gray"
                 android:textSize="16dp" />
 
             <TextView
@@ -203,10 +217,10 @@
                 android:layout_centerInParent="true"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:fontFamily="@font/neuehaasheavy"
-                android:textColor="@color/black"
+                android:fontFamily="@font/neuehaas65"
                 android:gravity="center"
                 android:text="TextView"
+                android:textColor="@color/black"
                 android:textSize="16dp" />
         </LinearLayout>
 
@@ -245,35 +259,35 @@
                 android:id="@+id/cost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
                 android:layout_marginTop="24dp"
+                android:fontFamily="@font/neuehaas45"
+                android:text="TextView"
                 android:textSize="20dp"
-                android:fontFamily="@font/urbaneroundedheavy"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iasoPay"/>
+                app:layout_constraintTop_toBottomOf="@id/iasoPay" />
 
             <TextView
                 android:id="@+id/balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="balance"
                 android:layout_marginTop="6dp"
-                android:textSize="14dp"
+                android:fontFamily="@font/neuehaas25"
+                android:text="balance"
                 android:textColor="@color/gray"
-                android:fontFamily="@font/urbaneroundedheavy"
+                android:textSize="14dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cost"/>
+                app:layout_constraintTop_toBottomOf="@id/cost" />
 
             <TextView
                 android:id="@+id/iasoPay"
-                android:textColor="@color/red"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:fontFamily="@font/urbaneroundedbold"
-                android:text="Iaso Pay"
+                android:fontFamily="@font/neuehaas65"
+                android:text="Finalize"
+                android:textColor="@color/red"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

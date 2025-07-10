@@ -44,12 +44,12 @@ import java.util.Set;
 public class AddDynamicHabit extends AppCompatActivity {
 
     TextView title;
-    TextView information;
+    TextView information, information2;
     Button enter;
     Button secondary, payButton;
     EditText informationBox;
     int choice;
-    int time, amount; //move to habits
+    int time, amount, initialInvestment; //move to habits
     CardView informationCard, purchaseCard;
     String habitName, habitDescription; //move to habits
     TextView habitNameInfo, habitDescriptionInfo, timeInvestedInfo, amountInfo, autoAssistInfo1;
@@ -83,6 +83,8 @@ public class AddDynamicHabit extends AppCompatActivity {
         informationBox = findViewById(R.id.informationBox);
         background = findViewById(R.id.background);
         informationCard = findViewById(R.id.checkInformation);
+        information2 = findViewById(R.id.information2); // For how much income you have
+        information2.setVisibility(View.INVISIBLE);
 
 
         //data shown at the end.
@@ -181,7 +183,7 @@ public class AddDynamicHabit extends AppCompatActivity {
             title.startAnimation(fadeInAnimation); //Use any item in place of toDoList.
             title.startAnimation(liftInAnimation);
 
-            information.setText("Let's Create A Dynamic Habit. Together!");
+            information.setText("Let's Create A Project. Together!");
             information.startAnimation(fadeInAnimation2); //Use any item in place of toDoList.
             information.startAnimation(liftInAnimation2);
 
@@ -202,11 +204,11 @@ public class AddDynamicHabit extends AppCompatActivity {
             animationView.setVisibility(View.INVISIBLE);
             background.setVisibility(View.VISIBLE);
 
-            title.setText("Enter Your Objective");
+            title.setText("Enter Your Project Name");
             title.startAnimation(fadeInAnimation); //Use any item in place of toDoList.
             title.startAnimation(liftInAnimation);
 
-            information.setText("Enter the name of the habit you want to create!");
+            information.setText("Enter the name of a long term goal that you want to achieve. The best goals are ones that require consistent hard work over a period of time.");
             information.startAnimation(fadeInAnimation2); //Use any item in place of toDoList.
             information.startAnimation(liftInAnimation2);
 
@@ -220,7 +222,7 @@ public class AddDynamicHabit extends AppCompatActivity {
             title.startAnimation(fadeInAnimation); //Use any item in place of toDoList.
             title.startAnimation(liftInAnimation);
 
-            information.setText("Enter the information about, end goal, or why you are doing this habit.");
+            information.setText("A little information about your dream makes things more clear and goes a long way...");
             information.startAnimation(fadeInAnimation2); //Use any item in place of toDoList.
             information.startAnimation(liftInAnimation2);
 
@@ -231,11 +233,17 @@ public class AddDynamicHabit extends AppCompatActivity {
             habitDescription = ((EditText)informationBox).getText().toString();
 
             informationBox.setText("");
-            title.setText("Amount?");
+            title.setText("Stock Price");
             title.startAnimation(fadeInAnimation); //Use any item in place of toDoList.
             title.startAnimation(liftInAnimation);
 
-            information.setText("What is the amount of this habit that is required? Ex. 3 Cups of Water. Just Enter The Number!");
+            userData = getSharedPreferences("UserData", Context.MODE_MULTI_PROCESS);
+            int blockAmount = userData.getInt("userPoints", 0);
+            String amount = Integer.toString(blockAmount);
+            information2.setVisibility(View.VISIBLE);
+            information2.setText("Your current balance: " + amount);
+
+            information.setText("Every project functions like a stock. Invest your time consistently and your stock rises. You can invest more blocks into a starting stock for more gains but make sure you can handle the commitment.");
             information.startAnimation(fadeInAnimation2); //Use any item in place of toDoList.
             information.startAnimation(liftInAnimation2);
             informationBox.setVisibility(View.VISIBLE);
@@ -243,8 +251,9 @@ public class AddDynamicHabit extends AppCompatActivity {
         else if(optionNumber == 5){
             //Get amount data and record
             String amount2 = ((EditText)informationBox).getText().toString();
-            amount = Integer.parseInt(amount2);
+            initialInvestment = Integer.parseInt(amount2);
 
+            information2.setVisibility(View.INVISIBLE);
             title.setText("Time For Your Investment");
             title.startAnimation(fadeInAnimation); //Use any item in place of toDoList.
             title.startAnimation(liftInAnimation);
@@ -300,7 +309,7 @@ public class AddDynamicHabit extends AppCompatActivity {
             habitNameInfo.setText(habitName);
             habitDescriptionInfo.setText(habitDescription);
             timeInvestedInfo.setText(time + " minutes");
-            amountInfo.setText(amount + " units");
+            amountInfo.setText(initialInvestment + " blocks");
             autoAssistInfo1.setText("Auto Assist Not Added");
 
             information.setText("This is what your habit data looks like. Please make sure everything looks good before proceeding.");
@@ -426,7 +435,7 @@ public class AddDynamicHabit extends AppCompatActivity {
                 //Create arrayList and add habits to it
                 dynamicHabitList = new ArrayList<DynamicHabit>();
                 String imageName = getRandomUnusedImage(dynamicHabitList);
-                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, amount, time, imageName, 0);
+                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, time, imageName, 0, initialInvestment);
                 dynamicHabitList.add(newHabit);
 
                 String updatedJson = gson.toJson(dynamicHabitList);
@@ -448,7 +457,7 @@ public class AddDynamicHabit extends AppCompatActivity {
                 dynamicHabitList = gson.fromJson(json, type);
 
                 String imageName = getRandomUnusedImage(dynamicHabitList);
-                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, amount, time, imageName, 0);
+                DynamicHabit newHabit = new DynamicHabit(habitName, 0, "Personal", habitDescription, time, imageName, 0, initialInvestment);
                 dynamicHabitList.add(newHabit);
 
                 // Step 5: Convert the updated list back to a JSON string

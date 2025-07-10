@@ -16,8 +16,20 @@ public class DynamicHabit {
         streak = streak1;
         type = type1;
         description = description1;
-        blocks = 1;
+        blocks = 1; //initial investment
         amount = amount1;
+        time = time1;
+        imageName = imageName1;
+        timeInvested = timeInvested1;
+    }
+
+    public DynamicHabit(String name1, int streak1, String type1, String description1, int time1, String imageName1, int timeInvested1, int blocks1){
+        name = name1;
+        streak = streak1;
+        type = type1;
+        description = description1;
+        blocks = blocks1; //initial investment
+        amount = 1;
         time = time1;
         imageName = imageName1;
         timeInvested = timeInvested1;

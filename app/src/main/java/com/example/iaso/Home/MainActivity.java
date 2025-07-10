@@ -12,9 +12,7 @@ import android.text.TextPaint;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +23,6 @@ import androidx.fragment.app.FragmentManager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
-import com.bumptech.glide.Glide;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
 import com.example.iaso.PersonalPage.DynamicHabit;
@@ -66,10 +63,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, WelcomeActivity.class));
             Toast.makeText(MainActivity.this, "Welcome", Toast.LENGTH_LONG)
                     .show();
-
         }
-        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
-                .putBoolean("isFirstRun", false).apply();
 
         //set pro text to invisible as default
         CardView welcomeToPro = findViewById(R.id.welcomeToPro);
@@ -81,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
         ImageButton storeButton2 = findViewById(R.id.circle2); //FIRE
         ImageButton habitButton = findViewById(R.id.circle3); //FIRE
         ImageButton storeButton = findViewById(R.id.storeButton);
-        TextView assistantText = findViewById(R.id.dynamicAssistantText);
-        CardView dynamicAssistant = findViewById(R.id.cardView);
 
         Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
         Animation fadeInAnimation2 = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
@@ -97,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
         storeButton2.startAnimation(fadeInAnimation2); //FIRE
         habitButton.startAnimation(fadeInAnimation3); //FIRE
         storeButton.startAnimation(fadeInAnimation3);
-        assistantText.startAnimation(fadeInAnimation3);
-        dynamicAssistant.startAnimation(upwardsFade);
 
         //Profile Page Setup
         ImageButton profile = findViewById(R.id.profileIcon);
@@ -125,10 +115,6 @@ public class MainActivity extends AppCompatActivity {
         TextView introText = findViewById(R.id.generatedText);
         setIntroText(introText);
 
-        //Set gif tester file
-        ImageView gifImageView = findViewById(R.id.imageView4);
-        Glide.with(this).asGif().load(R.drawable.iasoxgif4).into(gifImageView);
-
         //Set Dynamic Logo(old gif file)
         //ImageView dynamicLogoIaso = findViewById(R.id.dynamicLogo);
         //Glide.with(this).asGif().load(R.drawable.iasodyanmiclogo).into(dynamicLogoIaso);
@@ -143,9 +129,6 @@ public class MainActivity extends AppCompatActivity {
         back = findViewById(R.id.backButtonForFragments);
         back.setVisibility(View.GONE);
 
-        //Run Dynamic Assistant
-        runDynamicAssistant(gifImageView);
-
         //Send user to Personal Habit Fragment
         ImageButton habitBTN = findViewById(R.id.circle3);
         habitBTN.setOnClickListener(new View.OnClickListener() {
@@ -158,9 +141,7 @@ public class MainActivity extends AppCompatActivity {
                         .addToBackStack("name")
                         .commit();
 
-                gifImageView.setVisibility(View.GONE);
                 back.setVisibility(View.VISIBLE);
-                dynamicAssistant.setVisibility(View.GONE);
             }
         });
 
@@ -182,86 +163,6 @@ public class MainActivity extends AppCompatActivity {
         String json = gson.toJson(dynamicHabitList);
         dynamicHabitEditor.putString("dynamicHabitList", json);
         dynamicHabitEditor.apply();
-    }
-
-    //Create Dynamic Assistant
-    private void runDynamicAssistant(ImageView IASOX) {
-        TextView title = findViewById(R.id.titleInfoCardDescription);
-        TextView description = findViewById(R.id.InfoCardDescription);
-        ImageView gifIASO = IASOX;
-        Button reset = findViewById(R.id.button5);
-
-        reset.setVisibility(View.GONE);
-
-        ArrayList<String> titles = new ArrayList<>();
-        ArrayList<String> descriptions = new ArrayList<>();
-        String currentTitle;
-        String currentDescription;
-
-        SharedPreferences userData = getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        String name = userData.getString("name","");
-        int points = userData.getInt("userPoints", 0);
-        String stringPoints = Integer.toString(points);
-
-        //Fill In
-        titles.add("Your Current Worth, " + name);
-        titles.add("Heads up " + name + "!");
-        titles.add("Something Not Working Correctly?");
-        titles.add("Hey " + name);
-        titles.add("New Features Coming Soon");
-        titles.add("Make Sure To Do Your Tasks");
-        titles.add("Check Out The Store!");
-        titles.add("Dynamic Assistant");
-        titles.add("You're Doing Great, " + name);
-        titles.add("Nice Work, " + name);
-        titles.add("Use The Dynamic To-Do List!");
-        titles.add(name + " ,");
-
-        descriptions.add(stringPoints + " blocks");
-        descriptions.add("IASO X (Premium Edition) Releases Early 2024. All BETA Members Recieve It Free. Thanks For Being With Us.");
-        descriptions.add("All blocks and data will be CLEARED!");
-        descriptions.add("Make Sure To Do Your Habits On The Health Page. Get Blocks As You Complete Them");
-        descriptions.add("You're Currently On The BETA Model. New Features And Bug Fixes Coming Soon");
-        descriptions.add("Get 10 Blocks Per Task. Try It Out!");
-        descriptions.add("New Items Launching Soon!");
-        descriptions.add("My Job Is To Help You Succeed. Check Back Here For Suggestions, Tips, And Motivation.");
-        descriptions.add("Keep It Going! It Will Pay Off Greatly Someday");
-        descriptions.add("Great Job Today.");
-        descriptions.add("Make Sure To Use The Dynamic To-Do List. Press The Add Button To Add Tasks. Press To " +
-                "Open Expanded View. Hold To Complete!");
-        descriptions.add("Use The BMR Calculator In The Health Section. It Will Let You Know How Many Calories To " +
-                "Eat Any Time Of Day. Stick To It, And You'll Be Healthy In No Time!");
-
-
-        Random random = new Random();
-        int randomNumber = random.nextInt(titles.size());
-
-        currentTitle = titles.get(randomNumber);
-        currentDescription = descriptions.get(randomNumber);
-
-        //Print
-        if(randomNumber == 0){
-            title.setText(currentTitle);
-            description.setText(currentDescription);
-            gifIASO.setVisibility(View.GONE);
-        }
-        else if(randomNumber == 1){
-            title.setText(currentTitle);
-            description.setText(currentDescription);
-            gifIASO.setVisibility(View.VISIBLE);
-        }
-        else if(randomNumber == 2){
-            title.setText(currentTitle);
-            description.setText(currentDescription);
-            gifIASO.setVisibility(View.GONE);
-            reset.setVisibility(View.VISIBLE);
-        }
-        else{
-            title.setText(currentTitle);
-            description.setText(currentDescription);
-            gifIASO.setVisibility(View.GONE);
-        }
-
     }
 
     //Send User To Health Activity
@@ -317,8 +218,6 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         back.setVisibility(View.GONE);
-        CardView dynamicAssistant = findViewById(R.id.cardView);
-        dynamicAssistant.setVisibility(View.VISIBLE);
     }
 
     //Set Introduction text based on time of day

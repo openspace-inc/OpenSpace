@@ -204,6 +204,12 @@ public class WelcomeActivity3 extends AppCompatActivity {
         //initialize storage for users
         initalizeUserStorage();
 
+        //making sure the intro scene is not run again. 7.8.2025
+        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                .getBoolean("isFirstRun", true);
+        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).apply();
+
         startActivity(b);
 
     }

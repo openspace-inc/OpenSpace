@@ -47,7 +47,7 @@
             android:gravity="center"
             android:hint="Enter Code"
             android:inputType="text"
-            android:text="A"
+            android:text="-"
             android:textColor="#888888"
             android:textSize="30dp" />
 
@@ -63,7 +63,7 @@
             android:gravity="center"
             android:hint="Enter Code"
             android:inputType="text"
-            android:text="4"
+            android:text="-"
             android:textColor="#888888"
             android:textSize="30dp" />
 
@@ -79,7 +79,7 @@
             android:gravity="center"
             android:hint="Enter Code"
             android:inputType="text"
-            android:text="C"
+            android:text="-"
             android:textColor="#888888"
             android:textSize="30dp" />
 
@@ -95,7 +95,7 @@
             android:gravity="center"
             android:hint="Enter Code"
             android:inputType="text"
-            android:text="X"
+            android:text="-"
             android:textColor="#888888"
             android:textSize="30dp" />
     </LinearLayout>
@@ -112,40 +112,39 @@
         app:layout_constraintVertical_bias="1.0">
 
         <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Iaso Inc."
-            android:textSize="15dp"
-            android:layout_marginBottom="15dp"
-            android:fontFamily="@font/neuehaasmedium"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
             android:id="@+id/textView10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sfprodisplaysemibold"
-            android:text="Didn't join the waitlist? Proceed below."
+            android:layout_marginBottom="32dp"
+            android:fontFamily="@font/neuehaas25"
+            android:text="Didn't join the waitlist? Proceed here."
             android:textColor="#888888"
+            app:layout_constraintBottom_toTopOf="@+id/imageView4"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintHorizontal_bias="0.27"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/joinButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:backgroundTint="#000000"
             android:fontFamily="@font/sfuidisplayheavy"
             android:text="Join"
-            app:layout_constraintVertical_bias="0.2"
-            app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintBottom_toBottomOf="@+id/textView10"
+            app:layout_constraintStart_toEndOf="@+id/textView10"
+            app:layout_constraintTop_toTopOf="@+id/textView10" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="101dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+            app:srcCompat="@drawable/iasologo" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -171,16 +170,15 @@
 
         <ImageView
             android:id="@+id/checkmark"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:padding="10dp"
-            android:layout_width="119dp"
-            android:layout_height="75dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:scaleType="fitStart"
+            app:layout_constraintBottom_toBottomOf="@+id/submitButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/submitButton"
-            app:srcCompat="@drawable/checkmarkpro" />
+            app:layout_constraintStart_toEndOf="@+id/submitButton"
+            app:layout_constraintTop_toTopOf="@+id/submitButton"
+            app:srcCompat="@drawable/checkmarkv3" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -195,9 +193,9 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/sfuidisplayheavy"
+            android:fontFamily="@font/neuehaas65"
             android:text="Welcome"
-            android:textSize="40sp"
+            android:textSize="48sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -210,7 +208,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:fontFamily="@font/sfprodisplaysemibold"
+            android:fontFamily="@font/neuehaas45"
             android:text="Your future awaits."
             android:textColor="#888888"
             android:textColorLink="#4E4949"
@@ -224,17 +222,19 @@
 
         <TextView
             android:id="@+id/information"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:fontFamily="@font/sfprodisplaysemibold"
-            android:text="Please enter waitlist code below:"
+            android:fontFamily="@font/neuehaas45"
+            android:text="Iaso is currently a limited access app. You'll need to join a queue and get a code to enter. Or if you have a pro access code, you can enter that here."
+            android:textAlignment="center"
             android:textColor="#888888"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/description25"
-            app:layout_constraintVertical_bias="0.8" />
+            app:layout_constraintWidth_percent="0.75" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

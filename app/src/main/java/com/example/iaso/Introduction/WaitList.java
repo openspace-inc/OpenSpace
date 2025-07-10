@@ -12,9 +12,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.iaso.R;
 
@@ -25,11 +22,6 @@ public class WaitList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_wait_list);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         String code = "AXC4";
 
@@ -42,6 +34,40 @@ public class WaitList extends AppCompatActivity {
         EditText box2 = findViewById(R.id.code2);
         EditText box3 = findViewById(R.id.code3);
         EditText box4 = findViewById(R.id.code4);
+
+        box1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    box1.setText("");  // Clear the text
+                }
+            }
+        });
+        box2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    box2.setText("");  // Clear the text
+                }
+            }
+        });
+        box3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    box3.setText("");  // Clear the text
+                }
+            }
+        });
+        box4.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    box4.setText("");  // Clear the text
+                }
+            }
+        });
+
 
         Button submitButton = findViewById(R.id.submitButton);
 
