@@ -26,6 +26,7 @@ import com.example.iaso.Analytics;
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.RecyclerViewInterface;
+import com.example.iaso.PersonalPage.BlockAdjustment;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -148,6 +149,21 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             String x = "just a placer";
         }
 
+        //check for skipped days for this project
+        int lastDate = -1;
+        for (int i = dataStorageList.size() - 1; i >= 0; i--) {
+            dataStorage temp = dataStorageList.get(i);
+            if (temp.getName().equals(newData.getName())) {
+                lastDate = temp.getDate();
+                break;
+            }
+        }
+        if (lastDate != -1) {
+            for (int d = lastDate + 1; d < newData.getDate(); d++) {
+                dataStorageList.add(new dataStorage(newData.getName(), newData.getType(), 0, d));
+            }
+        }
+
         //Addition of data entry to storage
         dataStorageList.add(newData);
         String updatedJson = gson.toJson(dataStorageList);
@@ -209,6 +225,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
             dataStorage newData = new dataStorage(name, "Project", time);
             addToDataStorage(newData);
+            BlockAdjustment.adjustBlocks(this, name);
         }
     }
 
