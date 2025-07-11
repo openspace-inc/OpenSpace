@@ -336,7 +336,7 @@ public class AddDynamicHabit extends AppCompatActivity {
             int blockAmount = userData.getInt("userPoints", 0);
             String amount = Integer.toString(blockAmount);
 
-            cost.setText("50 blocks"); // need to build dynamic version of cost
+            cost.setText(initialInvestment + " blocks"); // need to build dynamic version of cost
             balance.setText("balance: " + amount + " blocks");
 
         } else if (optionNumber == 9) {
@@ -418,10 +418,13 @@ public class AddDynamicHabit extends AppCompatActivity {
     public void addHabit(){
         userData = getSharedPreferences("UserData", Context.MODE_MULTI_PROCESS);
         int blockAmount = userData.getInt("userPoints", 0);
-        if(blockAmount < 50){
+        if(blockAmount < initialInvestment){
             balance.setText("Not enough blocks in account");
         }
         else{
+            //subtract blocks
+            userData.edit().putInt("userPoints", blockAmount - initialInvestment).apply();
+
             // Step 1: Retrieve the JSON string from SharedPreferences
             dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_MULTI_PROCESS); //Change sharedPreference Collection 😀
             Gson gson = new Gson();
