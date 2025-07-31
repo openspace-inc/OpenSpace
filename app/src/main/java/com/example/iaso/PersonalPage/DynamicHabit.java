@@ -71,44 +71,74 @@ public class DynamicHabit {
     }
 
     private String generateStockSymbol(String habitName){
-        if(habitName == null || habitName.isEmpty()){
+        if(habitName == null || habitName.trim().isEmpty()){
             return "";
         }
 
-        String cleaned = habitName.toUpperCase().replaceAll("[^A-Z]", "");
-
-        if(cleaned.length() <= 4){
-            return cleaned;
+        // Remove any characters that are not letters or spaces
+        String cleanedName = habitName.replaceAll("[^A-Za-z ]", " ").trim();
+        if(cleanedName.isEmpty()){
+            return "";
         }
 
-        String vowels = "AEIOU";
-        StringBuilder builder = new StringBuilder();
-        builder.append(cleaned.charAt(0));
+        // Uppercase form used throughout
+        String upper = cleanedName.toUpperCase();
 
-        // Append consonants in order after the first character
-        for(int i = 1; i < cleaned.length() && builder.length() < 4; i++){
-            char c = cleaned.charAt(i);
-            if(vowels.indexOf(c) == -1){
-                builder.append(c);
+        // Handle a few well known names directly
+        String upperNoSpace = upper.replaceAll(" ", "");
+        switch(upperNoSpace){
+            case "APPLEINC":
+            case "APPLE":
+                return "AAPL";
+            case "TESLA":
+                return "TSLA";
+            case "MICROSOFT":
+            case "MICROSOFTCORPORATION":
+                return "MSFT";
+            default:
+                break;
+        }
+
+        // Split into words and start with their initials if there is more than one
+        String[] words = upper.split("\\s+");
+        String candidate;
+        if(words.length > 1){
+            StringBuilder b = new StringBuilder();
+            for(String w : words){
+                if(!w.isEmpty()){
+                    b.append(w.charAt(0));
+                    if(b.length() == 4){
+                        break;
+                    }
+                }
             }
-        }
-
-        // Append remaining characters if necessary
-        for(int i = 1; i < cleaned.length() && builder.length() < 4; i++){
-            char c = cleaned.charAt(i);
-            if(vowels.indexOf(c) != -1){
-                builder.append(c);
+            candidate = b.toString();
+            // If we got only one letter, fall back to first word characters
+            if(candidate.length() < 2){
+                candidate = words[0];
             }
+        }else{
+            candidate = upperNoSpace;
         }
 
-        while(builder.length() < 4){
-            builder.append(cleaned.charAt(cleaned.length()-1));
+        // Remove any remaining non letters and ensure uppercase
+        candidate = candidate.replaceAll("[^A-Z]", "");
+
+        // If the candidate is still too long, drop vowels after the first letter
+        if(candidate.length() > 4){
+            String start = String.valueOf(candidate.charAt(0));
+            String remainder = candidate.substring(1).replaceAll("[AEIOU]", "");
+            candidate = (start + remainder);
         }
 
-        if(builder.length() > 4){
-            builder.setLength(4);
+        if(candidate.length() > 4){
+            candidate = candidate.substring(0,4);
         }
 
-        return builder.toString();
+        if(candidate.length() < 2 && upperNoSpace.length() >= 2){
+            candidate = upperNoSpace.substring(0, Math.min(4, upperNoSpace.length()));
+        }
+
+        return candidate;
     }
 }
