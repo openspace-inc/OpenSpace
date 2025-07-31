@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iaso.AddDynamicHabit;
-import com.example.iaso.Analytics;
+import com.example.iaso.AnalyticsActivity;
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.RecyclerViewInterface;
@@ -190,7 +190,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
     //Upon long pressing project, call the analytics page
     void callAnalyticsClass(int position){
-        Intent b = new Intent(PersonalPage.this, Analytics.class);
+        Intent b = new Intent(PersonalPage.this, AnalyticsActivity.class);
         b.putExtra("project_name", dynamicHabitList.get(position).getName3());
         b.putExtra("project_description", dynamicHabitList.get(position).getDescription());
         startActivity(b);

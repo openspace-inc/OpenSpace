@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,9 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Iaso"
         tools:targetApi="31">
-        <activity
-            android:name=".Analytics"
-            android:exported="false" />
+
+
+
         <activity
             android:name=".Introduction.WaitList"
             android:exported="false" />
@@ -65,11 +67,33 @@
             android:exported="false" />
         <activity
             android:name=".Home.SplashScreen"
+            android:exported="false"
+            android:theme="@style/Theme.Design.NoActionBar">
+        </activity>
+        <!--
+        <activity
+            android:name=".Home.SplashScreen"
             android:exported="true"
             android:theme="@style/Theme.Design.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>   -->
 
+        <!-- KEEP THIS COMPLETE ENTRY
+        <activity
+            android:name=".AnalyticsActivity"
+            android:label="Analytics Dashboard"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:exported="false" /> -->
+        <activity
+            android:name=".AnalyticsActivity"
+            android:label="Analytics Dashboard"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
