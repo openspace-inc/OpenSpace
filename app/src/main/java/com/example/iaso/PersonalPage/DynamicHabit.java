@@ -67,6 +67,9 @@ public class DynamicHabit {
     public int getTimeInvested(){return timeInvested;}
 
     public String getStockSymbol(){
+        if (stockSymbol == null || stockSymbol.isEmpty()){
+            stockSymbol = generateStockSymbol(name);
+        }
         return stockSymbol;
     }
 
