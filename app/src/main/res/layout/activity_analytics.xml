@@ -37,10 +37,12 @@
                 android:gravity="start"
                 android:text="Project Name..."
                 android:textSize="40sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="gone">
 
             </TextView>
 
@@ -53,9 +55,11 @@
                 android:fontFamily="@font/neuehaas45"
                 android:text="Description..."
                 android:textSize="16sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/name"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintTop_toBottomOf="@+id/name"
+                tools:visibility="gone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -78,12 +82,14 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:visibility="gone"
                 app:cardCornerRadius="25dp"
                 app:cardElevation="14dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHeight_percent="0.6"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/amountOfHours">
+                app:layout_constraintTop_toBottomOf="@+id/amountOfHours"
+                tools:visibility="gone">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -119,9 +125,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Advanced Analytics Coming Soon"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView4" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView4"
+                tools:visibility="gone" />
 
             <ImageView
                 android:id="@+id/imageView22"
@@ -147,9 +155,11 @@
                 android:text="Hours"
                 android:textColor="@color/gray"
                 android:textSize="16sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/amountOfHours"
                 app:layout_constraintStart_toEndOf="@+id/amountOfHours"
-                app:layout_constraintTop_toTopOf="@+id/amountOfHours">
+                app:layout_constraintTop_toTopOf="@+id/amountOfHours"
+                tools:visibility="gone">
 
             </TextView>
 
@@ -162,8 +172,10 @@
                 android:text="89"
                 android:textColor="@color/black"
                 android:textSize="48sp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="gone">
 
             </TextView>
 
@@ -186,11 +198,13 @@
                 android:id="@+id/imageView11"
                 android:layout_width="165dp"
                 android:layout_height="100dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/block1" />
+                app:srcCompat="@drawable/block1"
+                tools:visibility="gone" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

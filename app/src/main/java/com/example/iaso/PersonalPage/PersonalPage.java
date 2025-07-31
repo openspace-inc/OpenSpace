@@ -192,6 +192,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     void callAnalyticsClass(int position){
         Intent b = new Intent(PersonalPage.this, Analytics.class);
         b.putExtra("project_name", dynamicHabitList.get(position).getName3());
+        b.putExtra("stock_name", dynamicHabitList.get(position).getStockSymbol());
         b.putExtra("project_description", dynamicHabitList.get(position).getDescription());
         startActivity(b);
     }

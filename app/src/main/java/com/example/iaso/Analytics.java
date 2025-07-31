@@ -39,7 +39,7 @@ public class Analytics extends AppCompatActivity {
             return insets;
         });
 
-        name1 = getIntent().getStringExtra("project_name");
+        name1 = getIntent().getStringExtra("stock_name");
         project_description = getIntent().getStringExtra("project_description");
         TextView name = findViewById(R.id.name);
         name.setText(name1);

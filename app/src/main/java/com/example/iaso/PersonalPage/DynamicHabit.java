@@ -77,19 +77,6 @@ public class DynamicHabit {
 
         String cleaned = habitName.toUpperCase().replaceAll("[^A-Z]", "");
 
-        switch(cleaned){
-            case "APPLEINC":
-            case "APPLE":
-                return "AAPL";
-            case "TESLA":
-                return "TSLA";
-            case "MICROSOFT":
-            case "MICROSOFTCORPORATION":
-                return "MSFT";
-            default:
-                break;
-        }
-
         if(cleaned.length() <= 4){
             return cleaned;
         }
