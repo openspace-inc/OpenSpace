@@ -25,6 +25,42 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <ImageButton
+                android:id="@+id/exchangeButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="16dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="@+id/backButton2"
+                app:layout_constraintEnd_toStartOf="@+id/backButton2"
+                app:layout_constraintTop_toTopOf="@+id/backButton2"
+                app:srcCompat="@drawable/os5_exchange_icon" />
+
+            <ImageButton
+                android:id="@+id/backButton2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/back" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/os5_logoicon" />
+
             <TextView
                 android:id="@+id/name"
                 android:layout_width="0dp"
@@ -37,10 +73,12 @@
                 android:gravity="start"
                 android:text="Project Name..."
                 android:textSize="40sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="gone">
 
             </TextView>
 
@@ -53,9 +91,11 @@
                 android:fontFamily="@font/neuehaas45"
                 android:text="Description..."
                 android:textSize="16sp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/name"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
+                app:layout_constraintTop_toBottomOf="@+id/name"
+                tools:visibility="gone" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -63,11 +103,9 @@
             android:id="@+id/Graph"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.5"
+            app:layout_constraintHeight_percent="0.6"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Top">
 
@@ -76,39 +114,137 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="25dp"
-                app:cardElevation="14dp"
+                app:cardElevation="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.6"
+                app:layout_constraintHeight_percent="0.9"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/amountOfHours">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/black">
+                    android:background="@color/white">
+
+                    <ImageView
+                        android:id="@+id/imageView26"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/amountOfHours"
+                        app:srcCompat="@drawable/os5_uparrow1" />
+
+                    <ImageView
+                        android:id="@+id/block"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/amountOfHours"
+                        app:layout_constraintStart_toEndOf="@+id/amountOfHours"
+                        app:layout_constraintTop_toTopOf="@+id/amountOfHours"
+                        app:srcCompat="@drawable/os5_blockv2" />
+
+                    <ImageView
+                        android:id="@+id/habitOrb"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/orb2" />
+
+                    <TextView
+                        android:id="@+id/stockTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/neuehaas65"
+                        android:text="TextView"
+                        android:textSize="24dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/habitOrb"
+                        app:layout_constraintStart_toEndOf="@+id/habitOrb"
+                        app:layout_constraintTop_toTopOf="@+id/habitOrb"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <TextView
+                        android:id="@+id/stockDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/neuehaas45"
+                        android:textSize="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:text="TextView"
+                        app:layout_constraintStart_toEndOf="@+id/habitOrb"
+                        app:layout_constraintTop_toBottomOf="@+id/stockTitle" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content"
+                        android:textSize="16dp"
+                        android:fontFamily="@font/neuehaas25"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="@+id/hours"
+                        app:layout_constraintStart_toEndOf="@+id/hours"
+                        app:layout_constraintTop_toTopOf="@+id/hours" />
+
+                    <TextView
+                        android:id="@+id/amountOfHours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/neuehaas45"
+                        android:gravity="center"
+                        android:text="89"
+                        android:textColor="@color/black"
+                        android:textSize="48sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/habitOrb">
+
+                    </TextView>
+
+                    <TextView
+                        android:id="@+id/hours"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/neuehaas25"
+                        android:gravity="center"
+                        android:text="Hours"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView26"
+                        app:layout_constraintStart_toEndOf="@+id/imageView26"
+                        app:layout_constraintTop_toTopOf="@+id/imageView26">
+
+                    </TextView>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="0dp"
                         android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintHeight_percent="0.60"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toBottomOf="@+id/imageView26">
 
                         <com.robinhood.spark.SparkView
                             android:id="@+id/sparkview"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            app:spark_lineColor="@color/white" />
+                            app:spark_lineColor="@color/black" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -137,36 +273,6 @@
                 app:srcCompat="@drawable/graphscomingsoon"
                 tools:visibility="gone" />
 
-            <TextView
-                android:id="@+id/hours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:fontFamily="@font/neuehaas45"
-                android:gravity="center"
-                android:text="Hours"
-                android:textColor="@color/gray"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="@+id/amountOfHours"
-                app:layout_constraintStart_toEndOf="@+id/amountOfHours"
-                app:layout_constraintTop_toTopOf="@+id/amountOfHours">
-
-            </TextView>
-
-            <TextView
-                android:id="@+id/amountOfHours"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/neuehaas65"
-                android:gravity="center"
-                android:text="89"
-                android:textColor="@color/black"
-                android:textSize="48sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </TextView>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -186,11 +292,13 @@
                 android:id="@+id/imageView11"
                 android:layout_width="165dp"
                 android:layout_height="100dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/block1" />
+                app:srcCompat="@drawable/block1"
+                tools:visibility="gone" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
