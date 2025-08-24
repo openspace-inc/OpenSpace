@@ -2,10 +2,11 @@
     <item>
         <shape android:shape="oval">
             <gradient
-                android:type="sweep"
-                android:startColor="#feda75"
-                android:centerColor="#d62976"
-                android:endColor="#962fbf" />
+                android:type="linear"
+                android:startColor="@color/red"
+                android:centerColor="#FFB886"
+                android:endColor="@color/tan"
+                android:angle="45"/>
         </shape>
     </item>
 </layer-list>
