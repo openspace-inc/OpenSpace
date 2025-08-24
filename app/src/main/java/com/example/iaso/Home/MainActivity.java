@@ -5,14 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +32,11 @@ import com.example.iaso.Profile;
 import com.example.iaso.Projects;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.TaskLister;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences dynamicHabits;
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
     LottieAnimationView dynamicLogo2;
+    LinearLayout projectContainer;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -71,23 +77,14 @@ public class MainActivity extends AppCompatActivity {
 
         //Create Animation of ImageButtons
         ImageButton toDoList = findViewById(R.id.todolistButton);
-        ImageButton toDoList2 = findViewById(R.id.circle1); //FIRE
-        ImageButton storeButton2 = findViewById(R.id.circle2); //FIRE
-        ImageButton habitButton = findViewById(R.id.circle3); //FIRE
         ImageButton storeButton = findViewById(R.id.storeButton);
 
         Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
-        Animation fadeInAnimation2 = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
         Animation fadeInAnimation3 = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
-        Animation upwardsFade = AnimationUtils.loadAnimation(this, R.anim.fade_in_lift);
         fadeInAnimation.setStartOffset(300);
-        fadeInAnimation2.setStartOffset(600);
         fadeInAnimation3.setStartOffset(900);
 
         toDoList.startAnimation(fadeInAnimation);
-        toDoList2.startAnimation(fadeInAnimation); //FIRE
-        storeButton2.startAnimation(fadeInAnimation2); //FIRE
-        habitButton.startAnimation(fadeInAnimation3); //FIRE
         storeButton.startAnimation(fadeInAnimation3);
 
         //Profile Page Setup
@@ -129,23 +126,57 @@ public class MainActivity extends AppCompatActivity {
         back = findViewById(R.id.backButtonForFragments);
         back.setVisibility(View.GONE);
 
-        //Send user to Personal Habit Fragment
-        ImageButton habitBTN = findViewById(R.id.circle3);
-        habitBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainerView, PersonalHabitFragment.class, null)
-                        .setReorderingAllowed(true)
-                        .addToBackStack("name")
-                        .commit();
+        //Set up horizontal list of projects
+        projectContainer = findViewById(R.id.projectContainer);
+        loadPersonalHabits();
+        populateProjectRow();
+    }
 
-                back.setVisibility(View.VISIBLE);
-            }
-        });
+    private void loadPersonalHabits() {
+        dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_MULTI_PROCESS);
+        String json = dynamicHabits.getString("personalHabitList", null);
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<DynamicHabit>>(){}.getType();
+            dynamicHabitList = gson.fromJson(json, type);
+        }
+    }
 
-        fillDynamicHabits();
+    private void populateProjectRow() {
+        if (dynamicHabitList == null || dynamicHabitList.isEmpty()) {
+            return;
+        }
+
+        for (DynamicHabit habit : dynamicHabitList) {
+            int imageRes = getResources().getIdentifier(habit.getImageName(), "drawable", getPackageName());
+
+            FrameLayout frame = new FrameLayout(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(125), dpToPx(125));
+            params.setMargins(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5));
+            frame.setLayoutParams(params);
+            frame.setBackgroundResource(R.drawable.story_ring);
+            frame.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
+
+            ImageButton button = new ImageButton(this);
+            FrameLayout.LayoutParams btnParams = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT);
+            button.setLayoutParams(btnParams);
+            button.setBackgroundColor(Color.TRANSPARENT);
+            button.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            Glide.with(this).load(imageRes).circleCrop().into(button);
+            button.setOnClickListener(v ->
+                    Toast.makeText(getApplicationContext(), habit.getDescription(), Toast.LENGTH_SHORT).show()
+            );
+
+            frame.addView(button);
+            projectContainer.addView(frame);
+        }
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 
     //Create arrayList where habits are stored in sharedpreferences.
