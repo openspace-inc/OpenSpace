@@ -5,15 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
+import com.bumptech.glide.Glide;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
 import com.example.iaso.PersonalPage.DynamicHabit;
@@ -32,12 +35,10 @@ import com.example.iaso.Profile;
 import com.example.iaso.Projects;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.TaskLister;
-import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
