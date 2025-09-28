@@ -1,4 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Iaso</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="loading_text">loading…</string>
+    <string name="breakfast_summary_content_description">BreakFast Summary</string>
+    <string name="click_here_content_description">Click here</string>
+    <string name="welcome_to_pro_title">Welcome To Pro</string>
+    <string name="pro_features_note">Most features are currently being implemented and will be released over the next few months</string>
+    <string name="pro_description">You&apos;ve been granted 2 years of access to our Pro model. With pro you&apos;ll have full access to advanced analytics and Auto Assist our AI model. We are so excited to see what you will be able to accomplish with this technology.</string>
+    <string name="top_gradient_content_description">Top gradient background</string>
+    <string name="iaso_logo_content_description">Iaso logo</string>
+    <string name="back_button_content_description">Back button</string>
+    <string name="profile_icon_content_description">Profile icon</string>
+    <string name="graphs_coming_soon_content_description">Graphs coming soon image</string>
+    <string name="other_button_content_description">Other button</string>
+    <string name="todolist_icon_content_description">To-do list icon</string>
+    <string name="habit_icon_content_description">Habit icon</string>
+    <string name="store_icon_content_description">Store icon</string>
+    <string name="rectangle_frame_content_description">Rectangle frame</string>
+    <string name="activity_black_menu_content_description">Activity menu button</string>
+    <string name="hub_white_menu_content_description">Hub menu button</string>
+    <string name="block_black_menu_content_description">Personal page button</string>
+    <string name="pro_text_image_content_description">Pro text image</string>
 </resources>
