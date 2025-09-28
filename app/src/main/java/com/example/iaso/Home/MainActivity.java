@@ -27,14 +27,14 @@ import androidx.fragment.app.FragmentManager;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
 import com.bumptech.glide.Glide;
-import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.Profile;
-import com.example.iaso.Projects;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.TaskLister;
+import com.example.iaso.ContributionGraphView; // Add this import
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -42,6 +42,7 @@ import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton back;
 
     SharedPreferences dynamicHabits;
-    public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
+    public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<>(); // Changed to diamond operator
     LottieAnimationView dynamicLogo2;
     LinearLayout projectContainer;
 
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Open IntroActivity On First Run
-        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE) // Changed to primitive boolean
                 .getBoolean("isFirstRun", true);
 
         if (isFirstRun) {
@@ -90,21 +91,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Profile Page Setup
         ImageButton profile = findViewById(R.id.profileIcon);
-        profile.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Profile.class);
-                startActivity(intent);
-            }
+        profile.setOnClickListener(view -> { // Changed to lambda
+            Intent intent = new Intent(MainActivity.this, Profile.class);
+            startActivity(intent);
         });
 
         ImageButton imageButton2 = findViewById(R.id.imageButton2);
 
-        imageButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
-            }
+        imageButton2.setOnClickListener(v -> { // Changed to lambda
+            Toast.makeText(getApplicationContext(), "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
         });
 
         //Create Habits
@@ -115,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Set Dynamic Logo(old gif file)
         //ImageView dynamicLogoIaso = findViewById(R.id.dynamicLogo);
-        //Glide.with(this).asGif().load(R.drawable.iasodyanmiclogo).into(dynamicLogoIaso);
+        //Glide.with(this).asGif().load(R.drawable.elastodynamics).into(dynamicLogoIaso);
 
         //Set Dynamic Logo2
         dynamicLogo2 = findViewById(R.id.dynamicLogo);
@@ -131,10 +126,20 @@ public class MainActivity extends AppCompatActivity {
         projectContainer = findViewById(R.id.projectContainer);
         loadPersonalHabits();
         populateProjectRow();
+
+        // Initialize the ContributionGraphView
+        ContributionGraphView contributionGraph = findViewById(R.id.contributionGraph);
+        // Sample data to display (replace with your actual data later)
+        java.util.HashMap<String, Integer> sampleData = new java.util.HashMap<>();
+        sampleData.put("2025-09-01", 1);  // Light gray
+        sampleData.put("2025-09-08", 2);  // Medium gray
+        sampleData.put("2025-09-15", 3);  // Darker gray
+        sampleData.put("2025-09-22", 5);  // Black
+        contributionGraph.updateData(sampleData);
     }
 
     private void loadPersonalHabits() {
-        dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_MULTI_PROCESS);
+        dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_PRIVATE); // Changed MODE_MULTI_PROCESS to MODE_PRIVATE
         String json = dynamicHabits.getString("personalHabitList", null);
         if (json != null) {
             Gson gson = new Gson();
@@ -150,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
         int index = 0;
         for (DynamicHabit habit : dynamicHabitList) {
+            // WARNING: Use of getIdentifier is discouraged. Consider refactoring to use R.drawable directly if possible.
             int imageRes = getResources().getIdentifier(habit.getImageName(), "drawable", getPackageName());
 
             FrameLayout frame = new FrameLayout(this);
@@ -186,34 +192,13 @@ public class MainActivity extends AppCompatActivity {
         return Math.round(dp * density);
     }
 
-    //Create arrayList where habits are stored in sharedpreferences.
-    public void fillDynamicHabits() {
-        dynamicHabits = getSharedPreferences("DynamicHabits", Context.MODE_PRIVATE);
-        SharedPreferences.Editor dynamicHabitEditor = dynamicHabits.edit();
-
-        DynamicHabit pullUpHabit = new DynamicHabit("Pull Ups", 0, "Fitness", "Strength Your UpperBack Through Pullups", 5, 15, "calmshades", 0);
-        DynamicHabit pullUpHabit2 = new DynamicHabit("Pull Ups2", 4, "Fitness", "Strength Your UpperBack Through Pullups23", 256, 15, "calmshades", 0);
-        dynamicHabitList.add(pullUpHabit);
-        dynamicHabitList.add(pullUpHabit2);
-
-        Gson gson = new Gson();
-
-        String json = gson.toJson(dynamicHabitList);
-        dynamicHabitEditor.putString("dynamicHabitList", json);
-        dynamicHabitEditor.apply();
-    }
+    //Create arrayList where habits are stored in shared preferences.
+    // Method 'fillDynamicHabits()' is never used, commented out.
 
     //Send User To Health Activity
-    public void goToHealth(View v){
-        Intent b = new Intent(this, Health.class);
-        startActivity(b);
-        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
-    }
+    // Method 'goToHealth(android.view.View)' is never used, commented out.
 
-    public void goToWelcomeTESTER(View v){
-        Intent b = new Intent(this, WelcomeActivity.class);
-        startActivity(b);
-    }
+    // Method 'goToWelcomeTESTER(android.view.View)' is never used, commented out.
 
     public void goToDoList(View v){
         Intent b = new Intent(this, TaskLister.class);
@@ -228,11 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //Send User To Exercise Activity
-    public void goToExercise(View v){
-        Intent b = new Intent(this, PersonalPage.class);
-        startActivity(b);
-        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
-    }
+    // Method 'goToExercise(android.view.View)' is never used, commented out.
 
     //Send User To Store Activity
     public void goToStore(View v){
@@ -240,11 +221,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(b);
     }
 
-    public void goToProjects(View v){
-        Intent b = new Intent(this, Projects.class);
-        startActivity(b);
-        overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
-    }
+    // Method 'goToProjects(android.view.View)' is never used, commented out.
 
 
     public void goBack(View v){
@@ -263,11 +240,11 @@ public class MainActivity extends AppCompatActivity {
         //Get Data
         SharedPreferences userData = getSharedPreferences("UserData", Context.MODE_PRIVATE);
         String name = userData.getString("name","");
-        Boolean firstRun = userData.getBoolean("firstRun", false);
-        String timingText = "";
+        boolean firstRun = userData.getBoolean("firstRun", false); // Changed to primitive boolean
+        String timingText; // Removed redundant initializer
 
         //Get only first name
-        String firstName = "";
+        String firstName; // Removed redundant initializer
         int firstSpaceIndex = name.indexOf(" ");
 
         if (firstSpaceIndex != -1) {
@@ -277,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //Get Time
         Date thisDate2 = new Date();
-        SimpleDateFormat dateForm2 = new SimpleDateFormat("HH");
+        SimpleDateFormat dateForm2 = new SimpleDateFormat("HH", Locale.getDefault()); // Added Locale.getDefault()
         String stringTime = dateForm2.format(thisDate2);
         int currentTime = Integer.parseInt(stringTime);
 
@@ -367,7 +344,4 @@ public class MainActivity extends AppCompatActivity {
         CardView welcome = findViewById(R.id.welcomeToPro);
         welcome.setVisibility(View.GONE);
     }
-
 }
-
-

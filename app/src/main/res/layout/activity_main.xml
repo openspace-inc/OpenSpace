@@ -15,7 +15,8 @@
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/topgradient2" />
+        app:srcCompat="@drawable/topgradient2"
+        android:contentDescription="@string/top_gradient_content_description" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/Spacer"
@@ -38,14 +39,15 @@
         app:layout_constraintTop_toBottomOf="@+id/Spacer">
 
         <ImageView
-            android:id="@+id/imageView16"
+            android:id="@+id/logoImageView"
             android:layout_width="85dp"
             android:layout_height="85dp"
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/iasologo" />
+            app:srcCompat="@drawable/iasologo"
+            android:contentDescription="@string/iaso_logo_content_description" />
 
         <ImageButton
             android:id="@+id/backButtonForFragments"
@@ -55,11 +57,13 @@
             android:background="@null"
             android:onClick="goBack"
             android:scaleType="fitCenter"
+            android:importantForAccessibility="yes"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView16"
+            app:layout_constraintStart_toEndOf="@+id/logoImageView"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/back"
-            app:tint="#000000" />
+            app:tint="#000000"
+            android:contentDescription="@string/back_button_content_description" />
 
         <ImageButton
             android:id="@+id/profileIcon"
@@ -69,10 +73,12 @@
             android:background="@null"
             android:padding="0dp"
             android:scaleType="centerCrop"
+            android:importantForAccessibility="yes"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/pfmale4" />
+            app:srcCompat="@drawable/pfmale4"
+            android:contentDescription="@string/profile_icon_content_description" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -87,7 +93,11 @@
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:scrollbars="none"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
                 android:id="@+id/projectContainer"
@@ -115,7 +125,7 @@
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/neuehaas65"
             android:freezesText="true"
-            android:text="loading..."
+            android:text="@string/loading_text"
             android:textAlignment="center"
             android:textColor="#4A4343"
             android:textSize="32sp"
@@ -124,13 +134,14 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/imageView20"
+            android:id="@+id/graphsComingSoonImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/generatedText"
-            app:srcCompat="@drawable/graphscomingsoon" />
+            app:srcCompat="@drawable/graphscomingsoon"
+            android:contentDescription="@string/graphs_coming_soon_content_description" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
@@ -142,16 +153,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.example.iaso.ContributionGraphView
+            android:id="@+id/contributionGraph"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:minHeight="200dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fragmentContainerView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/tabBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:contentDescription="BreakFast Summary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Hub">
 
@@ -167,7 +185,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/imageView21"
+                android:id="@+id/rectangleFrameImage"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="10dp"
@@ -177,7 +195,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.90"
-                app:srcCompat="@drawable/rectangeframe" />
+                app:srcCompat="@drawable/rectangeframe"
+                android:contentDescription="@string/rectangle_frame_content_description" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"
@@ -204,7 +223,8 @@
                         android:layout_height="0dp"
                         android:layout_marginStart="30dp"
                         android:background="@null"
-                        android:contentDescription="Click here"
+                        android:importantForAccessibility="yes"
+                        android:contentDescription="@string/activity_black_menu_content_description"
                         android:scaleType="fitCenter"
                         android:src="@drawable/activity_black_menu"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -216,7 +236,8 @@
                         android:layout_width="60dp"
                         android:layout_height="0dp"
                         android:background="@null"
-                        android:contentDescription="Click here"
+                        android:importantForAccessibility="yes"
+                        android:contentDescription="@string/hub_white_menu_content_description"
                         android:scaleType="fitCenter"
                         android:src="@drawable/hub_white_menu"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -230,7 +251,8 @@
                         android:layout_height="0dp"
                         android:layout_marginEnd="30dp"
                         android:background="@null"
-                        android:contentDescription="Click here"
+                        android:importantForAccessibility="yes"
+                        android:contentDescription="@string/block_black_menu_content_description"
                         android:onClick="goToPersonalPage"
                         android:scaleType="fitCenter"
                         android:src="@drawable/block_black_menu"
@@ -246,15 +268,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/titleBar"
-        android:layout_width="413dp"
-        android:layout_height="81dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/otherButton"
@@ -262,31 +281,17 @@
             android:layout_height="37dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageView16"
+            app:layout_constraintEnd_toStartOf="@+id/dynamicLogo"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/leftcircle" />
-
-        <!-- Old Gif File XML, remove when needed
-        <ImageView
-            android:id="@+id/dynamicLogo"
-            android:layout_width="134dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/iasodyanmiclogo" />
-         -->
+            app:srcCompat="@drawable/leftcircle"
+            android:contentDescription="@string/other_button_content_description" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/dynamicLogo"
             android:layout_width="134dp"
             android:layout_height="64dp"
-            android:layout_gravity="center"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
             android:visibility="gone"
@@ -303,57 +308,59 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/PersonalPage"
-        android:layout_width="415dp"
-        android:layout_height="582dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/tabBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleBar">
+        app:layout_constraintTop_toBottomOf="@id/titleBar">
 
         <LinearLayout
             android:id="@+id/taskBar"
-            android:layout_width="411dp"
+            android:layout_width="0dp"
             android:layout_height="150dp"
             android:orientation="horizontal"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/generatedText"
-            app:layout_constraintVertical_bias="0.005"
+            app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone">
 
             <ImageButton
                 android:id="@+id/todolistButton"
-                android:layout_width="136dp"
-                android:layout_height="152dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:contentDescription="Click here"
+                android:importantForAccessibility="yes"
+                android:contentDescription="@string/todolist_icon_content_description"
                 android:onClick="goToDoList"
                 android:scaleType="fitCenter"
                 android:src="@drawable/todolisticon" />
 
             <ImageButton
                 android:id="@+id/habitButton"
-                android:layout_width="136dp"
-                android:layout_height="152dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:contentDescription="Click here"
+                android:importantForAccessibility="yes"
+                android:contentDescription="@string/habit_icon_content_description"
                 android:scaleType="fitCenter"
                 android:src="@drawable/habiticon" />
 
             <ImageButton
                 android:id="@+id/storeButton"
-                android:layout_width="136dp"
-                android:layout_height="152dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@null"
-                android:contentDescription="Click here"
+                android:importantForAccessibility="yes"
+                android:contentDescription="@string/store_icon_content_description"
                 android:onClick="goToStore"
                 android:scaleType="fitCenter"
                 android:src="@drawable/storeicon" />
@@ -384,15 +391,17 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@null"
+                android:importantForAccessibility="yes"
                 android:onClick="exitProText"
                 android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/back"
-                app:tint="#000000" />
+                app:tint="#000000"
+                android:contentDescription="@string/back_button_content_description" />
 
             <ImageView
-                android:id="@+id/imageView23"
+                android:id="@+id/proTextImage"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="16dp"
@@ -402,19 +411,21 @@
                 app:layout_constraintHeight_percent="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/protext" />
+                app:srcCompat="@drawable/protext"
+                android:contentDescription="@string/pro_text_image_content_description" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/welcomeTitleText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/neuehaas65"
-                android:text="Welcome To Pro"
+                android:text="@string/welcome_to_pro_title"
+                android:textAlignment="center"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView23" />
+                app:layout_constraintTop_toBottomOf="@+id/proTextImage" />
 
             <TextView
                 android:id="@+id/note"
@@ -424,7 +435,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="@font/neuehaas25"
-                android:text="Most features are currently being implemented and will be released over the next few months"
+                android:text="@string/pro_features_note"
                 android:textAlignment="center"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -440,12 +451,12 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/neuehaas45"
-                android:text="You've been granted 2 years of access to our Pro model. With pro you'll have full access to advanced analytics and Auto Assist our AI model. We are so excited to see what you will be able to accomplish with this technology."
+                android:text="@string/pro_description"
                 android:textAlignment="center"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView8" />
+                app:layout_constraintTop_toBottomOf="@+id/welcomeTitleText" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
