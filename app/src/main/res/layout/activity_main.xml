@@ -110,7 +110,7 @@
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/featured_project"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/featured_project" />
+                        app:srcCompat="@drawable/ionlogo" />
                 </FrameLayout>
 
                 <LinearLayout
