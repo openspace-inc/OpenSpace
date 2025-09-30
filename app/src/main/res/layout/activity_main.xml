@@ -99,17 +99,17 @@
                 <FrameLayout
                     android:layout_width="125dp"
                     android:layout_height="125dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="0dp"
                     android:background="@drawable/story_ring">
 
                     <ImageButton
                         android:id="@+id/featuredProjectButton"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_margin="6dp"
+                        android:layout_margin="0dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/featured_project"
-                        android:scaleType="centerCrop"
+                        android:scaleType="fitXY"
                         app:srcCompat="@drawable/ionlogo" />
                 </FrameLayout>
 
