@@ -8,13 +8,23 @@
     tools:context=".Home.MainActivity">
 
     <ImageView
-        android:id="@+id/topGradient"
+        android:id="@+id/topGradient2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/topgradient2" />
+
+    <ImageView
+        android:id="@+id/topGradient"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:rotation="180"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/tabBar"
+        app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/topgradient2" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,7 +89,6 @@
         android:id="@+id/Row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Heading">
@@ -172,12 +181,14 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="10dp"
                 android:scaleType="fitXY"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.90"
-                app:srcCompat="@drawable/rectangeframe" />
+                app:srcCompat="@drawable/rectangeframe"
+                tools:visibility="gone" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView3"

@@ -39,7 +39,7 @@ public class Analytics extends AppCompatActivity {
             return insets;
         });
 
-        name1 = getIntent().getStringExtra("stock_name");
+        name1 = getIntent().getStringExtra("project_name");
         project_description = getIntent().getStringExtra("project_description");
         TextView name = findViewById(R.id.name);
         name.setText(name1);
@@ -65,6 +65,11 @@ public class Analytics extends AppCompatActivity {
     void buildSparkGraph(String projectName) {
         SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
         ArrayList<dataStorage> data = openSharedPref();
+
+        if (data.isEmpty()) {
+            sparkView.setAdapter(new MyAdapter(new ArrayList<>()));
+            return;
+        }
 
         //filter data
         double tempTime = 0;
