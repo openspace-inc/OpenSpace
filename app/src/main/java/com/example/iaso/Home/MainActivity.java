@@ -129,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
 
         //Set up horizontal list of projects
         projectContainer = findViewById(R.id.projectContainer);
+
+        ImageButton featuredProjectButton = findViewById(R.id.featuredProjectButton);
+        featuredProjectButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, Projects.class);
+            startActivity(intent);
+        });
         loadPersonalHabits();
         populateProjectRow();
     }
@@ -148,17 +154,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        int index = 0;
         for (DynamicHabit habit : dynamicHabitList) {
             int imageRes = getResources().getIdentifier(habit.getImageName(), "drawable", getPackageName());
 
             FrameLayout frame = new FrameLayout(this);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(125), dpToPx(125));
-            if (index == 0) {
-                params.setMargins(0, dpToPx(5), dpToPx(5), dpToPx(5));
-            } else {
-                params.setMargins(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5));
-            }
+            params.setMargins(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5));
             frame.setLayoutParams(params);
             frame.setBackgroundResource(R.drawable.story_ring);
 
@@ -177,7 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
             frame.addView(button);
             projectContainer.addView(frame);
-            index++;
         }
     }
 
