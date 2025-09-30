@@ -99,8 +99,7 @@
                 <FrameLayout
                     android:layout_width="125dp"
                     android:layout_height="125dp"
-                    android:layout_marginEnd="0dp"
-                    android:background="@drawable/story_ring">
+                    android:layout_marginEnd="0dp">
 
                     <ImageButton
                         android:id="@+id/featuredProjectButton"
@@ -109,8 +108,7 @@
                         android:layout_margin="0dp"
                         android:background="@android:color/transparent"
                         android:contentDescription="@string/featured_project"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@drawable/ionlogo" />
+                        android:scaleType="centerCrop" />
                 </FrameLayout>
 
                 <LinearLayout

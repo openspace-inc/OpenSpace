@@ -131,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
         projectContainer = findViewById(R.id.projectContainer);
 
         ImageButton featuredProjectButton = findViewById(R.id.featuredProjectButton);
+        featuredProjectButton.setBackgroundColor(Color.TRANSPARENT);
+        featuredProjectButton.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        Glide.with(this)
+                .load(R.drawable.ionlogo)
+                .circleCrop()
+                .into(featuredProjectButton);
         featuredProjectButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Projects.class);
             startActivity(intent);
@@ -161,13 +167,11 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(125), dpToPx(125));
             params.setMargins(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5));
             frame.setLayoutParams(params);
-            frame.setBackgroundResource(R.drawable.story_ring);
 
             ImageButton button = new ImageButton(this);
             FrameLayout.LayoutParams btnParams = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
                     FrameLayout.LayoutParams.MATCH_PARENT);
-            btnParams.setMargins(dpToPx(6), dpToPx(6), dpToPx(6), dpToPx(6));
             button.setLayoutParams(btnParams);
             button.setBackgroundColor(Color.TRANSPARENT);
             button.setScaleType(ImageView.ScaleType.CENTER_CROP);
