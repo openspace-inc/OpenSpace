@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iaso.AddDynamicHabit;
 import com.example.iaso.Analytics;
+import com.example.iaso.BrownianStockManager;
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.RecyclerViewInterface;
@@ -86,6 +87,9 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
             hasPlayedAnimation = true;
         }
+
+        //Ensure Brownian stock data is up to date before displaying
+        BrownianStockManager.updateAll(this);
 
         //Recieve sharedpref for projects - apply to recyclerview (auto set up dynamichabits sharedpref)
         setUpPersonalHabits();

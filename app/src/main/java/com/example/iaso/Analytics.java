@@ -13,6 +13,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.iaso.Model.StockDataPoint;
 import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.PersonalPage.dataStorage;
 import com.google.common.reflect.TypeToken;
@@ -22,6 +23,8 @@ import com.robinhood.spark.SparkView;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 //This page is to bring in all data from a specific project and display that data in a meaningful way through libraries
 public class Analytics extends AppCompatActivity {
@@ -64,46 +67,17 @@ public class Analytics extends AppCompatActivity {
 
     void buildSparkGraph(String projectName) {
         SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
-        ArrayList<dataStorage> data = openSharedPref();
 
-        if (data.isEmpty()) {
-            sparkView.setAdapter(new MyAdapter(new ArrayList<>()));
+        BrownianStockManager.updateForHabit(this, projectName);
+        ArrayList<StockDataPoint> history = BrownianStockManager.getHistoryForHabit(this, projectName);
+
+        if (history.isEmpty()) {
+            sparkView.setAdapter(new StockSparkAdapter(new ArrayList<>()));
             return;
         }
 
-        //filter data
-        double tempTime = 0;
-        int lastDate = data.get(0).getDate();
-        ArrayList<dataStorage> filteredData = new ArrayList<>();
-
-        //Advanced loop to filter data
-        for (int y = 0; y < data.size(); y++){
-            dataStorage x = data.get(y);
-
-            if (projectName != null && projectName.equals(x.getName())){
-
-                //date not same add object
-                if (lastDate != x.getDate()){
-                    dataStorage temp = new dataStorage(data.get(y-1).getName(), data.get(y-1).getType(), tempTime, data.get(y-1).getDate());
-                    filteredData.add(temp);
-
-                    lastDate = x.getDate();
-                    tempTime = x.getHours();
-
-                    continue;
-                }
-                //if date same wait
-                else {
-                    tempTime += x.getHours();
-                }
-
-                dataStorage temp = new dataStorage(x.getName(), x.getType(), tempTime, x.getDate());
-                filteredData.add(temp);
-            }
-        }
-
-        MyAdapter adapter = new MyAdapter(filteredData);
-        sparkView.setAdapter(adapter);
+        Collections.sort(history, Comparator.comparingLong(StockDataPoint::getTimestamp));
+        sparkView.setAdapter(new StockSparkAdapter(history));
     }
 
     //opens sharedpref for data storage and returns the arraylist
@@ -162,33 +136,42 @@ public class Analytics extends AppCompatActivity {
         totalHours.setText(String.format("%.2f", hours / 60));
     }
 
-    public class MyAdapter extends SparkAdapter {
-         private final ArrayList<dataStorage> data; //data type being fed in
-     
-         
-         public MyAdapter(ArrayList<dataStorage> data) {
-             this.data = data;
-         }
-     
-         @Override
-         public int getCount() {
-             return data.size();
-         }
-     
-         @Override
-         public Object getItem(int index) {
-            return data.get(index);
-         }
-     
-         @Override
-         public float getY(int index) {
-           return (float) data.get(index).getHours();
-         }
+    public class StockSparkAdapter extends SparkAdapter {
+        private final ArrayList<StockDataPoint> data;
+        private final long baseTimestamp;
 
-         @Override
+        public StockSparkAdapter(ArrayList<StockDataPoint> data) {
+            this.data = data;
+            if (data.isEmpty()) {
+                baseTimestamp = 0L;
+            } else {
+                baseTimestamp = data.get(0).getTimestamp();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int index) {
+            return data.get(index);
+        }
+
+        @Override
+        public float getY(int index) {
+            return (float) data.get(index).getPrice();
+        }
+
+        @Override
         public float getX(int index){
-             return (float) data.get(index).getDate();
-         }
+            long timestamp = data.get(index).getTimestamp();
+            if (baseTimestamp == 0L) {
+                return index;
+            }
+            return (float) ((timestamp - baseTimestamp) / 3600000f);
+        }
     }
 
 }
