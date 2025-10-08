@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +32,9 @@ public class Analytics extends AppCompatActivity {
 
     String name1;
     String project_description;
+    private SparkView sparkView;
+    private final ArrayList<StockDataPoint> fullHistory = new ArrayList<>();
+    private Range currentRange = Range.DAY_1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,22 +66,116 @@ public class Analytics extends AppCompatActivity {
         //dataPull();
 
         //build spark graph
+        sparkView = findViewById(R.id.sparkview);
+
         buildSparkGraph(name1);
+        setupRangeButtons();
     }
 
     void buildSparkGraph(String projectName) {
-        SparkView sparkView = (SparkView) findViewById(R.id.sparkview);
-
         BrownianStockManager.updateForHabit(this, projectName);
         ArrayList<StockDataPoint> history = BrownianStockManager.getHistoryForHabit(this, projectName);
 
-        if (history.isEmpty()) {
-            sparkView.setAdapter(new StockSparkAdapter(new ArrayList<>()));
+        fullHistory.clear();
+        if (!history.isEmpty()) {
+            Collections.sort(history, Comparator.comparingLong(StockDataPoint::getTimestamp));
+            fullHistory.addAll(history);
+        }
+
+        updateSparkForRange(currentRange);
+    }
+
+    private void setupRangeButtons() {
+        RadioGroup rangeGroup = findViewById(R.id.rangeGroup);
+        if (rangeGroup == null) {
             return;
         }
 
-        Collections.sort(history, Comparator.comparingLong(StockDataPoint::getTimestamp));
-        sparkView.setAdapter(new StockSparkAdapter(history));
+        rangeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            Range selected = mapRangeFromId(checkedId);
+            if (selected != null && selected != currentRange) {
+                currentRange = selected;
+                updateSparkForRange(currentRange);
+            }
+        });
+
+        rangeGroup.check(R.id.range24h);
+    }
+
+    private Range mapRangeFromId(int checkedId) {
+        if (checkedId == R.id.range24h) {
+            return Range.DAY_1;
+        } else if (checkedId == R.id.range3d) {
+            return Range.DAY_3;
+        } else if (checkedId == R.id.range1w) {
+            return Range.WEEK_1;
+        } else if (checkedId == R.id.range1m) {
+            return Range.MONTH_1;
+        } else if (checkedId == R.id.range3m) {
+            return Range.MONTH_3;
+        } else if (checkedId == R.id.range1y) {
+            return Range.YEAR_1;
+        } else if (checkedId == R.id.rangeAll) {
+            return Range.ALL;
+        }
+        return null;
+    }
+
+    private void updateSparkForRange(Range range) {
+        if (sparkView == null) {
+            return;
+        }
+        ArrayList<StockDataPoint> display = filterHistoryForRange(range);
+        sparkView.setAdapter(new StockSparkAdapter(display));
+    }
+
+    private ArrayList<StockDataPoint> filterHistoryForRange(Range range) {
+        if (fullHistory.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        if (range == Range.ALL) {
+            return new ArrayList<>(fullHistory);
+        }
+
+        long windowMillis = range.getWindowMillis();
+        if (windowMillis <= 0L) {
+            return new ArrayList<>(fullHistory);
+        }
+
+        StockDataPoint latest = fullHistory.get(fullHistory.size() - 1);
+        long cutoff = latest.getTimestamp() - windowMillis;
+
+        ArrayList<StockDataPoint> filtered = new ArrayList<>();
+        for (StockDataPoint point : fullHistory) {
+            if (point.getTimestamp() >= cutoff) {
+                filtered.add(point);
+            }
+        }
+        if (filtered.isEmpty()) {
+            filtered.add(fullHistory.get(fullHistory.size() - 1));
+        }
+        return filtered;
+    }
+
+    private enum Range {
+        DAY_1(24L * 60L * 60L * 1000L),
+        DAY_3(3L * 24L * 60L * 60L * 1000L),
+        WEEK_1(7L * 24L * 60L * 60L * 1000L),
+        MONTH_1(30L * 24L * 60L * 60L * 1000L),
+        MONTH_3(90L * 24L * 60L * 60L * 1000L),
+        YEAR_1(365L * 24L * 60L * 60L * 1000L),
+        ALL(-1L);
+
+        private final long windowMillis;
+
+        Range(long windowMillis) {
+            this.windowMillis = windowMillis;
+        }
+
+        long getWindowMillis() {
+            return windowMillis;
+        }
     }
 
     //opens sharedpref for data storage and returns the arraylist

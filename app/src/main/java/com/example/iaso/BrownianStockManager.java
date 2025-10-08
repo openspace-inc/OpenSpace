@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.iaso.Model.StockDataPoint;
+import com.example.iaso.Model.StockSimulationState;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.dataStorage;
 import com.google.common.reflect.TypeToken;
@@ -17,20 +18,25 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Generates Brownian motion-based stock prices for each personal project.
+ * Manages the simulated stock prices for each personal project.
  */
 public final class BrownianStockManager {
 
-    private static final double K = 0.011; // +/- 1.1%
-    private static final double C = 0.75; // fraction of k seen each day
-    private static final double DT_HOURS = 1.0; // run every hour
-    private static final long INTERVAL_MILLIS = (long) (DT_HOURS * 60 * 60 * 1000);
-    private static final double SIGMA = (C * K) / (2 * Math.sqrt(24.0 / DT_HOURS));
-    private static final double GOAL_IMPACT = 0.05; // 5% of progress delta applied to price
+    private static final long INTERVAL_MILLIS = 60L * 60L * 1000L; // 1 hour
+    private static final double MIN_PRICE = 0.01d;
+
+    private static final double DAILY_GOAL_BONUS = 0.05d;
+    private static final double DAILY_MAX_PENALTY = 0.05d;
+
+    private static final double STABLE_MIN_DELTA = -0.03d;
+    private static final double STABLE_MAX_DELTA = 0.04d;
+    private static final double UNSTABLE_MIN_DELTA = -0.08d;
+    private static final double UNSTABLE_MAX_DELTA = 0.03d;
 
     private static final String HABIT_PREF = "PersonalHabits";
     private static final String HABIT_LIST_KEY = "personalHabitList";
     private static final String STOCK_HISTORY_KEY = "stockHistory";
+    private static final String STOCK_STATE_KEY = "stockSimulationState";
 
     private static final Random RANDOM = new Random();
 
@@ -39,7 +45,7 @@ public final class BrownianStockManager {
     }
 
     /**
-     * Updates all saved projects with Brownian motion ticks up to the current hour.
+     * Updates all saved projects with pending stock ticks up to the current hour.
      */
     public static void updateAll(Context context) {
         if (context == null) {
@@ -56,7 +62,7 @@ public final class BrownianStockManager {
     }
 
     /**
-     * Generates stock ticks for a single project up to the current hour.
+     * Updates stock ticks for a specific project up to the current hour.
      */
     public static void updateForHabit(Context context, String habitName) {
         if (context == null || habitName == null || habitName.isEmpty()) {
@@ -82,10 +88,18 @@ public final class BrownianStockManager {
         SharedPreferences habitPrefs = context.getSharedPreferences(HABIT_PREF, Context.MODE_MULTI_PROCESS);
         Gson gson = new Gson();
         Map<String, ArrayList<StockDataPoint>> stockHistory = loadStockHistory(habitPrefs, gson);
+        Map<String, StockSimulationState> stockState = loadStockState(habitPrefs, gson);
+
         ArrayList<StockDataPoint> history = stockHistory.get(habitName);
         if (history == null) {
             history = new ArrayList<>();
             stockHistory.put(habitName, history);
+        }
+
+        StockSimulationState simulationState = stockState.get(habitName);
+        if (simulationState == null) {
+            simulationState = new StockSimulationState();
+            stockState.put(habitName, simulationState);
         }
 
         long now = floorToHour(System.currentTimeMillis());
@@ -102,21 +116,40 @@ public final class BrownianStockManager {
             lastTimestamp = lastPoint.getTimestamp();
 
             if (lastTimestamp > now) {
-                // Future-dated data; do not generate new points
                 saveStockHistory(habitPrefs, gson, stockHistory);
+                saveStockState(habitPrefs, gson, stockState);
                 return;
             }
         }
 
         long nextTimestamp = lastTimestamp + INTERVAL_MILLIS;
         while (nextTimestamp <= now) {
-            double newPrice = generateNextPrice(context, selectedHabit, habitName, nextTimestamp, lastPrice);
+            if (isStartOfDay(nextTimestamp)) {
+                Calendar previousDay = calendarFrom(nextTimestamp);
+                previousDay.add(Calendar.DAY_OF_YEAR, -1);
+                if (shouldEvaluateDay(previousDay, simulationState)) {
+                    DailyAdjustment adjustment = evaluateDailyPerformance(context, selectedHabit, habitName, previousDay);
+                    lastPrice = applyDailyAdjustment(lastPrice, adjustment);
+                    updateEvaluationState(simulationState, previousDay, adjustment.goalMet);
+                }
+            }
+
+            double newPrice = applyHourlyFluctuation(lastPrice, simulationState.wasLastGoalMet());
             history.add(new StockDataPoint(habitName, nextTimestamp, newPrice));
             lastPrice = newPrice;
+            lastTimestamp = nextTimestamp;
             nextTimestamp += INTERVAL_MILLIS;
         }
 
         saveStockHistory(habitPrefs, gson, stockHistory);
+        saveStockState(habitPrefs, gson, stockState);
+    }
+
+    /**
+     * Convenience helper used when the user logs minutes for a habit.
+     */
+    public static void onMinutesLogged(Context context, String habitName) {
+        updateForHabit(context, habitName);
     }
 
     /**
@@ -137,45 +170,78 @@ public final class BrownianStockManager {
         return new ArrayList<>(history);
     }
 
-    private static double generateNextPrice(Context context, DynamicHabit habit, String habitName, long timestamp, double lastPrice) {
-        double proposed = lastPrice * (1 + RANDOM.nextGaussian() * SIGMA);
-        double adjustment = 1 + GOAL_IMPACT * computeProgressDelta(context, habit, habitName, timestamp);
-        proposed *= adjustment;
-
-        double lowerBound = lastPrice * (1 - K);
-        double upperBound = lastPrice * (1 + K);
-
-        double boundedPrice;
-        if (proposed < lowerBound) {
-            boundedPrice = (2 * lowerBound) - proposed;
-        } else if (proposed > upperBound) {
-            boundedPrice = (2 * upperBound) - proposed;
-        } else {
-            boundedPrice = proposed;
-        }
-
-        return Math.max(0.01d, boundedPrice);
-    }
-
-    private static double computeProgressDelta(Context context, DynamicHabit habit, String habitName, long timestamp) {
+    private static DailyAdjustment evaluateDailyPerformance(Context context, DynamicHabit habit, String habitName, Calendar day) {
         int targetMinutes = habit.getTime();
         if (targetMinutes <= 0) {
-            return 0d;
+            return new DailyAdjustment(0d, true);
         }
 
+        double minutesWorked = getMinutesWorkedForDay(context, habitName, day.get(Calendar.DAY_OF_YEAR));
+        if (minutesWorked >= targetMinutes) {
+            double percentAbove = (minutesWorked - targetMinutes) / (double) targetMinutes;
+            double adjustment = DAILY_GOAL_BONUS;
+            if (percentAbove > 0d) {
+                double exponentialBonus = Math.exp(percentAbove) - 1d;
+                adjustment += exponentialBonus * DAILY_GOAL_BONUS;
+            }
+            return new DailyAdjustment(adjustment, true);
+        }
+
+        double percentMissing = (targetMinutes - minutesWorked) / (double) targetMinutes;
+        double penalty = -Math.min(DAILY_MAX_PENALTY, DAILY_MAX_PENALTY * percentMissing);
+        return new DailyAdjustment(penalty, false);
+    }
+
+    private static double applyDailyAdjustment(double lastPrice, DailyAdjustment adjustment) {
+        double adjusted = lastPrice * (1d + adjustment.delta);
+        if (adjusted < MIN_PRICE) {
+            adjusted = MIN_PRICE;
+        }
+        return adjusted;
+    }
+
+    private static double applyHourlyFluctuation(double lastPrice, boolean goalMet) {
+        double minChange = goalMet ? STABLE_MIN_DELTA : UNSTABLE_MIN_DELTA;
+        double maxChange = goalMet ? STABLE_MAX_DELTA : UNSTABLE_MAX_DELTA;
+        double randomPercent = minChange + (maxChange - minChange) * RANDOM.nextDouble();
+        double adjusted = lastPrice * (1d + randomPercent);
+        if (adjusted < MIN_PRICE) {
+            adjusted = MIN_PRICE;
+        }
+        return adjusted;
+    }
+
+    private static boolean shouldEvaluateDay(Calendar day, StockSimulationState state) {
+        if (state == null) {
+            return true;
+        }
+        int year = day.get(Calendar.YEAR);
+        int dayOfYear = day.get(Calendar.DAY_OF_YEAR);
+
+        if (state.getLastEvaluatedYear() < year) {
+            return true;
+        }
+        if (state.getLastEvaluatedYear() > year) {
+            return false;
+        }
+        return dayOfYear > state.getLastEvaluatedDayOfYear();
+    }
+
+    private static void updateEvaluationState(StockSimulationState state, Calendar day, boolean goalMet) {
+        state.setLastEvaluatedYear(day.get(Calendar.YEAR));
+        state.setLastEvaluatedDayOfYear(day.get(Calendar.DAY_OF_YEAR));
+        state.setLastGoalMet(goalMet);
+    }
+
+    private static Calendar calendarFrom(long timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+        return calendar;
+    }
 
-        double minutesWorked = getMinutesWorkedForDay(context, habitName, dayOfYear);
-        double delta = (minutesWorked - targetMinutes) / (double) targetMinutes;
-        // Clamp the delta to avoid extreme swings
-        if (delta > 1.5d) {
-            delta = 1.5d;
-        } else if (delta < -1.5d) {
-            delta = -1.5d;
-        }
-        return delta;
+    private static boolean isStartOfDay(long timestamp) {
+        Calendar calendar = calendarFrom(timestamp);
+        return calendar.get(Calendar.HOUR_OF_DAY) == 0;
     }
 
     private static double getMinutesWorkedForDay(Context context, String habitName, int dayOfYear) {
@@ -231,9 +297,38 @@ public final class BrownianStockManager {
         return history;
     }
 
+    private static Map<String, StockSimulationState> loadStockState(SharedPreferences prefs, Gson gson) {
+        String json = prefs.getString(STOCK_STATE_KEY, null);
+        if (json == null) {
+            return new HashMap<>();
+        }
+        Type type = new TypeToken<HashMap<String, StockSimulationState>>(){}.getType();
+        Map<String, StockSimulationState> state = gson.fromJson(json, type);
+        if (state == null) {
+            state = new HashMap<>();
+        }
+        return state;
+    }
+
     private static void saveStockHistory(SharedPreferences prefs, Gson gson, Map<String, ArrayList<StockDataPoint>> history) {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(STOCK_HISTORY_KEY, gson.toJson(history));
         editor.apply();
+    }
+
+    private static void saveStockState(SharedPreferences prefs, Gson gson, Map<String, StockSimulationState> state) {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(STOCK_STATE_KEY, gson.toJson(state));
+        editor.apply();
+    }
+
+    private static class DailyAdjustment {
+        final double delta;
+        final boolean goalMet;
+
+        DailyAdjustment(double delta, boolean goalMet) {
+            this.delta = delta;
+            this.goalMet = goalMet;
+        }
     }
 }

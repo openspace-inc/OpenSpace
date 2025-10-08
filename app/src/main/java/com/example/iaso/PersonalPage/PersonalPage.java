@@ -167,6 +167,8 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         dataEditor.putString("userStorageList", updatedJson);
         dataEditor.apply();
 
+        BrownianStockManager.onMinutesLogged(this, newData.getName());
+
         //Debugging confirm that the habit has been stored
         Toast.makeText(getApplicationContext(), "Success. added the data", Toast.LENGTH_SHORT).show();
     }
