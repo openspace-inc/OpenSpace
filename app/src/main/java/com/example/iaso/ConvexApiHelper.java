@@ -48,7 +48,7 @@ public class ConvexApiHelper {
      * Format: "file:functionName" where 'file' is the .ts file in convex/ folder
      * and 'functionName' is the exported function
      */
-    private static final String CONVEX_ACTION_PATH = "claude:getClaudeResponse";
+    private static final String CONVEX_ACTION_PATH = "workhorse:getClaudeResponse";
 
     // ==================== SETUP ====================
 
