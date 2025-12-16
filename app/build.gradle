@@ -53,4 +53,7 @@ dependencies {
 
     implementation 'com.airbnb.android:lottie:6.1.0' // Use the latest version available
 
+    // OkHttp for making network requests to Convex backend
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
 }

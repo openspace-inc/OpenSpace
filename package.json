@@ -1,0 +1,17 @@
+{
+  "name": "openspace-convex-backend",
+  "version": "1.0.0",
+  "description": "Convex backend for OpenSpace Android app - handles Claude API integration",
+  "private": true,
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy",
+    "env:set": "convex env set"
+  },
+  "dependencies": {
+    "convex": "^1.17.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
