@@ -120,11 +120,10 @@
             android:id="@+id/loading_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:layout_marginBottom="12dp"
-            android:visibility="gone"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@id/input_box"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -132,8 +131,8 @@
             <!-- Ion logo displayed during loading -->
             <ImageView
                 android:id="@+id/ion_logo"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="8dp"
                 app:srcCompat="@drawable/ionlogo" />
 
@@ -143,9 +142,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/neuehaas25"
-                android:textSize="14sp"
+                android:text="waiting..."
                 android:textColor="#666666"
-                android:text="plotting timelines" />
+                android:textSize="16sp" />
 
         </LinearLayout>
 
