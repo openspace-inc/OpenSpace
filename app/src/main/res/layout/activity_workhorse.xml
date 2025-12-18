@@ -64,6 +64,128 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- QUESTION 1: Time Investment Question -->
+        <LinearLayout
+            android:id="@+id/question_time_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="visible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/question_time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How many minutes do you want to invest in this project everyday?"
+                android:textSize="22sp"
+                android:textColor="#333333"
+                android:fontFamily="@font/neuehaas45"
+                android:textAlignment="center"
+                android:lineSpacingMultiplier="1.3"
+                android:layout_marginBottom="40dp" />
+
+            <NumberPicker
+                android:id="@+id/minutes_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="40dp"
+                android:theme="@style/Theme.AppCompat.Light" />
+
+            <TextView
+                android:id="@+id/continue_time_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Continue"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/neuehaas45"
+                android:background="@drawable/input_outline"
+                android:backgroundTint="#333333"
+                android:paddingHorizontal="48dp"
+                android:paddingVertical="16dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+        <!-- QUESTION 2: Completion Date Question -->
+        <LinearLayout
+            android:id="@+id/question_date_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/question_date_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="When do you want to complete this project by?"
+                android:textSize="22sp"
+                android:textColor="#333333"
+                android:fontFamily="@font/neuehaas45"
+                android:textAlignment="center"
+                android:lineSpacingMultiplier="1.3"
+                android:layout_marginBottom="40dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="40dp">
+
+                <NumberPicker
+                    android:id="@+id/day_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:theme="@style/Theme.AppCompat.Light" />
+
+                <NumberPicker
+                    android:id="@+id/month_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:theme="@style/Theme.AppCompat.Light" />
+
+                <NumberPicker
+                    android:id="@+id/year_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/Theme.AppCompat.Light" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/continue_date_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Continue"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/neuehaas45"
+                android:background="@drawable/input_outline"
+                android:backgroundTint="#333333"
+                android:paddingHorizontal="48dp"
+                android:paddingVertical="16dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
         <!--
             RESPONSE DISPLAY AREA
             ScrollView with fully transparent background
@@ -79,6 +201,7 @@
             android:fillViewport="true"
             android:background="@null"
             android:scrollbars="none"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -111,6 +234,7 @@
         android:padding="16dp"
         android:animateLayoutChanges="true"
         android:background="@android:color/transparent"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

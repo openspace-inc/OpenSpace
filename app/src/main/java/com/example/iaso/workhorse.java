@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Calendar;
 import java.util.Random;
 
 /**
@@ -76,6 +78,75 @@ public class workhorse extends AppCompatActivity {
      * ScrollView that contains the response text
      */
     private ScrollView responseScroll;
+
+    // ==================== ONBOARDING UI ELEMENTS ====================
+
+    /**
+     * Container for the time investment question
+     */
+    private LinearLayout questionTimeContainer;
+
+    /**
+     * Container for the completion date question
+     */
+    private LinearLayout questionDateContainer;
+
+    /**
+     * NumberPicker for selecting daily minutes
+     */
+    private NumberPicker minutesPicker;
+
+    /**
+     * NumberPicker for selecting day
+     */
+    private NumberPicker dayPicker;
+
+    /**
+     * NumberPicker for selecting month
+     */
+    private NumberPicker monthPicker;
+
+    /**
+     * NumberPicker for selecting year
+     */
+    private NumberPicker yearPicker;
+
+    /**
+     * Continue button for time question
+     */
+    private TextView continueTimeButton;
+
+    /**
+     * Continue button for date question
+     */
+    private TextView continueDateButton;
+
+    /**
+     * Bottom container with input box
+     */
+    private ConstraintLayout bottomContainer;
+
+    // ==================== USER DATA ====================
+
+    /**
+     * Daily minutes the user wants to invest (stored temporarily)
+     */
+    private int dailyMinutesInvestment = 0;
+
+    /**
+     * Target completion day
+     */
+    private int targetDay = 1;
+
+    /**
+     * Target completion month (1-12)
+     */
+    private int targetMonth = 1;
+
+    /**
+     * Target completion year
+     */
+    private int targetYear = 2025;
 
     // ==================== API HELPER ====================
 
@@ -148,12 +219,25 @@ public class workhorse extends AppCompatActivity {
         loadingContainer = findViewById(R.id.loading_container);
         loadingStatusText = findViewById(R.id.loading_status_text);
         responseScroll = findViewById(R.id.response_scroll);
-        ConstraintLayout bottomContainer = findViewById(R.id.bottom_container);
+        bottomContainer = findViewById(R.id.bottom_container);
+
+        // Onboarding views
+        questionTimeContainer = findViewById(R.id.question_time_container);
+        questionDateContainer = findViewById(R.id.question_date_container);
+        minutesPicker = findViewById(R.id.minutes_picker);
+        dayPicker = findViewById(R.id.day_picker);
+        monthPicker = findViewById(R.id.month_picker);
+        yearPicker = findViewById(R.id.year_picker);
+        continueTimeButton = findViewById(R.id.continue_time_button);
+        continueDateButton = findViewById(R.id.continue_date_button);
 
         // ==================== INITIALIZE ====================
 
         convexApiHelper = new ConvexApiHelper();
         statusHandler = new Handler(Looper.getMainLooper());
+
+        // Setup NumberPickers for onboarding
+        setupNumberPickers();
 
         // Create the runnable that cycles through status messages
         statusCycleRunnable = new Runnable() {
@@ -192,6 +276,15 @@ public class workhorse extends AppCompatActivity {
         });
 
         // ==================== CLICK LISTENERS ====================
+
+        // Onboarding continue buttons
+        if (continueTimeButton != null) {
+            continueTimeButton.setOnClickListener(v -> onContinueTimeClicked());
+        }
+
+        if (continueDateButton != null) {
+            continueDateButton.setOnClickListener(v -> onContinueDateClicked());
+        }
 
         if (enterArrow != null) {
             enterArrow.setOnClickListener(v -> sendMessage());
@@ -401,5 +494,114 @@ public class workhorse extends AppCompatActivity {
                 dp,
                 getResources().getDisplayMetrics()
         );
+    }
+
+    // ==================== ONBOARDING METHODS ====================
+
+    /**
+     * Sets up the NumberPickers with appropriate min/max values
+     */
+    private void setupNumberPickers() {
+        // Minutes picker: 1-180 minutes (3 hours max), default 30
+        if (minutesPicker != null) {
+            minutesPicker.setMinValue(1);
+            minutesPicker.setMaxValue(180);
+            minutesPicker.setValue(30);
+            minutesPicker.setWrapSelectorWheel(true);
+        }
+
+        // Get current date for setting defaults
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Calendar months are 0-based
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Day picker: 1-31
+        if (dayPicker != null) {
+            dayPicker.setMinValue(1);
+            dayPicker.setMaxValue(31);
+            dayPicker.setValue(currentDay);
+            dayPicker.setWrapSelectorWheel(true);
+        }
+
+        // Month picker: 1-12 with display values
+        if (monthPicker != null) {
+            String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            monthPicker.setMinValue(1);
+            monthPicker.setMaxValue(12);
+            monthPicker.setDisplayedValues(months);
+            monthPicker.setValue(currentMonth);
+            monthPicker.setWrapSelectorWheel(true);
+        }
+
+        // Year picker: current year to current year + 10
+        if (yearPicker != null) {
+            yearPicker.setMinValue(currentYear);
+            yearPicker.setMaxValue(currentYear + 10);
+            yearPicker.setValue(currentYear);
+            yearPicker.setWrapSelectorWheel(false);
+        }
+    }
+
+    /**
+     * Called when user presses continue on the time investment question
+     */
+    private void onContinueTimeClicked() {
+        // Store the selected minutes
+        if (minutesPicker != null) {
+            dailyMinutesInvestment = minutesPicker.getValue();
+        }
+
+        // Hide time question, show date question
+        if (questionTimeContainer != null) {
+            questionTimeContainer.setVisibility(View.GONE);
+        }
+        if (questionDateContainer != null) {
+            questionDateContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Called when user presses continue on the completion date question
+     */
+    private void onContinueDateClicked() {
+        // Store the selected date
+        if (dayPicker != null) {
+            targetDay = dayPicker.getValue();
+        }
+        if (monthPicker != null) {
+            targetMonth = monthPicker.getValue();
+        }
+        if (yearPicker != null) {
+            targetYear = yearPicker.getValue();
+        }
+
+        // Hide date question, show main input interface
+        if (questionDateContainer != null) {
+            questionDateContainer.setVisibility(View.GONE);
+        }
+        if (responseScroll != null) {
+            responseScroll.setVisibility(View.VISIBLE);
+        }
+        if (bottomContainer != null) {
+            bottomContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Gets the stored daily minutes investment
+     * @return Minutes per day the user wants to invest
+     */
+    public int getDailyMinutesInvestment() {
+        return dailyMinutesInvestment;
+    }
+
+    /**
+     * Gets the stored target completion date as a formatted string
+     * @return Target date in format "DD/MM/YYYY"
+     */
+    public String getTargetCompletionDate() {
+        return String.format("%02d/%02d/%04d", targetDay, targetMonth, targetYear);
     }
 }
