@@ -101,16 +101,16 @@
                 android:id="@+id/continue_time_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Continue"
-                android:textSize="18sp"
-                android:textColor="#FFFFFF"
-                android:fontFamily="@font/neuehaas45"
                 android:background="@drawable/input_outline"
                 android:backgroundTint="#333333"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/neuehaas45"
                 android:paddingHorizontal="48dp"
                 android:paddingVertical="16dp"
-                android:clickable="true"
-                android:focusable="true" />
+                android:text="Continue"
+                android:textColor="#000000"
+                android:textSize="18sp" />
 
         </LinearLayout>
 
