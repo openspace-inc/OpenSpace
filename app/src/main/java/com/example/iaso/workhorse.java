@@ -347,9 +347,12 @@ public class workhorse extends AppCompatActivity {
         // Clear the input field
         userInput.getText().clear();
 
-        // ==================== SEND TO CLAUDE ====================
+        // ==================== BUILD PROMPT AND SEND TO CLAUDE ====================
 
-        convexApiHelper.sendMessageToClaude(text, new ConvexApiHelper.ClaudeResponseCallback() {
+        // Build the formatted prompt with user's project details
+        String prompt = buildMilestonePrompt(text);
+
+        convexApiHelper.sendMessageToClaude(prompt, new ConvexApiHelper.ClaudeResponseCallback() {
             @Override
             public void onSuccess(String response) {
                 // Show final messages before displaying response
@@ -603,5 +606,54 @@ public class workhorse extends AppCompatActivity {
      */
     public String getTargetCompletionDate() {
         return String.format("%02d/%02d/%04d", targetDay, targetMonth, targetYear);
+    }
+
+    /**
+     * Calculates the number of days from today until the target completion date
+     * @return Number of days until completion (minimum 1)
+     */
+    private int calculateDaysUntilCompletion() {
+        // Get today's date
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
+        // Create target date calendar
+        Calendar target = Calendar.getInstance();
+        target.set(Calendar.YEAR, targetYear);
+        target.set(Calendar.MONTH, targetMonth - 1); // Calendar months are 0-based
+        target.set(Calendar.DAY_OF_MONTH, targetDay);
+        target.set(Calendar.HOUR_OF_DAY, 0);
+        target.set(Calendar.MINUTE, 0);
+        target.set(Calendar.SECOND, 0);
+        target.set(Calendar.MILLISECOND, 0);
+
+        // Calculate difference in milliseconds and convert to days
+        long diffMillis = target.getTimeInMillis() - today.getTimeInMillis();
+        int days = (int) (diffMillis / (1000 * 60 * 60 * 24));
+
+        // Return at least 1 day
+        return Math.max(1, days);
+    }
+
+    /**
+     * Builds the formatted prompt to send to Claude with user's project details
+     * @param projectDescription The user's description of their project/goal
+     * @return The formatted prompt string
+     */
+    private String buildMilestonePrompt(String projectDescription) {
+        int daysUntilCompletion = calculateDaysUntilCompletion();
+
+        return "Context: The user wants to invest a maximum of " + dailyMinutesInvestment +
+                " mins everyday and wants to accomplish " + projectDescription +
+                " in " + daysUntilCompletion + " days. Provide a list of milestones (2-15) " +
+                "(2-5 for short goals, only use 10-15 for goals that take years) to break down " +
+                "this goal that the user must hit along with the amount of days each milestone will take.\n" +
+                "Your response:\n" +
+                "Only provide a list and no other text which follows the below example:\n" +
+                "milestone name, X days\n" +
+                "milestone name, X days";
     }
 }
