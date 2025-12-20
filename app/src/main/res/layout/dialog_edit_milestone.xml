@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -20,10 +21,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/neuehaas75"
+        android:fontFamily="@font/neuehaas65"
         android:text="Milestone Name"
-        android:textColor="#666666"
-        android:textSize="24sp" />
+        android:textColor="#000000"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/edit_milestone_name"
@@ -42,10 +43,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:fontFamily="@font/neuehaas75"
+        android:fontFamily="@font/neuehaas65"
         android:text="Time (e.g., 30 days)"
-        android:textColor="#666666"
-        android:textSize="24sp" />
+        android:textColor="#000000"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/edit_milestone_time"
@@ -62,18 +63,31 @@
 
     <!-- Save button -->
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/neuehaas25"
+        android:gravity="center"
+        android:text="OpenSpace"
+        android:textColor="#000000"
+        android:textSize="12sp" />
+
+    <TextView
         android:id="@+id/save_milestone_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/input_outline"
         android:backgroundTint="#333333"
-        android:text="Save"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
+        android:clickable="true"
+        android:focusable="true"
         android:fontFamily="@font/neuehaas45"
         android:gravity="center"
         android:paddingVertical="16dp"
-        android:clickable="true"
-        android:focusable="true" />
+        android:text="Save"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:visibility="gone" />
 
 </LinearLayout>
