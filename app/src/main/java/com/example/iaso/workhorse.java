@@ -649,7 +649,7 @@ public class workhorse extends AppCompatActivity {
         return "Context: The user wants to invest a maximum of " + dailyMinutesInvestment +
                 " mins everyday and wants to accomplish " + projectDescription +
                 " in " + daysUntilCompletion + " days. Provide a list of milestones (2-15) " +
-                "(2-5 for short goals, only use 10-15 for goals that take years) to break down " +
+                "(1-2 goals for under 25 days, 2-5 for goals under 100 days, 6-8 for goals between 100-365, and 9-12 for goals that take years) to break down " +
                 "this goal that the user must hit along with the amount of days each milestone will take.\n" +
                 "Your response:\n" +
                 "Only provide a list and no other text which follows the below example:\n" +
