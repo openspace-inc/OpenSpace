@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_sheet_background">
 
     <!-- Checkmark button at top right -->
-    <ImageView
-        android:id="@+id/save_milestone_button"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="top|end"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/checkmarkv3"
-        android:clickable="true"
-        android:focusable="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,7 +21,19 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"
             android:background="@drawable/input_outline"
-            android:backgroundTint="#DDDDDD" />
+            android:backgroundTint="#DDDDDD"
+            android:visibility="gone"
+            tools:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/save_milestone_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/checkmarkv3" />
 
         <TextView
             android:layout_width="wrap_content"
