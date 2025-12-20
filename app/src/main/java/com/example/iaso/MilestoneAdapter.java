@@ -53,6 +53,15 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
         }
     }
 
+    public void removeMilestone(int position) {
+        if (position >= 0 && position < milestones.size()) {
+            milestones.remove(position);
+            notifyItemRemoved(position);
+            // Update remaining items to refresh the timeline lines
+            notifyItemRangeChanged(position, milestones.size() - position);
+        }
+    }
+
     @NonNull
     @Override
     public MilestoneViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

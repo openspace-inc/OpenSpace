@@ -1,6 +1,5 @@
 package com.example.iaso;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -17,13 +17,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -240,6 +245,9 @@ public class workhorse extends AppCompatActivity {
         milestoneAdapter.setOnMilestoneClickListener((position, milestone) -> {
             showEditMilestoneDialog(position, milestone);
         });
+
+        // Set up swipe-to-delete functionality
+        setupSwipeToDelete();
 
         // Onboarding views
         questionTimeContainer = findViewById(R.id.question_time_container);
@@ -576,35 +584,70 @@ public class workhorse extends AppCompatActivity {
     }
 
     /**
-     * Shows a dialog to edit a milestone's name and time
+     * Shows a bottom sheet dialog to edit a milestone's name and time
      * @param position The position of the milestone in the list
      * @param milestone The milestone to edit
      */
     private void showEditMilestoneDialog(int position, Milestone milestone) {
-        // Create dialog view
+        // Create bottom sheet dialog
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_milestone, null);
+        bottomSheetDialog.setContentView(dialogView);
+
+        // Make background transparent to show rounded corners
+        FrameLayout bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        if (bottomSheet != null) {
+            bottomSheet.setBackgroundResource(android.R.color.transparent);
+            BottomSheetBehavior<FrameLayout> behavior = BottomSheetBehavior.from(bottomSheet);
+            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            behavior.setSkipCollapsed(true);
+        }
+
+        // Get input fields
         EditText nameInput = dialogView.findViewById(R.id.edit_milestone_name);
         EditText timeInput = dialogView.findViewById(R.id.edit_milestone_time);
+        TextView saveButton = dialogView.findViewById(R.id.save_milestone_button);
 
         // Pre-fill current values
         nameInput.setText(milestone.getName());
         timeInput.setText(milestone.getTime());
 
-        // Build and show dialog
-        new AlertDialog.Builder(this)
-                .setTitle("Edit Milestone")
-                .setView(dialogView)
-                .setPositiveButton("Save", (dialog, which) -> {
-                    String newName = nameInput.getText().toString().trim();
-                    String newTime = timeInput.getText().toString().trim();
+        // Set up save button click listener
+        saveButton.setOnClickListener(v -> {
+            String newName = nameInput.getText().toString().trim();
+            String newTime = timeInput.getText().toString().trim();
 
-                    if (!newName.isEmpty() && !newTime.isEmpty()) {
-                        Milestone updatedMilestone = new Milestone(newName, newTime);
-                        milestoneAdapter.updateMilestone(position, updatedMilestone);
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+            if (!newName.isEmpty() && !newTime.isEmpty()) {
+                Milestone updatedMilestone = new Milestone(newName, newTime);
+                milestoneAdapter.updateMilestone(position, updatedMilestone);
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
+    /**
+     * Sets up swipe-to-delete functionality for the milestone list
+     */
+    private void setupSwipeToDelete() {
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                milestoneAdapter.removeMilestone(position);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        itemTouchHelper.attachToRecyclerView(milestoneList);
     }
 
     // ==================== HELPER METHODS ====================

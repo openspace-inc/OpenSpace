@@ -2,10 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FAF9F6"
-    android:backgroundTint="#FAF9F6"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:background="@drawable/bottom_sheet_background"
+    android:padding="24dp"
+    android:paddingBottom="32dp">
+
+    <!-- Drag handle indicator -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/input_outline"
+        android:backgroundTint="#DDDDDD" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -42,6 +51,7 @@
         android:id="@+id/edit_milestone_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/input_outline"
         android:fontFamily="@font/neuehaas45"
         android:inputType="text"
@@ -49,5 +59,21 @@
         android:padding="12dp"
         android:textColor="#333333"
         android:textSize="16sp" />
+
+    <!-- Save button -->
+    <TextView
+        android:id="@+id/save_milestone_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/input_outline"
+        android:backgroundTint="#333333"
+        android:text="Save"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="@font/neuehaas45"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:clickable="true"
+        android:focusable="true" />
 
 </LinearLayout>
