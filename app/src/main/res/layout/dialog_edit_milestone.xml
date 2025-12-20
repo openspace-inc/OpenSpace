@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#FAF9F6"
+    android:backgroundTint="#FAF9F6"
     android:orientation="vertical"
     android:padding="24dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/neuehaas75"
         android:text="Milestone Name"
-        android:textSize="14sp"
         android:textColor="#666666"
-        android:layout_marginBottom="8dp" />
+        android:textSize="24sp" />
 
     <EditText
         android:id="@+id/edit_milestone_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/input_outline"
-        android:textSize="16sp"
-        android:textColor="#333333"
+        android:fontFamily="@font/neuehaas45"
         android:inputType="text"
         android:maxLines="2"
-        android:layout_marginBottom="16dp" />
+        android:padding="12dp"
+        android:textColor="#333333"
+        android:textSize="16sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/neuehaas75"
         android:text="Time (e.g., 30 days)"
-        android:textSize="14sp"
         android:textColor="#666666"
-        android:layout_marginBottom="8dp" />
+        android:textSize="24sp" />
 
     <EditText
         android:id="@+id/edit_milestone_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
         android:background="@drawable/input_outline"
-        android:textSize="16sp"
-        android:textColor="#333333"
+        android:fontFamily="@font/neuehaas45"
         android:inputType="text"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:padding="12dp"
+        android:textColor="#333333"
+        android:textSize="16sp" />
 
 </LinearLayout>
