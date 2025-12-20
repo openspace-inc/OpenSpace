@@ -186,6 +186,40 @@
 
         </LinearLayout>
 
+        <!-- Timeline exceeded warning message -->
+        <LinearLayout
+            android:id="@+id/timeline_warning_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="16dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/warning_ion_logo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="12dp"
+                app:srcCompat="@drawable/ionlogo" />
+
+            <TextView
+                android:id="@+id/timeline_warning_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Your project is ambitious and exceeded the timeline you entered, I've created a more appropriate schedule for you to follow."
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:fontFamily="@font/neuehaas45"
+                android:lineSpacingMultiplier="1.2" />
+
+        </LinearLayout>
+
         <!--
             MILESTONE LIST DISPLAY AREA
             RecyclerView to show milestone cards with timeline
@@ -199,7 +233,7 @@
             android:clipToPadding="false"
             android:paddingBottom="16dp"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/timeline_warning_container"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

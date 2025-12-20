@@ -1,10 +1,12 @@
 package com.example.iaso;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -81,6 +83,11 @@ public class workhorse extends AppCompatActivity {
      * TextView showing cycling status messages during loading
      */
     private TextView loadingStatusText;
+
+    /**
+     * Container for timeline exceeded warning
+     */
+    private LinearLayout timelineWarningContainer;
 
     // ==================== ONBOARDING UI ELEMENTS ====================
 
@@ -222,11 +229,17 @@ public class workhorse extends AppCompatActivity {
         loadingContainer = findViewById(R.id.loading_container);
         loadingStatusText = findViewById(R.id.loading_status_text);
         bottomContainer = findViewById(R.id.bottom_container);
+        timelineWarningContainer = findViewById(R.id.timeline_warning_container);
 
         // Setup RecyclerView for milestones
         milestoneAdapter = new MilestoneAdapter();
         milestoneList.setLayoutManager(new LinearLayoutManager(this));
         milestoneList.setAdapter(milestoneAdapter);
+
+        // Set up click listener for editing milestones
+        milestoneAdapter.setOnMilestoneClickListener((position, milestone) -> {
+            showEditMilestoneDialog(position, milestone);
+        });
 
         // Onboarding views
         questionTimeContainer = findViewById(R.id.question_time_container);
@@ -458,19 +471,34 @@ public class workhorse extends AppCompatActivity {
                     loadingContainer.setVisibility(View.GONE);
                 }
 
+                // Hide input box when milestones are shown
+                if (bottomContainer != null) {
+                    bottomContainer.setVisibility(View.GONE);
+                }
+
                 // Parse and display milestones
                 List<Milestone> milestones = parseMilestones(response);
                 if (milestoneAdapter != null) {
                     milestoneAdapter.setMilestones(milestones);
                 }
 
+                // Calculate total days from milestones and check against user's timeline
+                int totalMilestoneDays = calculateTotalMilestoneDays(milestones);
+                int userTargetDays = calculateDaysUntilCompletion();
+
+                // Show warning if milestones exceed user's timeline
+                if (timelineWarningContainer != null) {
+                    if (totalMilestoneDays > userTargetDays) {
+                        timelineWarningContainer.setVisibility(View.VISIBLE);
+                    } else {
+                        timelineWarningContainer.setVisibility(View.GONE);
+                    }
+                }
+
                 // Scroll to top of list
                 if (milestoneList != null) {
                     milestoneList.scrollToPosition(0);
                 }
-
-                // Re-enable input
-                setInputEnabled(true);
 
             }, 500);
 
@@ -511,6 +539,72 @@ public class workhorse extends AppCompatActivity {
         }
 
         return milestones;
+    }
+
+    /**
+     * Calculates the total number of days from all milestones
+     * @param milestones List of milestones to sum
+     * @return Total days across all milestones
+     */
+    private int calculateTotalMilestoneDays(List<Milestone> milestones) {
+        int totalDays = 0;
+        for (Milestone milestone : milestones) {
+            totalDays += extractDaysFromTime(milestone.getTime());
+        }
+        return totalDays;
+    }
+
+    /**
+     * Extracts the number of days from a time string like "55 days" or "30 days"
+     * @param timeString The time string to parse
+     * @return Number of days, or 0 if parsing fails
+     */
+    private int extractDaysFromTime(String timeString) {
+        if (timeString == null || timeString.isEmpty()) {
+            return 0;
+        }
+        // Extract numbers from the string
+        String numbersOnly = timeString.replaceAll("[^0-9]", "");
+        if (numbersOnly.isEmpty()) {
+            return 0;
+        }
+        try {
+            return Integer.parseInt(numbersOnly);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Shows a dialog to edit a milestone's name and time
+     * @param position The position of the milestone in the list
+     * @param milestone The milestone to edit
+     */
+    private void showEditMilestoneDialog(int position, Milestone milestone) {
+        // Create dialog view
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_milestone, null);
+        EditText nameInput = dialogView.findViewById(R.id.edit_milestone_name);
+        EditText timeInput = dialogView.findViewById(R.id.edit_milestone_time);
+
+        // Pre-fill current values
+        nameInput.setText(milestone.getName());
+        timeInput.setText(milestone.getTime());
+
+        // Build and show dialog
+        new AlertDialog.Builder(this)
+                .setTitle("Edit Milestone")
+                .setView(dialogView)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String newName = nameInput.getText().toString().trim();
+                    String newTime = timeInput.getText().toString().trim();
+
+                    if (!newName.isEmpty() && !newTime.isEmpty()) {
+                        Milestone updatedMilestone = new Milestone(newName, newTime);
+                        milestoneAdapter.updateMilestone(position, updatedMilestone);
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     // ==================== HELPER METHODS ====================

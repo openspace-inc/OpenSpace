@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -20,13 +21,36 @@ import java.util.List;
 public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.MilestoneViewHolder> {
 
     private List<Milestone> milestones = new ArrayList<>();
+    private OnMilestoneClickListener clickListener;
+
+    /**
+     * Interface for handling milestone card clicks
+     */
+    public interface OnMilestoneClickListener {
+        void onMilestoneClick(int position, Milestone milestone);
+    }
 
     public MilestoneAdapter() {
+    }
+
+    public void setOnMilestoneClickListener(OnMilestoneClickListener listener) {
+        this.clickListener = listener;
     }
 
     public void setMilestones(List<Milestone> milestones) {
         this.milestones = milestones;
         notifyDataSetChanged();
+    }
+
+    public List<Milestone> getMilestones() {
+        return milestones;
+    }
+
+    public void updateMilestone(int position, Milestone milestone) {
+        if (position >= 0 && position < milestones.size()) {
+            milestones.set(position, milestone);
+            notifyItemChanged(position);
+        }
     }
 
     @NonNull
@@ -43,7 +67,7 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
         boolean isFirst = position == 0;
         boolean isLast = position == milestones.size() - 1;
 
-        holder.bind(milestone, isFirst, isLast);
+        holder.bind(milestone, isFirst, isLast, clickListener, position);
     }
 
     @Override
@@ -57,6 +81,7 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
         private final TextView milestoneTime;
         private final View lineTop;
         private final View lineBottom;
+        private final CardView milestoneCard;
 
         public MilestoneViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,9 +90,11 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
             milestoneTime = itemView.findViewById(R.id.milestone_time);
             lineTop = itemView.findViewById(R.id.line_top);
             lineBottom = itemView.findViewById(R.id.line_bottom);
+            milestoneCard = itemView.findViewById(R.id.milestone_card);
         }
 
-        public void bind(Milestone milestone, boolean isFirst, boolean isLast) {
+        public void bind(Milestone milestone, boolean isFirst, boolean isLast,
+                         OnMilestoneClickListener listener, int position) {
             milestoneName.setText(milestone.getName());
             milestoneTime.setText(milestone.getTime());
 
@@ -83,6 +110,13 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
 
             // Hide bottom line for last item
             lineBottom.setVisibility(isLast ? View.INVISIBLE : View.VISIBLE);
+
+            // Set click listener on the card
+            milestoneCard.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onMilestoneClick(position, milestone);
+                }
+            });
         }
     }
 }
