@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp">
+
+    <!-- Top line (hidden for first item) -->
+    <View
+        android:id="@+id/line_top"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:background="#333333"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/milestone_icon"
+        app:layout_constraintStart_toStartOf="@id/milestone_icon"
+        app:layout_constraintEnd_toEndOf="@id/milestone_icon" />
+
+    <!-- Circle icon (or checkmark for last item) -->
+    <ImageView
+        android:id="@+id/milestone_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/os_circle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/milestone_card"
+        app:layout_constraintBottom_toBottomOf="@id/milestone_card" />
+
+    <!-- Bottom line (hidden for last item) -->
+    <View
+        android:id="@+id/line_bottom"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:background="#333333"
+        app:layout_constraintTop_toBottomOf="@id/milestone_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/milestone_icon"
+        app:layout_constraintEnd_toEndOf="@id/milestone_icon" />
+
+    <!-- Milestone card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/milestone_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginVertical="8dp"
+        app:cardBackgroundColor="#F5F5F5"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toEndOf="@id/milestone_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Milestone name -->
+            <TextView
+                android:id="@+id/milestone_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="#333333"
+                android:fontFamily="@font/neuehaas45"
+                android:text="Milestone name" />
+
+            <!-- Time duration -->
+            <TextView
+                android:id="@+id/milestone_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="16sp"
+                android:textColor="#888888"
+                android:fontFamily="@font/neuehaas45"
+                android:text="X days" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

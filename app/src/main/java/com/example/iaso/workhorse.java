@@ -11,7 +11,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +20,12 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -60,9 +63,14 @@ public class workhorse extends AppCompatActivity {
     private ImageView enterArrow;
 
     /**
-     * TextView that displays Claude's response
+     * RecyclerView that displays the milestone list
      */
-    private TextView responseText;
+    private RecyclerView milestoneList;
+
+    /**
+     * Adapter for the milestone list
+     */
+    private MilestoneAdapter milestoneAdapter;
 
     /**
      * Container for the loading indicator (ion logo + status text)
@@ -73,11 +81,6 @@ public class workhorse extends AppCompatActivity {
      * TextView showing cycling status messages during loading
      */
     private TextView loadingStatusText;
-
-    /**
-     * ScrollView that contains the response text
-     */
-    private ScrollView responseScroll;
 
     // ==================== ONBOARDING UI ELEMENTS ====================
 
@@ -215,11 +218,15 @@ public class workhorse extends AppCompatActivity {
 
         userInput = findViewById(R.id.user_input);
         enterArrow = findViewById(R.id.enter_arrow);
-        responseText = findViewById(R.id.response_text);
+        milestoneList = findViewById(R.id.milestone_list);
         loadingContainer = findViewById(R.id.loading_container);
         loadingStatusText = findViewById(R.id.loading_status_text);
-        responseScroll = findViewById(R.id.response_scroll);
         bottomContainer = findViewById(R.id.bottom_container);
+
+        // Setup RecyclerView for milestones
+        milestoneAdapter = new MilestoneAdapter();
+        milestoneList.setLayoutManager(new LinearLayoutManager(this));
+        milestoneList.setAdapter(milestoneAdapter);
 
         // Onboarding views
         questionTimeContainer = findViewById(R.id.question_time_container);
@@ -336,9 +343,9 @@ public class workhorse extends AppCompatActivity {
         // Show the loading container with ion logo and cycling text
         startLoadingAnimation();
 
-        // Clear previous response
-        if (responseText != null) {
-            responseText.setText("");
+        // Clear previous milestones
+        if (milestoneAdapter != null) {
+            milestoneAdapter.setMilestones(new ArrayList<>());
         }
 
         // Disable input to prevent duplicate sends
@@ -365,11 +372,7 @@ public class workhorse extends AppCompatActivity {
                 stopLoadingAnimation();
 
                 // Show error
-                Toast.makeText(workhorse.this, errorMessage, Toast.LENGTH_LONG).show();
-
-                if (responseText != null) {
-                    responseText.setText("Error: " + errorMessage);
-                }
+                Toast.makeText(workhorse.this, "Error: " + errorMessage, Toast.LENGTH_LONG).show();
 
                 // Re-enable input
                 setInputEnabled(true);
@@ -455,14 +458,15 @@ public class workhorse extends AppCompatActivity {
                     loadingContainer.setVisibility(View.GONE);
                 }
 
-                // Display Claude's response
-                if (responseText != null) {
-                    responseText.setText(response);
+                // Parse and display milestones
+                List<Milestone> milestones = parseMilestones(response);
+                if (milestoneAdapter != null) {
+                    milestoneAdapter.setMilestones(milestones);
                 }
 
-                // Scroll to top of response
-                if (responseScroll != null) {
-                    responseScroll.scrollTo(0, 0);
+                // Scroll to top of list
+                if (milestoneList != null) {
+                    milestoneList.scrollToPosition(0);
                 }
 
                 // Re-enable input
@@ -471,6 +475,42 @@ public class workhorse extends AppCompatActivity {
             }, 500);
 
         }, 500);
+    }
+
+    /**
+     * Parses the AI response into a list of Milestone objects.
+     * Expected format: "milestone name, X days" per line
+     *
+     * @param response The raw response from Claude
+     * @return List of Milestone objects
+     */
+    private List<Milestone> parseMilestones(String response) {
+        List<Milestone> milestones = new ArrayList<>();
+
+        if (response == null || response.isEmpty()) {
+            return milestones;
+        }
+
+        // Split response by lines
+        String[] lines = response.split("\n");
+
+        for (String line : lines) {
+            line = line.trim();
+            if (line.isEmpty()) continue;
+
+            // Find the last comma to split name and time
+            int lastCommaIndex = line.lastIndexOf(",");
+            if (lastCommaIndex > 0 && lastCommaIndex < line.length() - 1) {
+                String name = line.substring(0, lastCommaIndex).trim();
+                String time = line.substring(lastCommaIndex + 1).trim();
+
+                if (!name.isEmpty() && !time.isEmpty()) {
+                    milestones.add(new Milestone(name, time));
+                }
+            }
+        }
+
+        return milestones;
     }
 
     // ==================== HELPER METHODS ====================
@@ -584,8 +624,8 @@ public class workhorse extends AppCompatActivity {
         if (questionDateContainer != null) {
             questionDateContainer.setVisibility(View.GONE);
         }
-        if (responseScroll != null) {
-            responseScroll.setVisibility(View.VISIBLE);
+        if (milestoneList != null) {
+            milestoneList.setVisibility(View.VISIBLE);
         }
         if (bottomContainer != null) {
             bottomContainer.setVisibility(View.VISIBLE);

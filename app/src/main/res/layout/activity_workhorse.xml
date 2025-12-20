@@ -187,42 +187,22 @@
         </LinearLayout>
 
         <!--
-            RESPONSE DISPLAY AREA
-            ScrollView with fully transparent background
+            MILESTONE LIST DISPLAY AREA
+            RecyclerView to show milestone cards with timeline
         -->
-        <ScrollView
-            android:id="@+id/response_scroll"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/milestone_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:overScrollMode="never"
-            android:requiresFadingEdge="none"
-            android:fadingEdgeLength="0dp"
-            android:layout_margin="16dp"
-            android:fillViewport="true"
+            android:layout_marginVertical="16dp"
             android:background="@null"
-            android:scrollbars="none"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <!--
-                TextView to display Claude's response
-                Fully transparent background - no grey box
-            -->
-            <TextView
-                android:id="@+id/response_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/neuehaas45"
-                android:textSize="16sp"
-                android:textColor="#333333"
-                android:lineSpacingMultiplier="1.3"
-                android:padding="8dp"
-                android:background="@null" />
-
-        </ScrollView>
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
