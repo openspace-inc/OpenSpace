@@ -606,7 +606,7 @@ public class workhorse extends AppCompatActivity {
         // Get input fields
         EditText nameInput = dialogView.findViewById(R.id.edit_milestone_name);
         EditText timeInput = dialogView.findViewById(R.id.edit_milestone_time);
-        TextView saveButton = dialogView.findViewById(R.id.save_milestone_button);
+        ImageView saveButton = dialogView.findViewById(R.id.save_milestone_button);
 
         // Pre-fill current values
         nameInput.setText(milestone.getName());

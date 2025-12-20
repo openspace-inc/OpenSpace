@@ -1,93 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/bottom_sheet_background"
-    android:padding="24dp"
-    android:paddingBottom="32dp">
+    android:background="@drawable/bottom_sheet_background">
 
-    <!-- Drag handle indicator -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/input_outline"
-        android:backgroundTint="#DDDDDD" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="@font/neuehaas65"
-        android:text="Milestone Name"
-        android:textColor="#000000"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/edit_milestone_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/input_outline"
-        android:fontFamily="@font/neuehaas45"
-        android:inputType="text"
-        android:maxLines="2"
-        android:padding="12dp"
-        android:textColor="#333333"
-        android:textSize="16sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="@font/neuehaas65"
-        android:text="Time (e.g., 30 days)"
-        android:textColor="#000000"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/edit_milestone_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/input_outline"
-        android:fontFamily="@font/neuehaas45"
-        android:inputType="text"
-        android:maxLines="1"
-        android:padding="12dp"
-        android:textColor="#333333"
-        android:textSize="16sp" />
-
-    <!-- Save button -->
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:fontFamily="@font/neuehaas25"
-        android:gravity="center"
-        android:text="OpenSpace"
-        android:textColor="#000000"
-        android:textSize="12sp" />
-
-    <TextView
+    <!-- Checkmark button at top right -->
+    <ImageView
         android:id="@+id/save_milestone_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/checkmarkv3"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/input_outline"
-        android:backgroundTint="#333333"
-        android:clickable="true"
-        android:focusable="true"
-        android:fontFamily="@font/neuehaas45"
-        android:gravity="center"
-        android:paddingVertical="16dp"
-        android:text="Save"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:visibility="gone" />
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:paddingBottom="32dp">
 
-</LinearLayout>
+        <!-- Drag handle indicator -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/input_outline"
+            android:backgroundTint="#DDDDDD" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/neuehaas65"
+            android:text="Milestone Name"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edit_milestone_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/input_outline"
+            android:fontFamily="@font/neuehaas45"
+            android:inputType="text"
+            android:maxLines="2"
+            android:padding="12dp"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/neuehaas65"
+            android:text="Time (e.g., 30 days)"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edit_milestone_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/input_outline"
+            android:fontFamily="@font/neuehaas45"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="12dp"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/neuehaas25"
+            android:gravity="center"
+            android:text="OpenSpace"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</FrameLayout>
