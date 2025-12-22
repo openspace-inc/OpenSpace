@@ -1,6 +1,7 @@
 package com.example.iaso;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.lang.reflect.Field;
 
 import com.example.iaso.PersonalPage.PersonalPage;
 
@@ -101,14 +104,24 @@ public class workhorse extends AppCompatActivity {
     // ==================== ONBOARDING UI ELEMENTS ====================
 
     /**
-     * Container for the time investment question
+     * Container for the minutes picker question
      */
-    private LinearLayout questionTimeContainer;
+    private LinearLayout questionMinutesContainer;
 
     /**
-     * Container for the completion date question
+     * Container for the day picker question
      */
-    private LinearLayout questionDateContainer;
+    private LinearLayout questionDayContainer;
+
+    /**
+     * Container for the month picker question
+     */
+    private LinearLayout questionMonthContainer;
+
+    /**
+     * Container for the year picker question
+     */
+    private LinearLayout questionYearContainer;
 
     /**
      * NumberPicker for selecting daily minutes
@@ -131,19 +144,39 @@ public class workhorse extends AppCompatActivity {
     private NumberPicker yearPicker;
 
     /**
-     * Continue button for time question
+     * Continue button for minutes picker
      */
-    private TextView continueTimeButton;
+    private TextView continueMinutesButton;
 
     /**
-     * Continue button for date question
+     * Continue button for day picker
      */
-    private TextView continueDateButton;
+    private TextView continueDayButton;
+
+    /**
+     * Continue button for month picker
+     */
+    private TextView continueMonthButton;
+
+    /**
+     * Continue button for year picker
+     */
+    private TextView continueYearButton;
 
     /**
      * Bottom container with input box
      */
     private ConstraintLayout bottomContainer;
+
+    /**
+     * Back button for navigation
+     */
+    private ImageButton backButton;
+
+    /**
+     * Current step in the picker flow (0=minutes, 1=day, 2=month, 3=year, 4=input)
+     */
+    private int currentPickerStep = 0;
 
     // ==================== USER DATA ====================
 
@@ -239,7 +272,7 @@ public class workhorse extends AppCompatActivity {
         loadingStatusText = findViewById(R.id.loading_status_text);
         bottomContainer = findViewById(R.id.bottom_container);
         timelineWarningContainer = findViewById(R.id.timeline_warning_container);
-        ImageButton backButton = findViewById(R.id.back_button);
+        backButton = findViewById(R.id.back_button);
 
         // Setup RecyclerView for milestones
         milestoneAdapter = new MilestoneAdapter();
@@ -255,14 +288,18 @@ public class workhorse extends AppCompatActivity {
         setupSwipeToDelete();
 
         // Onboarding views
-        questionTimeContainer = findViewById(R.id.question_time_container);
-        questionDateContainer = findViewById(R.id.question_date_container);
+        questionMinutesContainer = findViewById(R.id.question_minutes_container);
+        questionDayContainer = findViewById(R.id.question_day_container);
+        questionMonthContainer = findViewById(R.id.question_month_container);
+        questionYearContainer = findViewById(R.id.question_year_container);
         minutesPicker = findViewById(R.id.minutes_picker);
         dayPicker = findViewById(R.id.day_picker);
         monthPicker = findViewById(R.id.month_picker);
         yearPicker = findViewById(R.id.year_picker);
-        continueTimeButton = findViewById(R.id.continue_time_button);
-        continueDateButton = findViewById(R.id.continue_date_button);
+        continueMinutesButton = findViewById(R.id.continue_minutes_button);
+        continueDayButton = findViewById(R.id.continue_day_button);
+        continueMonthButton = findViewById(R.id.continue_month_button);
+        continueYearButton = findViewById(R.id.continue_year_button);
 
         // ==================== INITIALIZE ====================
 
@@ -311,22 +348,26 @@ public class workhorse extends AppCompatActivity {
 
         // ==================== CLICK LISTENERS ====================
 
-        // Back button - navigate to PersonalPage
+        // Back button - navigate back through picker steps or to PersonalPage
         if (backButton != null) {
-            backButton.setOnClickListener(v -> {
-                Intent intent = new Intent(workhorse.this, PersonalPage.class);
-                startActivity(intent);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            });
+            backButton.setOnClickListener(v -> handleBackButtonClick());
         }
 
         // Onboarding continue buttons
-        if (continueTimeButton != null) {
-            continueTimeButton.setOnClickListener(v -> onContinueTimeClicked());
+        if (continueMinutesButton != null) {
+            continueMinutesButton.setOnClickListener(v -> onContinueMinutesClicked());
         }
 
-        if (continueDateButton != null) {
-            continueDateButton.setOnClickListener(v -> onContinueDateClicked());
+        if (continueDayButton != null) {
+            continueDayButton.setOnClickListener(v -> onContinueDayClicked());
+        }
+
+        if (continueMonthButton != null) {
+            continueMonthButton.setOnClickListener(v -> onContinueMonthClicked());
+        }
+
+        if (continueYearButton != null) {
+            continueYearButton.setOnClickListener(v -> onContinueYearClicked());
         }
 
         if (enterArrow != null) {
@@ -703,6 +744,7 @@ public class workhorse extends AppCompatActivity {
             minutesPicker.setMaxValue(180);
             minutesPicker.setValue(30);
             minutesPicker.setWrapSelectorWheel(true);
+            styleNumberPicker(minutesPicker);
         }
 
         // Get current date for setting defaults
@@ -717,6 +759,7 @@ public class workhorse extends AppCompatActivity {
             dayPicker.setMaxValue(31);
             dayPicker.setValue(currentDay);
             dayPicker.setWrapSelectorWheel(true);
+            styleNumberPicker(dayPicker);
         }
 
         // Month picker: 1-12 with display values
@@ -728,6 +771,7 @@ public class workhorse extends AppCompatActivity {
             monthPicker.setDisplayedValues(months);
             monthPicker.setValue(currentMonth);
             monthPicker.setWrapSelectorWheel(true);
+            styleNumberPicker(monthPicker);
         }
 
         // Year picker: current year to current year + 10
@@ -736,45 +780,163 @@ public class workhorse extends AppCompatActivity {
             yearPicker.setMaxValue(currentYear + 10);
             yearPicker.setValue(currentYear);
             yearPicker.setWrapSelectorWheel(false);
+            styleNumberPicker(yearPicker);
         }
     }
 
     /**
-     * Called when user presses continue on the time investment question
+     * Applies custom styling to NumberPicker: white text, larger size, no dividers, motion blur
+     * @param picker The NumberPicker to style
      */
-    private void onContinueTimeClicked() {
+    private void styleNumberPicker(NumberPicker picker) {
+        if (picker == null) return;
+
+        // Remove dividers by setting divider height to 0 using reflection
+        try {
+            Field selectionDivider = NumberPicker.class.getDeclaredField("mSelectionDivider");
+            selectionDivider.setAccessible(true);
+            selectionDivider.set(picker, null);
+        } catch (Exception e) {
+            // If reflection fails, try setting divider height to 0
+            try {
+                Field dividerField = NumberPicker.class.getDeclaredField("mSelectionDividerHeight");
+                dividerField.setAccessible(true);
+                dividerField.set(picker, 0);
+            } catch (Exception ex) {
+                // Fallback: do nothing if both methods fail
+            }
+        }
+
+        // Apply custom text styling and motion blur to all child EditText views
+        final int childCount = picker.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View child = picker.getChildAt(i);
+            if (child instanceof EditText) {
+                EditText editText = (EditText) child;
+                editText.setTextColor(0xFFFFFFFF); // White color
+                editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 48); // Large text size
+
+                // Set font to neuehaas95
+                try {
+                    editText.setTypeface(getResources().getFont(R.font.neuehaas95));
+                } catch (Exception e) {
+                    // Fallback if font not found
+                }
+
+                // Add motion blur effect
+                editText.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                Paint paint = editText.getPaint();
+                paint.setMaskFilter(new android.graphics.BlurMaskFilter(3, android.graphics.BlurMaskFilter.Blur.NORMAL));
+            }
+        }
+
+        // Force picker to redraw
+        picker.invalidate();
+    }
+
+    /**
+     * Handles back button click - navigates back through picker steps
+     */
+    private void handleBackButtonClick() {
+        if (currentPickerStep == 0) {
+            // At first step, go back to PersonalPage
+            Intent intent = new Intent(workhorse.this, PersonalPage.class);
+            startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        } else if (currentPickerStep == 1) {
+            // Go back to minutes picker
+            currentPickerStep = 0;
+            if (questionDayContainer != null) questionDayContainer.setVisibility(View.GONE);
+            if (questionMinutesContainer != null) questionMinutesContainer.setVisibility(View.VISIBLE);
+        } else if (currentPickerStep == 2) {
+            // Go back to day picker
+            currentPickerStep = 1;
+            if (questionMonthContainer != null) questionMonthContainer.setVisibility(View.GONE);
+            if (questionDayContainer != null) questionDayContainer.setVisibility(View.VISIBLE);
+        } else if (currentPickerStep == 3) {
+            // Go back to month picker
+            currentPickerStep = 2;
+            if (questionYearContainer != null) questionYearContainer.setVisibility(View.GONE);
+            if (questionMonthContainer != null) questionMonthContainer.setVisibility(View.VISIBLE);
+        } else if (currentPickerStep == 4) {
+            // Go back to year picker
+            currentPickerStep = 3;
+            if (bottomContainer != null) bottomContainer.setVisibility(View.GONE);
+            if (milestoneList != null) milestoneList.setVisibility(View.GONE);
+            if (questionYearContainer != null) questionYearContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Called when user presses continue on the minutes picker
+     */
+    private void onContinueMinutesClicked() {
         // Store the selected minutes
         if (minutesPicker != null) {
             dailyMinutesInvestment = minutesPicker.getValue();
         }
 
-        // Hide time question, show date question
-        if (questionTimeContainer != null) {
-            questionTimeContainer.setVisibility(View.GONE);
+        // Hide minutes question, show day question
+        currentPickerStep = 1;
+        if (questionMinutesContainer != null) {
+            questionMinutesContainer.setVisibility(View.GONE);
         }
-        if (questionDateContainer != null) {
-            questionDateContainer.setVisibility(View.VISIBLE);
+        if (questionDayContainer != null) {
+            questionDayContainer.setVisibility(View.VISIBLE);
         }
     }
 
     /**
-     * Called when user presses continue on the completion date question
+     * Called when user presses continue on the day picker
      */
-    private void onContinueDateClicked() {
-        // Store the selected date
+    private void onContinueDayClicked() {
+        // Store the selected day
         if (dayPicker != null) {
             targetDay = dayPicker.getValue();
         }
+
+        // Hide day question, show month question
+        currentPickerStep = 2;
+        if (questionDayContainer != null) {
+            questionDayContainer.setVisibility(View.GONE);
+        }
+        if (questionMonthContainer != null) {
+            questionMonthContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Called when user presses continue on the month picker
+     */
+    private void onContinueMonthClicked() {
+        // Store the selected month
         if (monthPicker != null) {
             targetMonth = monthPicker.getValue();
         }
+
+        // Hide month question, show year question
+        currentPickerStep = 3;
+        if (questionMonthContainer != null) {
+            questionMonthContainer.setVisibility(View.GONE);
+        }
+        if (questionYearContainer != null) {
+            questionYearContainer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Called when user presses continue on the year picker
+     */
+    private void onContinueYearClicked() {
+        // Store the selected year
         if (yearPicker != null) {
             targetYear = yearPicker.getValue();
         }
 
-        // Hide date question, show main input interface
-        if (questionDateContainer != null) {
-            questionDateContainer.setVisibility(View.GONE);
+        // Hide year question, show main input interface
+        currentPickerStep = 4;
+        if (questionYearContainer != null) {
+            questionYearContainer.setVisibility(View.GONE);
         }
         if (milestoneList != null) {
             milestoneList.setVisibility(View.VISIBLE);

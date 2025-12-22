@@ -76,9 +76,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- QUESTION 1: Time Investment Question -->
+        <!-- QUESTION 1: Minutes Picker -->
         <LinearLayout
-            android:id="@+id/question_time_container"
+            android:id="@+id/question_minutes_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
@@ -90,27 +90,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/question_time_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="How many minutes do you want to invest in this project everyday?"
-                android:textSize="22sp"
-                android:textColor="#333333"
-                android:fontFamily="@font/neuehaas45"
-                android:textAlignment="center"
-                android:lineSpacingMultiplier="1.3"
-                android:layout_marginBottom="40dp" />
-
             <NumberPicker
                 android:id="@+id/minutes_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40dp"
+                android:layout_marginBottom="60dp"
                 android:theme="@style/Theme.AppCompat.Light" />
 
             <TextView
-                android:id="@+id/continue_time_button"
+                android:id="@+id/continue_minutes_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/input_outline"
@@ -126,9 +114,9 @@
 
         </LinearLayout>
 
-        <!-- QUESTION 2: Completion Date Question -->
+        <!-- QUESTION 2: Day Picker -->
         <LinearLayout
-            android:id="@+id/question_date_container"
+            android:id="@+id/question_day_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:orientation="vertical"
@@ -140,49 +128,91 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <TextView
-                android:id="@+id/question_date_text"
+            <NumberPicker
+                android:id="@+id/day_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="When do you want to complete this project by?"
-                android:textSize="22sp"
-                android:textColor="#333333"
+                android:layout_marginBottom="60dp"
+                android:theme="@style/Theme.AppCompat.Light" />
+
+            <TextView
+                android:id="@+id/continue_day_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_outline"
+                android:backgroundTint="#333333"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="@font/neuehaas45"
-                android:textAlignment="center"
-                android:lineSpacingMultiplier="1.3"
-                android:layout_marginBottom="40dp" />
+                android:paddingHorizontal="48dp"
+                android:paddingVertical="16dp"
+                android:text="Continue"
+                android:textColor="#000000"
+                android:textSize="18sp" />
 
-            <LinearLayout
+        </LinearLayout>
+
+        <!-- QUESTION 3: Month Picker -->
+        <LinearLayout
+            android:id="@+id/question_month_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <NumberPicker
+                android:id="@+id/month_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginBottom="40dp">
-
-                <NumberPicker
-                    android:id="@+id/day_picker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:theme="@style/Theme.AppCompat.Light" />
-
-                <NumberPicker
-                    android:id="@+id/month_picker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:theme="@style/Theme.AppCompat.Light" />
-
-                <NumberPicker
-                    android:id="@+id/year_picker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:theme="@style/Theme.AppCompat.Light" />
-
-            </LinearLayout>
+                android:layout_marginBottom="60dp"
+                android:theme="@style/Theme.AppCompat.Light" />
 
             <TextView
-                android:id="@+id/continue_date_button"
+                android:id="@+id/continue_month_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_outline"
+                android:backgroundTint="#333333"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/neuehaas45"
+                android:paddingHorizontal="48dp"
+                android:paddingVertical="16dp"
+                android:text="Continue"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <!-- QUESTION 4: Year Picker -->
+        <LinearLayout
+            android:id="@+id/question_year_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="32dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <NumberPicker
+                android:id="@+id/year_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="60dp"
+                android:theme="@style/Theme.AppCompat.Light" />
+
+            <TextView
+                android:id="@+id/continue_year_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/input_outline"
