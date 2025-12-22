@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reusable Bottom Navigation Bar Component -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottomNavContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp">
+
+    <ImageView
+        android:id="@+id/bottomNavBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.90"
+        app:srcCompat="@drawable/rectangeframe" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottomNavCard"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:maxWidth="300dp"
+        app:cardCornerRadius="60dp"
+        app:cardElevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.85">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/navButtonWorkhorse"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginEnd="28dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/activity_black_menu"
+                android:contentDescription="Workhorse Activity"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/navButtonHub"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/navButtonHub"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginEnd="28dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/hub_white_menu"
+                android:contentDescription="Hub Activity"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/navButtonAnalytics"
+                app:layout_constraintStart_toEndOf="@+id/navButtonWorkhorse"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/navButtonAnalytics"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/block_black_menu"
+                android:contentDescription="Analytics Activity"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/navButtonHub"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

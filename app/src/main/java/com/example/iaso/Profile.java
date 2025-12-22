@@ -30,6 +30,7 @@ public class Profile extends AppCompatActivity {
         TextView profileName = findViewById(R.id.profileName);
         profileName.setText(name);
 
-
+        // Setup bottom navigation bar
+        BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, Profile.class);
     }
 }

@@ -29,6 +29,7 @@ import com.airbnb.lottie.LottieDrawable;
 import com.bumptech.glide.Glide;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
+import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.Projects;
@@ -98,14 +99,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton imageButton2 = findViewById(R.id.imageButton2);
-
-        imageButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Setup bottom navigation bar
+        BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, MainActivity.class);
 
         //Create Habits
 

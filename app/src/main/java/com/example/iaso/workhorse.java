@@ -267,6 +267,9 @@ public class workhorse extends AppCompatActivity {
         // Setup NumberPickers for onboarding
         setupNumberPickers();
 
+        // Setup bottom navigation bar
+        BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, workhorse.class);
+
         // Create the runnable that cycles through status messages
         statusCycleRunnable = new Runnable() {
             @Override

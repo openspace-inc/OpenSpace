@@ -62,17 +62,14 @@ public class Analytics extends AppCompatActivity {
         rangeLabelView = findViewById(R.id.rangeLabel);
         trendArrowView = findViewById(R.id.imageView26);
 
-        ImageButton exitButton = findViewById(R.id.backbutton234);
-        exitButton.setOnClickListener(view -> {
-            Intent b = new Intent(Analytics.this, PersonalPage.class);
-            startActivity(b);
-        });
-
         // Build the spark graph for this project and immediately draw the latest range.
         sparkView = findViewById(R.id.sparkview);
 
         buildSparkGraph(name1);
         setupRangeButtons();
+
+        // Setup bottom navigation bar
+        BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, Analytics.class);
     }
 
     void buildSparkGraph(String projectName) {
