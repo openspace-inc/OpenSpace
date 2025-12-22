@@ -244,12 +244,150 @@
             android:layout_marginVertical="16dp"
             android:background="@null"
             android:clipToPadding="false"
-            android:paddingBottom="16dp"
+            android:paddingBottom="80dp"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/timeline_warning_container"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Continue button after milestones are displayed -->
+        <TextView
+            android:id="@+id/continue_milestone_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/input_outline"
+            android:backgroundTint="#333333"
+            android:clickable="true"
+            android:focusable="true"
+            android:fontFamily="@font/neuehaas45"
+            android:paddingHorizontal="48dp"
+            android:paddingVertical="16dp"
+            android:text="Continue"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- INVESTMENT VIEW - Shown after user presses continue on milestones -->
+        <LinearLayout
+            android:id="@+id/investment_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="32dp"
+            android:paddingTop="32dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Header with ion logo and description text -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="48dp">
+
+                <ImageView
+                    android:id="@+id/investment_ion_logo"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="16dp"
+                    app:srcCompat="@drawable/ionlogo" />
+
+                <TextView
+                    android:id="@+id/investment_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Your project has been created, now choose an investment amount for your first stock in the project."
+                    android:textSize="16sp"
+                    android:textColor="#333333"
+                    android:fontFamily="@font/neuehaas45"
+                    android:lineSpacingMultiplier="1.3" />
+
+            </LinearLayout>
+
+            <!-- Investment amount display with block image -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="24dp">
+
+                <!-- Container for animated number -->
+                <FrameLayout
+                    android:id="@+id/investment_number_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="true"
+                    android:clipToPadding="true">
+
+                    <TextView
+                        android:id="@+id/investment_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="80sp"
+                        android:textColor="#FFFFFF"
+                        android:fontFamily="@font/neuehaas95"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/investment_block_icon"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    app:srcCompat="@drawable/os5_blockv2" />
+
+            </LinearLayout>
+
+            <!-- Current worth display -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/current_worth_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current worth: "
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:fontFamily="@font/neuehaas45" />
+
+                <TextView
+                    android:id="@+id/current_worth_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="16sp"
+                    android:textColor="#666666"
+                    android:fontFamily="@font/neuehaas45" />
+
+                <ImageView
+                    android:id="@+id/current_worth_block_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="8dp"
+                    app:srcCompat="@drawable/os5_blockv2" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,9 +1,16 @@
 package com.example.iaso;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputType;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -145,6 +152,31 @@ public class workhorse extends AppCompatActivity {
      */
     private ConstraintLayout bottomContainer;
 
+    /**
+     * Continue button shown after milestones are displayed
+     */
+    private TextView continueMilestoneButton;
+
+    /**
+     * Container for the investment view
+     */
+    private LinearLayout investmentContainer;
+
+    /**
+     * TextView showing the investment amount
+     */
+    private TextView investmentAmount;
+
+    /**
+     * TextView showing the current worth value
+     */
+    private TextView currentWorthValue;
+
+    /**
+     * FrameLayout container for animated number
+     */
+    private FrameLayout investmentNumberContainer;
+
     // ==================== USER DATA ====================
 
     /**
@@ -171,6 +203,16 @@ public class workhorse extends AppCompatActivity {
      * Target completion year
      */
     private int targetYear = 2025;
+
+    /**
+     * Current investment amount selected by user
+     */
+    private int currentInvestmentAmount = 0;
+
+    /**
+     * User's total points from SharedPreferences
+     */
+    private int userPoints = 0;
 
     // ==================== API HELPER ====================
 
@@ -269,6 +311,16 @@ public class workhorse extends AppCompatActivity {
         continueTimeButton = findViewById(R.id.continue_time_button);
         continueDateButton = findViewById(R.id.continue_date_button);
 
+        // Investment views
+        continueMilestoneButton = findViewById(R.id.continue_milestone_button);
+        investmentContainer = findViewById(R.id.investment_container);
+        investmentAmount = findViewById(R.id.investment_amount);
+        currentWorthValue = findViewById(R.id.current_worth_value);
+        investmentNumberContainer = findViewById(R.id.investment_number_container);
+
+        // Load user points from SharedPreferences
+        loadUserPoints();
+
         // ==================== INITIALIZE ====================
 
         convexApiHelper = new ConvexApiHelper();
@@ -332,6 +384,14 @@ public class workhorse extends AppCompatActivity {
 
         if (continueDateButton != null) {
             continueDateButton.setOnClickListener(v -> onContinueDateClicked());
+        }
+
+        if (continueMilestoneButton != null) {
+            continueMilestoneButton.setOnClickListener(v -> onContinueMilestoneClicked());
+        }
+
+        if (investmentAmount != null) {
+            investmentAmount.setOnClickListener(v -> showInvestmentInputDialog());
         }
 
         if (enterArrow != null) {
@@ -526,6 +586,11 @@ public class workhorse extends AppCompatActivity {
                 // Scroll to top of list
                 if (milestoneList != null) {
                     milestoneList.scrollToPosition(0);
+                }
+
+                // Show continue button after milestones are displayed
+                if (continueMilestoneButton != null) {
+                    continueMilestoneButton.setVisibility(View.VISIBLE);
                 }
 
             }, 500);
@@ -877,5 +942,143 @@ public class workhorse extends AppCompatActivity {
                 "Tickersymbol\n" +
                 "milestone name, X days\n" +
                 "milestone name, X days";
+    }
+
+    // ==================== INVESTMENT METHODS ====================
+
+    /**
+     * Loads the user's points from SharedPreferences
+     */
+    private void loadUserPoints() {
+        SharedPreferences userData = getSharedPreferences("UserData", Context.MODE_PRIVATE);
+        userPoints = userData.getInt("userPoints", 0);
+    }
+
+    /**
+     * Called when user presses continue on the milestone view
+     */
+    private void onContinueMilestoneClicked() {
+        // Hide milestone list, warning container, and continue button
+        if (milestoneList != null) {
+            milestoneList.setVisibility(View.GONE);
+        }
+        if (timelineWarningContainer != null) {
+            timelineWarningContainer.setVisibility(View.GONE);
+        }
+        if (continueMilestoneButton != null) {
+            continueMilestoneButton.setVisibility(View.GONE);
+        }
+
+        // Show investment container
+        if (investmentContainer != null) {
+            investmentContainer.setVisibility(View.VISIBLE);
+        }
+
+        // Update current worth display
+        if (currentWorthValue != null) {
+            currentWorthValue.setText(String.valueOf(userPoints));
+        }
+    }
+
+    /**
+     * Shows a dialog for the user to enter an investment amount
+     */
+    private void showInvestmentInputDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Investment Amount");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setHint("Enter amount");
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String inputText = input.getText().toString().trim();
+            if (!inputText.isEmpty()) {
+                try {
+                    int newAmount = Integer.parseInt(inputText);
+                    animateNumberChange(newAmount);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+    /**
+     * Animates the investment amount change with a wheel effect
+     * @param newAmount The new amount to display
+     */
+    private void animateNumberChange(int newAmount) {
+        if (investmentAmount == null || investmentNumberContainer == null) return;
+
+        int oldAmount = currentInvestmentAmount;
+        currentInvestmentAmount = newAmount;
+
+        // Determine animation direction
+        float startY, endY;
+        if (newAmount > oldAmount) {
+            // New number is larger - animate downward (old goes down, new comes from top)
+            startY = -investmentAmount.getHeight();
+            endY = 0;
+        } else if (newAmount < oldAmount) {
+            // New number is smaller - animate upward (old goes up, new comes from bottom)
+            startY = investmentAmount.getHeight();
+            endY = 0;
+        } else {
+            // Same number - no animation needed
+            updateInvestmentDisplay();
+            return;
+        }
+
+        // Animate old number out
+        ObjectAnimator oldAnimator;
+        if (newAmount > oldAmount) {
+            oldAnimator = ObjectAnimator.ofFloat(investmentAmount, "translationY", 0, investmentAmount.getHeight());
+        } else {
+            oldAnimator = ObjectAnimator.ofFloat(investmentAmount, "translationY", 0, -investmentAmount.getHeight());
+        }
+        oldAnimator.setDuration(150);
+
+        oldAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Update the text
+                updateInvestmentDisplay();
+
+                // Position for animation in
+                investmentAmount.setTranslationY(startY);
+
+                // Animate new number in
+                ObjectAnimator newAnimator = ObjectAnimator.ofFloat(investmentAmount, "translationY", startY, endY);
+                newAnimator.setDuration(150);
+                newAnimator.start();
+            }
+        });
+
+        oldAnimator.start();
+    }
+
+    /**
+     * Updates the investment amount display and validates against user points
+     */
+    private void updateInvestmentDisplay() {
+        if (investmentAmount == null) return;
+
+        investmentAmount.setText(String.valueOf(currentInvestmentAmount));
+
+        // Check if amount exceeds user points and change color accordingly
+        if (currentInvestmentAmount > userPoints) {
+            // Red color for exceeding user points
+            investmentAmount.setTextColor(0xFFBA524F);
+        } else {
+            // White color for valid amount
+            investmentAmount.setTextColor(0xFFFFFFFF);
+        }
     }
 }
