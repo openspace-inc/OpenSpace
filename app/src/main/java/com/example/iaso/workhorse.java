@@ -1012,9 +1012,13 @@ public class workhorse extends AppCompatActivity {
      */
     private void setupInvestmentAmountWatcher() {
         investmentAmount.addTextChangedListener(new TextWatcher() {
+            private String previousText = "0";
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Not needed
+                if (!isAnimating) {
+                    previousText = s.toString();
+                }
             }
 
             @Override
@@ -1026,24 +1030,48 @@ public class workhorse extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 if (isAnimating) return;
 
-                String text = s.toString().trim();
-                int newAmount = 0;
-
-                if (!text.isEmpty()) {
-                    try {
-                        newAmount = Integer.parseInt(text);
-                    } catch (NumberFormatException e) {
-                        // Invalid input, keep at 0
-                        newAmount = 0;
-                    }
-                }
+                String text = s.toString();
 
                 // If text is empty, reset to 0
                 if (text.isEmpty()) {
                     isAnimating = true;
                     investmentAmount.setText("0");
-                    investmentAmount.setSelection(1); // Move cursor after the 0
+                    investmentAmount.setSelection(1);
                     isAnimating = false;
+
+                    if (currentInvestmentAmount != 0) {
+                        animateNumberChange(0, "0");
+                    }
+                    updateFinalizeButtonState();
+                    return;
+                }
+
+                // If previous text was "0" and user typed a digit, replace the 0
+                // This handles the case where "0" + "1" should become "1", not "01"
+                if (previousText.equals("0") && text.length() == 2 && text.startsWith("0")) {
+                    isAnimating = true;
+                    String newText = text.substring(1); // Remove the leading 0
+                    investmentAmount.setText(newText);
+                    investmentAmount.setSelection(newText.length());
+                    isAnimating = false;
+                    return; // The setText will trigger afterTextChanged again with the correct value
+                }
+
+                // Remove any leading zeros (except for just "0")
+                if (text.length() > 1 && text.startsWith("0")) {
+                    isAnimating = true;
+                    String newText = text.replaceFirst("^0+", "");
+                    if (newText.isEmpty()) newText = "0";
+                    investmentAmount.setText(newText);
+                    investmentAmount.setSelection(newText.length());
+                    isAnimating = false;
+                    return;
+                }
+
+                int newAmount = 0;
+                try {
+                    newAmount = Integer.parseInt(text);
+                } catch (NumberFormatException e) {
                     newAmount = 0;
                 }
 
