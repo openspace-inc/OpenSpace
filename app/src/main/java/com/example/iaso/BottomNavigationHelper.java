@@ -73,18 +73,18 @@ public class BottomNavigationHelper {
                     updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.HUB);
                     Intent intent = new Intent(activity, MainActivity.class);
                     activity.startActivity(intent);
-                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    activity.overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
                 }
             });
         }
 
         if (navButtonPersonalPage != null) {
             navButtonPersonalPage.setOnClickListener(v -> {
-                if (currentActivityClass != PersonalPage.class) {
+                if (currentActivityClass != PersonalPage.class && currentActivityClass != Analytics.class) {
                     updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.PERSONALPAGE);
                     Intent intent = new Intent(activity, PersonalPage.class);
                     activity.startActivity(intent);
-                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    activity.overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
                 }
             });
         }
@@ -98,6 +98,9 @@ public class BottomNavigationHelper {
      */
     private static NavigationItem getActiveNavigationItem(Class<?> currentActivityClass) {
         if (currentActivityClass == PersonalPage.class) {
+            return NavigationItem.PERSONALPAGE;
+        } else if (currentActivityClass == Analytics.class) {
+            // Analytics is a sub-view of PersonalPage, so PersonalPage button should be active
             return NavigationItem.PERSONALPAGE;
         } else if (currentActivityClass == MainActivity.class) {
             return NavigationItem.HUB;
