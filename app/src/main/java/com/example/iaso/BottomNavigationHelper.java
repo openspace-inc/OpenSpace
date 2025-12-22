@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.iaso.Home.MainActivity;
+import com.example.iaso.PersonalPage.PersonalPage;
 
 /**
  * BottomNavigationHelper
@@ -15,6 +17,11 @@ import com.example.iaso.Home.MainActivity;
  * - Setting up click listeners for navigation buttons
  * - Managing button states (active/inactive with different drawables)
  * - Navigating between activities
+ *
+ * Navigation mapping:
+ * - navButtonWorkhorse (activity icon) -> Toast "Coming soon"
+ * - navButtonHub (hub icon) -> MainActivity
+ * - navButtonAnalytics (block icon) -> PersonalPage
  *
  * Usage:
  * In your activity's onCreate, call:
@@ -26,9 +33,9 @@ public class BottomNavigationHelper {
      * Enum representing the different navigation destinations
      */
     public enum NavigationItem {
-        WORKHORSE,
+        ACTIVITY,
         HUB,
-        ANALYTICS
+        PERSONALPAGE
     }
 
     /**
@@ -44,30 +51,26 @@ public class BottomNavigationHelper {
             return;
         }
 
-        ImageButton navButtonWorkhorse = bottomNavView.findViewById(R.id.navButtonWorkhorse);
+        ImageButton navButtonActivity = bottomNavView.findViewById(R.id.navButtonWorkhorse);
         ImageButton navButtonHub = bottomNavView.findViewById(R.id.navButtonHub);
-        ImageButton navButtonAnalytics = bottomNavView.findViewById(R.id.navButtonAnalytics);
+        ImageButton navButtonPersonalPage = bottomNavView.findViewById(R.id.navButtonAnalytics);
 
         // Determine which button should be highlighted as active
         NavigationItem activeItem = getActiveNavigationItem(currentActivityClass);
-        updateButtonStates(navButtonWorkhorse, navButtonHub, navButtonAnalytics, activeItem);
+        updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, activeItem);
 
         // Set up click listeners
-        if (navButtonWorkhorse != null) {
-            navButtonWorkhorse.setOnClickListener(v -> {
-                if (currentActivityClass != workhorse.class) {
-                    updateButtonStates(navButtonWorkhorse, navButtonHub, navButtonAnalytics, NavigationItem.WORKHORSE);
-                    Intent intent = new Intent(activity, workhorse.class);
-                    activity.startActivity(intent);
-                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                }
+        if (navButtonActivity != null) {
+            navButtonActivity.setOnClickListener(v -> {
+                // Show "Coming soon" toast - not linked to any activity yet
+                Toast.makeText(activity, "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
             });
         }
 
         if (navButtonHub != null) {
             navButtonHub.setOnClickListener(v -> {
                 if (currentActivityClass != MainActivity.class) {
-                    updateButtonStates(navButtonWorkhorse, navButtonHub, navButtonAnalytics, NavigationItem.HUB);
+                    updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.HUB);
                     Intent intent = new Intent(activity, MainActivity.class);
                     activity.startActivity(intent);
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
@@ -75,11 +78,11 @@ public class BottomNavigationHelper {
             });
         }
 
-        if (navButtonAnalytics != null) {
-            navButtonAnalytics.setOnClickListener(v -> {
-                if (currentActivityClass != Analytics.class) {
-                    updateButtonStates(navButtonWorkhorse, navButtonHub, navButtonAnalytics, NavigationItem.ANALYTICS);
-                    Intent intent = new Intent(activity, Analytics.class);
+        if (navButtonPersonalPage != null) {
+            navButtonPersonalPage.setOnClickListener(v -> {
+                if (currentActivityClass != PersonalPage.class) {
+                    updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.PERSONALPAGE);
+                    Intent intent = new Intent(activity, PersonalPage.class);
                     activity.startActivity(intent);
                     activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
@@ -94,10 +97,8 @@ public class BottomNavigationHelper {
      * @return The active NavigationItem
      */
     private static NavigationItem getActiveNavigationItem(Class<?> currentActivityClass) {
-        if (currentActivityClass == workhorse.class) {
-            return NavigationItem.WORKHORSE;
-        } else if (currentActivityClass == Analytics.class) {
-            return NavigationItem.ANALYTICS;
+        if (currentActivityClass == PersonalPage.class) {
+            return NavigationItem.PERSONALPAGE;
         } else if (currentActivityClass == MainActivity.class) {
             return NavigationItem.HUB;
         }
@@ -108,21 +109,18 @@ public class BottomNavigationHelper {
      * Updates the button states (images) based on which item is active
      * Active buttons show white icons, inactive buttons show black icons
      *
-     * @param navButtonWorkhorse The workhorse navigation button
+     * @param navButtonActivity The activity navigation button (coming soon)
      * @param navButtonHub The hub navigation button
-     * @param navButtonAnalytics The analytics navigation button
+     * @param navButtonPersonalPage The personal page navigation button
      * @param activeItem The currently active navigation item
      */
-    private static void updateButtonStates(ImageButton navButtonWorkhorse,
+    private static void updateButtonStates(ImageButton navButtonActivity,
                                           ImageButton navButtonHub,
-                                          ImageButton navButtonAnalytics,
+                                          ImageButton navButtonPersonalPage,
                                           NavigationItem activeItem) {
-        if (navButtonWorkhorse != null) {
-            if (activeItem == NavigationItem.WORKHORSE) {
-                navButtonWorkhorse.setImageResource(R.drawable.activity_white_menu);
-            } else {
-                navButtonWorkhorse.setImageResource(R.drawable.activity_black_menu);
-            }
+        // Activity button is never active (always black) since it's "coming soon"
+        if (navButtonActivity != null) {
+            navButtonActivity.setImageResource(R.drawable.activity_black_menu);
         }
 
         if (navButtonHub != null) {
@@ -133,11 +131,11 @@ public class BottomNavigationHelper {
             }
         }
 
-        if (navButtonAnalytics != null) {
-            if (activeItem == NavigationItem.ANALYTICS) {
-                navButtonAnalytics.setImageResource(R.drawable.block_white_menu);
+        if (navButtonPersonalPage != null) {
+            if (activeItem == NavigationItem.PERSONALPAGE) {
+                navButtonPersonalPage.setImageResource(R.drawable.block_white_menu);
             } else {
-                navButtonAnalytics.setImageResource(R.drawable.block_black_menu);
+                navButtonPersonalPage.setImageResource(R.drawable.block_black_menu);
             }
         }
     }

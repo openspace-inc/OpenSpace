@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iaso.AddDynamicHabit;
 import com.example.iaso.Analytics;
+import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.BrownianStockManager;
 import com.example.iaso.Home.MainActivity;
 import com.example.iaso.R;
@@ -115,15 +116,8 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
             }
         });
 
-        //transfer to health page
-        ImageButton imageButton2 = findViewById(R.id.imageButton2);
-
-        imageButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Coming soon! Stay tuned.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Setup bottom navigation bar
+        BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, PersonalPage.class);
     }
 
     //Add a data entry to the dataStorage sharedPref
