@@ -290,11 +290,12 @@ public class workhorse extends AppCompatActivity {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root), (v, insets) -> {
             Insets sysBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(sysBars.left, sysBars.top, sysBars.right, 0);
+            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
 
-            // Don't add IME insets to bottom padding since bottom_container is already
-            // constrained above bottom_nav_include by the layout
-            // This prevents the input box from appearing too high when keyboard shows
+            // Apply keyboard (IME) insets to root view's bottom padding
+            // This pushes the entire layout up when keyboard appears, keeping input box visible
+            int bottomPadding = Math.max(sysBars.bottom, imeInsets.bottom);
+            v.setPadding(sysBars.left, sysBars.top, sysBars.right, bottomPadding);
 
             return insets;
         });
