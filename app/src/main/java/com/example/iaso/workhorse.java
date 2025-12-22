@@ -1012,13 +1012,9 @@ public class workhorse extends AppCompatActivity {
      */
     private void setupInvestmentAmountWatcher() {
         investmentAmount.addTextChangedListener(new TextWatcher() {
-            private String previousText = "0";
-
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (!isAnimating) {
-                    previousText = s.toString();
-                }
+                // Not needed
             }
 
             @Override
@@ -1035,37 +1031,31 @@ public class workhorse extends AppCompatActivity {
                 // If text is empty, reset to 0
                 if (text.isEmpty()) {
                     isAnimating = true;
-                    investmentAmount.setText("0");
+                    s.clear();
+                    s.append("0");
                     investmentAmount.setSelection(1);
                     isAnimating = false;
 
-                    if (currentInvestmentAmount != 0) {
-                        animateNumberChange(0, "0");
+                    int oldAmount = currentInvestmentAmount;
+                    currentInvestmentAmount = 0;
+                    if (oldAmount != 0) {
+                        animateNumberChangeOnly(0, oldAmount);
                     }
                     updateFinalizeButtonState();
                     return;
                 }
 
-                // If previous text was "0" and user typed a digit, replace the 0
-                // This handles the case where "0" + "1" should become "1", not "01"
-                if (previousText.equals("0") && text.length() == 2 && text.startsWith("0")) {
-                    isAnimating = true;
-                    String newText = text.substring(1); // Remove the leading 0
-                    investmentAmount.setText(newText);
-                    investmentAmount.setSelection(newText.length());
-                    isAnimating = false;
-                    return; // The setText will trigger afterTextChanged again with the correct value
-                }
-
-                // Remove any leading zeros (except for just "0")
+                // Remove leading zeros (except for just "0")
                 if (text.length() > 1 && text.startsWith("0")) {
                     isAnimating = true;
                     String newText = text.replaceFirst("^0+", "");
                     if (newText.isEmpty()) newText = "0";
-                    investmentAmount.setText(newText);
+                    s.clear();
+                    s.append(newText);
                     investmentAmount.setSelection(newText.length());
                     isAnimating = false;
-                    return;
+                    // Don't return - continue processing with the cleaned text
+                    text = newText;
                 }
 
                 int newAmount = 0;
@@ -1075,27 +1065,27 @@ public class workhorse extends AppCompatActivity {
                     newAmount = 0;
                 }
 
-                // Only animate if the value actually changed
-                if (newAmount != currentInvestmentAmount) {
-                    animateNumberChange(newAmount, text);
+                // Update the value and animate if changed
+                int oldAmount = currentInvestmentAmount;
+                if (newAmount != oldAmount) {
+                    currentInvestmentAmount = newAmount;
+                    animateNumberChangeOnly(newAmount, oldAmount);
                 }
 
-                // Update finalize button state
+                // Always update finalize button and color
+                updateInvestmentColor();
                 updateFinalizeButtonState();
             }
         });
     }
 
     /**
-     * Animates the investment amount change with a wheel effect
-     * @param newAmount The new amount to display
-     * @param displayText The text to display (preserves user's input format)
+     * Animates the number change with a wheel effect (without updating currentInvestmentAmount)
+     * @param newAmount The new amount
+     * @param oldAmount The old amount
      */
-    private void animateNumberChange(int newAmount, String displayText) {
+    private void animateNumberChangeOnly(int newAmount, int oldAmount) {
         if (investmentAmount == null || investmentNumberContainer == null) return;
-
-        int oldAmount = currentInvestmentAmount;
-        currentInvestmentAmount = newAmount;
 
         // Determine animation direction
         float startY;
@@ -1106,8 +1096,7 @@ public class workhorse extends AppCompatActivity {
             // New number is smaller - animate upward (old goes up, new comes from bottom)
             startY = investmentAmount.getHeight();
         } else {
-            // Same number - just update color
-            updateInvestmentColor();
+            // Same number - no animation needed
             return;
         }
 
@@ -1123,9 +1112,6 @@ public class workhorse extends AppCompatActivity {
         oldAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                // Update color based on validation
-                updateInvestmentColor();
-
                 // Position for animation in
                 investmentAmount.setTranslationY(startY);
 
@@ -1137,6 +1123,21 @@ public class workhorse extends AppCompatActivity {
         });
 
         oldAnimator.start();
+    }
+
+    /**
+     * Animates the investment amount change with a wheel effect
+     * @param newAmount The new amount to display
+     * @param displayText The text to display (preserves user's input format)
+     */
+    private void animateNumberChange(int newAmount, String displayText) {
+        if (investmentAmount == null || investmentNumberContainer == null) return;
+
+        int oldAmount = currentInvestmentAmount;
+        currentInvestmentAmount = newAmount;
+
+        animateNumberChangeOnly(newAmount, oldAmount);
+        updateInvestmentColor();
     }
 
     /**
@@ -1156,31 +1157,48 @@ public class workhorse extends AppCompatActivity {
     }
 
     /**
+     * Gets the current investment amount from the EditText
+     */
+    private int getCurrentInvestmentFromField() {
+        if (investmentAmount == null) return 0;
+        String text = investmentAmount.getText().toString().trim();
+        if (text.isEmpty()) return 0;
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    /**
      * Updates the finalize button state based on whether the investment is valid
      */
     private void updateFinalizeButtonState() {
         if (finalizeButton == null) return;
 
-        boolean canFinalize = currentInvestmentAmount > 0 && currentInvestmentAmount <= userPoints;
+        // Read directly from field to ensure accuracy
+        int amount = getCurrentInvestmentFromField();
+        boolean canFinalize = amount >= 1 && amount <= userPoints;
 
-        if (canFinalize) {
-            finalizeButton.setAlpha(1.0f);
-            finalizeButton.setClickable(true);
-        } else {
-            finalizeButton.setAlpha(0.5f);
-            finalizeButton.setClickable(false);
-        }
+        finalizeButton.setEnabled(canFinalize);
+        finalizeButton.setAlpha(canFinalize ? 1.0f : 0.5f);
     }
 
     /**
      * Called when user presses the finalize button
      */
     private void onFinalizeClicked() {
+        // Read current value directly from field
+        int amount = getCurrentInvestmentFromField();
+
         // Validate that the investment amount is valid
-        if (currentInvestmentAmount <= 0 || currentInvestmentAmount > userPoints) {
+        if (amount < 1 || amount > userPoints) {
             Toast.makeText(this, "Please enter a valid investment amount", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Update currentInvestmentAmount to match field value
+        currentInvestmentAmount = amount;
 
         // Subtract investment from user points and save
         SharedPreferences userData = getSharedPreferences("UserData", Context.MODE_PRIVATE);
