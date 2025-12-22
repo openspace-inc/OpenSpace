@@ -331,7 +331,7 @@
                     android:clipChildren="true"
                     android:clipToPadding="true">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/investment_amount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -339,8 +339,11 @@
                         android:textSize="80sp"
                         android:textColor="#FFFFFF"
                         android:fontFamily="@font/neuehaas95"
-                        android:clickable="true"
-                        android:focusable="true" />
+                        android:background="@null"
+                        android:inputType="number"
+                        android:cursorVisible="false"
+                        android:minWidth="60dp"
+                        android:gravity="start" />
 
                 </FrameLayout>
 

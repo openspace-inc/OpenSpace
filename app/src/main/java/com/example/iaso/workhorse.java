@@ -3,14 +3,14 @@ package com.example.iaso;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.InputType;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -163,9 +163,9 @@ public class workhorse extends AppCompatActivity {
     private LinearLayout investmentContainer;
 
     /**
-     * TextView showing the investment amount
+     * EditText showing the investment amount (inline editable)
      */
-    private TextView investmentAmount;
+    private EditText investmentAmount;
 
     /**
      * TextView showing the current worth value
@@ -391,7 +391,7 @@ public class workhorse extends AppCompatActivity {
         }
 
         if (investmentAmount != null) {
-            investmentAmount.setOnClickListener(v -> showInvestmentInputDialog());
+            setupInvestmentAmountWatcher();
         }
 
         if (enterArrow != null) {
@@ -947,6 +947,11 @@ public class workhorse extends AppCompatActivity {
     // ==================== INVESTMENT METHODS ====================
 
     /**
+     * Flag to prevent recursive text change events during animation
+     */
+    private boolean isAnimating = false;
+
+    /**
      * Loads the user's points from SharedPreferences
      */
     private void loadUserPoints() {
@@ -981,58 +986,66 @@ public class workhorse extends AppCompatActivity {
     }
 
     /**
-     * Shows a dialog for the user to enter an investment amount
+     * Sets up the TextWatcher for inline editing of investment amount
      */
-    private void showInvestmentInputDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter Investment Amount");
+    private void setupInvestmentAmountWatcher() {
+        investmentAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Not needed
+            }
 
-        // Set up the input
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Enter amount");
-        builder.setView(input);
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Not needed
+            }
 
-        // Set up the buttons
-        builder.setPositiveButton("OK", (dialog, which) -> {
-            String inputText = input.getText().toString().trim();
-            if (!inputText.isEmpty()) {
-                try {
-                    int newAmount = Integer.parseInt(inputText);
-                    animateNumberChange(newAmount);
-                } catch (NumberFormatException e) {
-                    Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show();
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (isAnimating) return;
+
+                String text = s.toString().trim();
+                int newAmount = 0;
+
+                if (!text.isEmpty()) {
+                    try {
+                        newAmount = Integer.parseInt(text);
+                    } catch (NumberFormatException e) {
+                        // Invalid input, keep at 0
+                        newAmount = 0;
+                    }
+                }
+
+                // Only animate if the value actually changed
+                if (newAmount != currentInvestmentAmount) {
+                    animateNumberChange(newAmount, text);
                 }
             }
         });
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-        builder.show();
     }
 
     /**
      * Animates the investment amount change with a wheel effect
      * @param newAmount The new amount to display
+     * @param displayText The text to display (preserves user's input format)
      */
-    private void animateNumberChange(int newAmount) {
+    private void animateNumberChange(int newAmount, String displayText) {
         if (investmentAmount == null || investmentNumberContainer == null) return;
 
         int oldAmount = currentInvestmentAmount;
         currentInvestmentAmount = newAmount;
 
         // Determine animation direction
-        float startY, endY;
+        float startY;
         if (newAmount > oldAmount) {
             // New number is larger - animate downward (old goes down, new comes from top)
             startY = -investmentAmount.getHeight();
-            endY = 0;
         } else if (newAmount < oldAmount) {
             // New number is smaller - animate upward (old goes up, new comes from bottom)
             startY = investmentAmount.getHeight();
-            endY = 0;
         } else {
-            // Same number - no animation needed
-            updateInvestmentDisplay();
+            // Same number - just update color
+            updateInvestmentColor();
             return;
         }
 
@@ -1043,20 +1056,20 @@ public class workhorse extends AppCompatActivity {
         } else {
             oldAnimator = ObjectAnimator.ofFloat(investmentAmount, "translationY", 0, -investmentAmount.getHeight());
         }
-        oldAnimator.setDuration(150);
+        oldAnimator.setDuration(100);
 
         oldAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                // Update the text
-                updateInvestmentDisplay();
+                // Update color based on validation
+                updateInvestmentColor();
 
                 // Position for animation in
                 investmentAmount.setTranslationY(startY);
 
                 // Animate new number in
-                ObjectAnimator newAnimator = ObjectAnimator.ofFloat(investmentAmount, "translationY", startY, endY);
-                newAnimator.setDuration(150);
+                ObjectAnimator newAnimator = ObjectAnimator.ofFloat(investmentAmount, "translationY", startY, 0);
+                newAnimator.setDuration(100);
                 newAnimator.start();
             }
         });
@@ -1065,12 +1078,10 @@ public class workhorse extends AppCompatActivity {
     }
 
     /**
-     * Updates the investment amount display and validates against user points
+     * Updates the investment amount color based on validation against user points
      */
-    private void updateInvestmentDisplay() {
+    private void updateInvestmentColor() {
         if (investmentAmount == null) return;
-
-        investmentAmount.setText(String.valueOf(currentInvestmentAmount));
 
         // Check if amount exceeds user points and change color accordingly
         if (currentInvestmentAmount > userPoints) {
