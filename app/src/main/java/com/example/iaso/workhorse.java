@@ -292,16 +292,9 @@ public class workhorse extends AppCompatActivity {
             Insets sysBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(sysBars.left, sysBars.top, sysBars.right, 0);
 
-            Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
-            int basePadding = dpToPx(16);
-            int bottom = Math.max(sysBars.bottom, imeInsets.bottom) + basePadding;
-
-            bottomContainer.setPadding(
-                    bottomContainer.getPaddingLeft(),
-                    bottomContainer.getPaddingTop(),
-                    bottomContainer.getPaddingRight(),
-                    bottom
-            );
+            // Don't add IME insets to bottom padding since bottom_container is already
+            // constrained above bottom_nav_include by the layout
+            // This prevents the input box from appearing too high when keyboard shows
 
             return insets;
         });

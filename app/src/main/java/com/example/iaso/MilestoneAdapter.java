@@ -1,5 +1,6 @@
 package com.example.iaso;
 
+import android.animation.ObjectAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,13 @@ import java.util.List;
  * Adapter for displaying milestones in a RecyclerView.
  * Each milestone shows a card with name and time, with a timeline on the left.
  * The last item shows a checkmark instead of a circle.
+ * Items animate in with a fade effect, appearing one at a time.
  */
 public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.MilestoneViewHolder> {
 
     private List<Milestone> milestones = new ArrayList<>();
     private OnMilestoneClickListener clickListener;
+    private int lastAnimatedPosition = -1;
 
     /**
      * Interface for handling milestone card clicks
@@ -39,6 +42,7 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
 
     public void setMilestones(List<Milestone> milestones) {
         this.milestones = milestones;
+        lastAnimatedPosition = -1; // Reset animation tracking when new data is set
         notifyDataSetChanged();
     }
 
@@ -77,6 +81,27 @@ public class MilestoneAdapter extends RecyclerView.Adapter<MilestoneAdapter.Mile
         boolean isLast = position == milestones.size() - 1;
 
         holder.bind(milestone, isFirst, isLast, clickListener, position);
+
+        // Animate items appearing one at a time with fade-in effect
+        if (position > lastAnimatedPosition) {
+            // Calculate delay: 150ms per item for staggered animation
+            long delay = position * 150L;
+
+            // Start items invisible
+            holder.itemView.setAlpha(0f);
+
+            // Fade in with delay
+            holder.itemView.postDelayed(() -> {
+                ObjectAnimator fadeIn = ObjectAnimator.ofFloat(holder.itemView, "alpha", 0f, 1f);
+                fadeIn.setDuration(400);
+                fadeIn.start();
+            }, delay);
+
+            lastAnimatedPosition = position;
+        } else {
+            // Item was already animated, show it immediately
+            holder.itemView.setAlpha(1f);
+        }
     }
 
     @Override
