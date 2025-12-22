@@ -80,7 +80,7 @@ public class BottomNavigationHelper {
 
         if (navButtonPersonalPage != null) {
             navButtonPersonalPage.setOnClickListener(v -> {
-                if (currentActivityClass != PersonalPage.class && currentActivityClass != Analytics.class) {
+                if (currentActivityClass != PersonalPage.class) {
                     updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.PERSONALPAGE);
                     Intent intent = new Intent(activity, PersonalPage.class);
                     activity.startActivity(intent);
