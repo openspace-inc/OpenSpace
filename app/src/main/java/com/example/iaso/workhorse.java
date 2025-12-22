@@ -292,10 +292,17 @@ public class workhorse extends AppCompatActivity {
             Insets sysBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
 
-            // Apply keyboard (IME) insets to root view's bottom padding
-            // This pushes the entire layout up when keyboard appears, keeping input box visible
-            int bottomPadding = Math.max(sysBars.bottom, imeInsets.bottom);
-            v.setPadding(sysBars.left, sysBars.top, sysBars.right, bottomPadding);
+            // Apply system bars to root padding
+            v.setPadding(sysBars.left, sysBars.top, sysBars.right, sysBars.bottom);
+
+            // Apply keyboard (IME) insets to bottom_container's bottom margin
+            // This moves input box up while keeping bottom nav fixed at screen bottom
+            if (bottomContainer != null) {
+                androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
+                        (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) bottomContainer.getLayoutParams();
+                params.bottomMargin = imeInsets.bottom;
+                bottomContainer.setLayoutParams(params);
+            }
 
             return insets;
         });
