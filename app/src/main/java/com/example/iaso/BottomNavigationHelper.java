@@ -73,7 +73,7 @@ public class BottomNavigationHelper {
                     updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.HUB);
                     Intent intent = new Intent(activity, MainActivity.class);
                     activity.startActivity(intent);
-                    activity.overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
         }
@@ -84,7 +84,7 @@ public class BottomNavigationHelper {
                     updateButtonStates(navButtonActivity, navButtonHub, navButtonPersonalPage, NavigationItem.PERSONALPAGE);
                     Intent intent = new Intent(activity, PersonalPage.class);
                     activity.startActivity(intent);
-                    activity.overridePendingTransition(android.R.anim.accelerate_interpolator, android.R.anim.decelerate_interpolator);
+                    activity.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             });
         }
