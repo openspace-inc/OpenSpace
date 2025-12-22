@@ -25,8 +25,6 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.iaso.PersonalPage.PersonalPage;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +37,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iaso.PersonalPage.DynamicHabit;
+import com.example.iaso.PersonalPage.PersonalPage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
@@ -960,7 +959,7 @@ public class workhorse extends AppCompatActivity {
                 "(1-2 goals for under 25 days, 2-5 for goals under 100 days, 6-8 for goals between 100-365, and 9-12 for goals that take years) to break down " +
                 "this goal that the user must hit along with the amount of days each milestone will take.\n" +
                 "Your response:\n" +
-                "Only provide a list and no other text which follows the below example, additionally, using the projectDescripton create a ticker Symbol for it:\n" +
+                "Only provide a list and no other text which follows the below example, additionally, using the projectDescripton create a ticker Symbol (no numbers) for it:\n" +
                 "Tickersymbol\n" +
                 "milestone name, X days\n" +
                 "milestone name, X days";
