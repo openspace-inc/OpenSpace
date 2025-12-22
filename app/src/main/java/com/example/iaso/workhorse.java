@@ -1,5 +1,6 @@
 package com.example.iaso;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,11 +11,14 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.iaso.PersonalPage.PersonalPage;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -235,6 +239,7 @@ public class workhorse extends AppCompatActivity {
         loadingStatusText = findViewById(R.id.loading_status_text);
         bottomContainer = findViewById(R.id.bottom_container);
         timelineWarningContainer = findViewById(R.id.timeline_warning_container);
+        ImageButton backButton = findViewById(R.id.back_button);
 
         // Setup RecyclerView for milestones
         milestoneAdapter = new MilestoneAdapter();
@@ -267,9 +272,6 @@ public class workhorse extends AppCompatActivity {
         // Setup NumberPickers for onboarding
         setupNumberPickers();
 
-        // Setup bottom navigation bar
-        BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, workhorse.class);
-
         // Create the runnable that cycles through status messages
         statusCycleRunnable = new Runnable() {
             @Override
@@ -296,7 +298,7 @@ public class workhorse extends AppCompatActivity {
             v.setPadding(sysBars.left, sysBars.top, sysBars.right, sysBars.bottom);
 
             // Apply keyboard (IME) insets to bottom_container's bottom margin
-            // This moves input box up while keeping bottom nav fixed at screen bottom
+            // This moves input box up when keyboard appears
             if (bottomContainer != null) {
                 androidx.constraintlayout.widget.ConstraintLayout.LayoutParams params =
                         (androidx.constraintlayout.widget.ConstraintLayout.LayoutParams) bottomContainer.getLayoutParams();
@@ -308,6 +310,15 @@ public class workhorse extends AppCompatActivity {
         });
 
         // ==================== CLICK LISTENERS ====================
+
+        // Back button - navigate to PersonalPage
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                Intent intent = new Intent(workhorse.this, PersonalPage.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            });
+        }
 
         // Onboarding continue buttons
         if (continueTimeButton != null) {
