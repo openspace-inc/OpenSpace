@@ -390,6 +390,29 @@
 
             </LinearLayout>
 
+            <!-- Spacer to push finalize button to bottom -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- Finalize button -->
+            <TextView
+                android:id="@+id/finalize_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/input_outline"
+                android:backgroundTint="#333333"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/neuehaas45"
+                android:paddingHorizontal="48dp"
+                android:paddingVertical="16dp"
+                android:text="Finalize"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
