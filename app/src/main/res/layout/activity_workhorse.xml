@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -81,26 +82,26 @@
             android:id="@+id/question_time_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:paddingHorizontal="32dp"
             android:visibility="visible"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/question_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="How many minutes do you want to invest in this project everyday?"
-                android:textSize="22sp"
-                android:textColor="#333333"
+                android:layout_marginBottom="40dp"
                 android:fontFamily="@font/neuehaas45"
-                android:textAlignment="center"
                 android:lineSpacingMultiplier="1.3"
-                android:layout_marginBottom="40dp" />
+                android:text="How many minutes do you want to invest in this project everyday?"
+                android:textAlignment="center"
+                android:textColor="#333333"
+                android:textSize="22sp" />
 
             <NumberPicker
                 android:id="@+id/minutes_picker"
@@ -277,23 +278,23 @@
             android:id="@+id/investment_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:orientation="vertical"
             android:gravity="center_horizontal"
+            android:orientation="vertical"
             android:paddingHorizontal="32dp"
             android:paddingTop="32dp"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <!-- Header with ion logo and description text -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginBottom="48dp"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="48dp">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/investment_ion_logo"
@@ -307,11 +308,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Your project has been created, now choose an investment amount for your first stock in the project."
-                    android:textSize="16sp"
-                    android:textColor="#333333"
                     android:fontFamily="@font/neuehaas45"
-                    android:lineSpacingMultiplier="1.3" />
+                    android:lineSpacingMultiplier="1.3"
+                    android:text="Your project has been created, now choose an investment amount for your first stock in the project."
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -319,9 +320,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <!-- Container for animated number -->
                 <FrameLayout
@@ -335,60 +336,82 @@
                         android:id="@+id/investment_amount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="80sp"
-                        android:textColor="#FFFFFF"
-                        android:fontFamily="@font/neuehaas95"
                         android:background="@null"
-                        android:inputType="number"
                         android:cursorVisible="false"
+                        android:fontFamily="@font/neuehaas65"
+                        android:gravity="center"
+                        android:inputType="number"
                         android:minWidth="60dp"
-                        android:gravity="start" />
+                        android:text="0"
+                        android:textColor="#000000"
+                        android:textSize="128sp" />
 
                 </FrameLayout>
 
                 <ImageView
                     android:id="@+id/investment_block_icon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginStart="8dp"
                     app:srcCompat="@drawable/os5_blockv2" />
 
             </LinearLayout>
 
             <!-- Current worth display -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                app:cardBackgroundColor="#FAF9F6"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardUseCompatPadding="true">
 
-                <TextView
-                    android:id="@+id/current_worth_label"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Current worth: "
-                    android:textSize="16sp"
-                    android:textColor="#666666"
-                    android:fontFamily="@font/neuehaas45" />
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp">
 
-                <TextView
-                    android:id="@+id/current_worth_value"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="16sp"
-                    android:textColor="#666666"
-                    android:fontFamily="@font/neuehaas45" />
+                    <TextView
+                        android:id="@+id/current_worth_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/neuehaas45"
+                        android:text="Currently: "
+                        android:textColor="#666666"
+                        android:textSize="16sp" />
 
-                <ImageView
-                    android:id="@+id/current_worth_block_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="8dp"
-                    app:srcCompat="@drawable/os5_blockv2" />
+                    <TextView
+                        android:id="@+id/current_worth_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/neuehaas45"
+                        android:text="0"
+                        android:textColor="#666666"
+                        android:textSize="16sp" />
 
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/current_worth_block_icon"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginStart="4dp"
+                        app:srcCompat="@drawable/os5_blockv2" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/current_worth_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/neuehaas25"
+                android:text="The higher the investment, the faster the rise of the stock, but it also means a more risky project to ignore."
+                android:textAlignment="center"
+                android:textColor="#666666"
+                android:textSize="16sp" />
 
             <!-- Spacer to push finalize button to bottom -->
             <View
@@ -409,7 +432,7 @@
                 android:fontFamily="@font/neuehaas45"
                 android:paddingHorizontal="48dp"
                 android:paddingVertical="16dp"
-                android:text="Finalize"
+                android:text="Finalize Investment"
                 android:textColor="#000000"
                 android:textSize="18sp" />
 
