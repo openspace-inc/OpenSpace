@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
@@ -470,23 +469,11 @@ public class MainActivity extends AppCompatActivity {
         int rangeDays = isAllTime ? 365 : range.getDays();
         int daysToLookBack = Math.max(7, rangeDays);
 
-        // Build a set of valid day numbers for the range
-        HashSet<Integer> validDays = new HashSet<>();
-        if (!isAllTime) {
-            for (int i = 0; i < rangeDays; i++) {
-                int day = currentDayOfYear - i;
-                if (day < 1) {
-                    day += 365; // Handle year wrap-around
-                }
-                validDays.add(day);
-            }
-        }
-
         // Filter and aggregate data by project
         Map<String, ProjectTimeData> projectTimeMap = new HashMap<>();
 
         // Group data by day for spark graph
-        Map<Integer, Double> dailyTotals = new HashMap<>();
+        double[] dailyTotals = new double[daysToLookBack];
 
         double totalMinutes = 0;
 
@@ -501,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
             projectName = projectName.trim();
 
             // Check if this entry falls within our valid days
-            boolean inRange = isAllTime || validDays.contains(entryDay);
+            boolean inRange = isAllTime || isWithinRange(entryDay, currentDayOfYear, rangeDays);
 
             if (inRange) {
                 double minutes = entry.getHours();
@@ -519,10 +506,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Aggregate by day for spark graph
-                if (dailyTotals.containsKey(entryDay)) {
-                    dailyTotals.put(entryDay, dailyTotals.get(entryDay) + minutes);
-                } else {
-                    dailyTotals.put(entryDay, minutes);
+                int dayOffset = getDayOffset(entryDay, currentDayOfYear);
+                if (dayOffset >= 0 && dayOffset < daysToLookBack) {
+                    dailyTotals[dayOffset] += minutes;
                 }
             }
         }
@@ -544,14 +530,14 @@ public class MainActivity extends AppCompatActivity {
         // Use daysToLookBack (minimum 7) for graph display
         ArrayList<Float> sparkData = new ArrayList<>();
         for (int i = daysToLookBack - 1; i >= 0; i--) {
-            int day = currentDayOfYear - i;
-            if (day < 1) day += 365;
-            Double value = dailyTotals.get(day);
-            sparkData.add(value != null ? value.floatValue() : 0f);
+            sparkData.add((float) dailyTotals[i]);
         }
 
         // Update spark view
-        if (dailySparkView != null && sparkData.size() >= 2) {
+        if (dailySparkView != null) {
+            if (sparkData.size() == 1) {
+                sparkData.add(sparkData.get(0));
+            }
             dailySparkView.setAdapter(new DailySparkAdapter(sparkData));
         }
 
@@ -559,6 +545,19 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<ProjectTimeData> projectList = new ArrayList<>(projectTimeMap.values());
         projectList.sort((first, second) -> Double.compare(second.getTotalMinutes(), first.getTotalMinutes()));
         projectTimeAdapter.updateData(projectList);
+    }
+
+    private boolean isWithinRange(int entryDay, int currentDayOfYear, int rangeDays) {
+        int dayOffset = getDayOffset(entryDay, currentDayOfYear);
+        return dayOffset >= 0 && dayOffset < rangeDays;
+    }
+
+    private int getDayOffset(int entryDay, int currentDayOfYear) {
+        int offset = currentDayOfYear - entryDay;
+        if (offset < 0) {
+            offset += 365;
+        }
+        return offset;
     }
 
     private void updateRangeLabel(DailyRange range) {
