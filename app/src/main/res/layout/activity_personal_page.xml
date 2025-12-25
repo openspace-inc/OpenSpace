@@ -47,6 +47,226 @@
         app:layout_constraintTop_toTopOf="@+id/exitButtonForPersonalPage"
         app:srcCompat="@drawable/addproject" />
 
+    <!-- Portfolio Overview Section -->
+    <LinearLayout
+        android:id="@+id/portfolioOverview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PersonalPageHeader">
+
+        <!-- Portfolio Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/neuehaas45"
+            android:text="Portfolio Value"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Current Portfolio Value -->
+        <TextView
+            android:id="@+id/portfolioValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/neuehaas45"
+            android:text="$0.00"
+            android:textColor="@color/black"
+            android:textSize="36sp" />
+
+        <!-- Percentage Change Row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/portfolioTrendArrow"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/os5_uparrow1" />
+
+            <TextView
+                android:id="@+id/portfolioPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/neuehaas25"
+                android:text="+0.00%"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/portfolioRangeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/neuehaas25"
+                android:text="VS 1D"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Spark Graph -->
+        <com.robinhood.spark.SparkView
+            android:id="@+id/portfolioSparkView"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="8dp"
+            app:spark_lineColor="@color/black" />
+
+        <!-- Time Range Buttons -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <RadioGroup
+                android:id="@+id/portfolioRangeGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/portfolioRange24h"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="1D"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/portfolioRange3d"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="3D"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/portfolioRange1w"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="1W"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/portfolioRange1m"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="1M"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/portfolioRange3m"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="3M"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/portfolioRange1y"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="1Y"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/portfolioRangeAll"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="All"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+            </RadioGroup>
+        </HorizontalScrollView>
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/personalHabitDisplayRecyclerView"
         android:layout_width="0dp"
@@ -59,7 +279,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/bottom_nav_include"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PersonalPageHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/portfolioOverview" />
 
     <TextView
         android:id="@+id/textView19"
