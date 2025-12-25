@@ -457,12 +457,13 @@ public class MainActivity extends AppCompatActivity {
         Calendar now = Calendar.getInstance();
         int currentDayOfYear = now.get(Calendar.DAY_OF_YEAR);
 
-        // Calculate the number of days to look back
-        int daysToLookBack = range == DailyRange.ALL ? 365 : range.getDays();
+        // Calculate the number of days to look back (minimum 7 for graph visibility)
+        int rangeDays = range == DailyRange.ALL ? 365 : range.getDays();
+        int daysToLookBack = Math.max(7, rangeDays);
 
         // Build a set of valid day numbers for the range
         ArrayList<Integer> validDays = new ArrayList<>();
-        for (int i = 0; i < daysToLookBack; i++) {
+        for (int i = 0; i < rangeDays; i++) {
             int day = currentDayOfYear - i;
             if (day < 1) {
                 day += 365; // Handle year wrap-around
@@ -483,6 +484,10 @@ public class MainActivity extends AppCompatActivity {
 
             int entryDay = entry.getDate();
             String projectName = entry.getName();
+
+            // Skip entries with null or empty project names
+            if (projectName == null || projectName.trim().isEmpty()) continue;
+            projectName = projectName.trim();
 
             // Check if this entry falls within our valid days
             boolean inRange = (range == DailyRange.ALL) || validDays.contains(entryDay);
@@ -522,6 +527,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Build spark data points - oldest to newest (left to right)
+        // Use daysToLookBack (minimum 7) for graph display
         ArrayList<Float> sparkData = new ArrayList<>();
         for (int i = daysToLookBack - 1; i >= 0; i--) {
             int day = currentDayOfYear - i;
@@ -531,7 +537,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Update spark view
-        if (dailySparkView != null) {
+        if (dailySparkView != null && sparkData.size() >= 2) {
             dailySparkView.setAdapter(new DailySparkAdapter(sparkData));
         }
 

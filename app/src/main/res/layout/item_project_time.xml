@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="6dp"
     app:cardBackgroundColor="@color/black"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
 
     <ImageView
         android:layout_width="match_parent"
@@ -19,12 +19,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:id="@+id/projectIcon"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,12 +37,12 @@
             android:id="@+id/projectName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:fontFamily="@font/neuehaas45"
             android:text="Project Name"
             android:textColor="@color/pure_white"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/timeContainer"
             app:layout_constraintStart_toEndOf="@+id/projectIcon"
@@ -62,7 +65,7 @@
                 android:fontFamily="@font/neuehaas45"
                 android:text="120"
                 android:textColor="@color/pure_white"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/minsLabel"
@@ -71,7 +74,7 @@
                 android:fontFamily="@font/neuehaas45"
                 android:text="mins"
                 android:textColor="@color/lavender_gray"
-                android:textSize="10sp" />
+                android:textSize="8sp" />
 
         </LinearLayout>
 
