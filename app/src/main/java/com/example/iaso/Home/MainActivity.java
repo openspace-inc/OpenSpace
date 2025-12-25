@@ -453,17 +453,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDailyInvestmentForRange(DailyRange range) {
-        // Get the date range
+        // Get the current date info
         Calendar now = Calendar.getInstance();
         int currentDayOfYear = now.get(Calendar.DAY_OF_YEAR);
-        int currentYear = now.get(Calendar.YEAR);
 
-        // Calculate the starting day based on range
-        int startDayOfYear = getStartDayForRange(range, currentDayOfYear);
+        // Calculate the number of days to look back
+        int daysToLookBack = range == DailyRange.ALL ? 365 : range.getDays();
 
-        // Filter and aggregate data
+        // Build a set of valid day numbers for the range
+        ArrayList<Integer> validDays = new ArrayList<>();
+        for (int i = 0; i < daysToLookBack; i++) {
+            int day = currentDayOfYear - i;
+            if (day < 1) {
+                day += 365; // Handle year wrap-around
+            }
+            validDays.add(day);
+        }
+
+        // Filter and aggregate data by project
         Map<String, ProjectTimeData> projectTimeMap = new HashMap<>();
-        ArrayList<DailyInvestmentPoint> dailyPoints = new ArrayList<>();
 
         // Group data by day for spark graph
         Map<Integer, Double> dailyTotals = new HashMap<>();
@@ -474,22 +482,16 @@ public class MainActivity extends AppCompatActivity {
             if (entry == null) continue;
 
             int entryDay = entry.getDate();
-            boolean inRange = false;
+            String projectName = entry.getName();
 
-            if (range == DailyRange.ALL) {
-                inRange = true;
-            } else if (range == DailyRange.DAY_1) {
-                inRange = (entryDay == currentDayOfYear);
-            } else {
-                inRange = (entryDay >= startDayOfYear && entryDay <= currentDayOfYear);
-            }
+            // Check if this entry falls within our valid days
+            boolean inRange = (range == DailyRange.ALL) || validDays.contains(entryDay);
 
             if (inRange) {
                 double minutes = entry.getHours();
                 totalMinutes += minutes;
 
-                // Aggregate by project
-                String projectName = entry.getName();
+                // Aggregate by project - sum up all time for this project in the range
                 if (projectTimeMap.containsKey(projectName)) {
                     projectTimeMap.get(projectName).addMinutes(minutes);
                 } else {
@@ -519,10 +521,9 @@ public class MainActivity extends AppCompatActivity {
             dailyTotalTime.setText(totalMins + " mins");
         }
 
-        // Build spark data points
+        // Build spark data points - oldest to newest (left to right)
         ArrayList<Float> sparkData = new ArrayList<>();
-        int numDays = range == DailyRange.ALL ? 365 : range.getDays();
-        for (int i = numDays - 1; i >= 0; i--) {
+        for (int i = daysToLookBack - 1; i >= 0; i--) {
             int day = currentDayOfYear - i;
             if (day < 1) day += 365;
             Double value = dailyTotals.get(day);
@@ -534,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
             dailySparkView.setAdapter(new DailySparkAdapter(sparkData));
         }
 
-        // Update project list
+        // Update project list with all projects that have time in this range
         ArrayList<ProjectTimeData> projectList = new ArrayList<>(projectTimeMap.values());
         projectTimeAdapter.updateData(projectList);
     }
@@ -562,15 +563,6 @@ public class MainActivity extends AppCompatActivity {
                 dailyInvestmentLabel.setText("Total Investment");
                 break;
         }
-    }
-
-    private int getStartDayForRange(DailyRange range, int currentDay) {
-        int daysBack = range.getDays();
-        int startDay = currentDay - daysBack + 1;
-        if (startDay < 1) {
-            startDay += 365;
-        }
-        return startDay;
     }
 
     private String getImageNameForProject(String projectName) {
@@ -604,16 +596,6 @@ public class MainActivity extends AppCompatActivity {
 
         String getLabel() {
             return label;
-        }
-    }
-
-    private static class DailyInvestmentPoint {
-        int dayOfYear;
-        double totalMinutes;
-
-        DailyInvestmentPoint(int dayOfYear, double totalMinutes) {
-            this.dayOfYear = dayOfYear;
-            this.totalMinutes = totalMinutes;
         }
     }
 

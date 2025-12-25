@@ -10,6 +10,12 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitEnd"
+        android:src="@drawable/os_dots" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,44 +45,35 @@
             app:layout_constraintStart_toEndOf="@+id/projectIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
+        <LinearLayout
             android:id="@+id/timeContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/os_dots"
-            android:paddingStart="8dp"
-            android:paddingEnd="48dp"
+            android:gravity="center"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/projectTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:fontFamily="@font/neuehaas45"
+                android:text="120"
+                android:textColor="@color/pure_white"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/projectTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="120"
-                    android:textColor="@color/pure_white"
-                    android:textSize="20sp" />
+            <TextView
+                android:id="@+id/minsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/neuehaas45"
+                android:text="mins"
+                android:textColor="@color/lavender_gray"
+                android:textSize="10sp" />
 
-                <TextView
-                    android:id="@+id/minsLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="mins"
-                    android:textColor="@color/lavender_gray"
-                    android:textSize="10sp" />
-
-            </LinearLayout>
-
-        </FrameLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
