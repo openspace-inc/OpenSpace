@@ -49,13 +49,13 @@
 
         <ImageView
             android:id="@+id/imageView16"
-            android:layout_width="85dp"
-            android:layout_height="85dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/iasologo" />
+            app:srcCompat="@drawable/os5_logoicon" />
 
         <ImageButton
             android:id="@+id/backButtonForFragments"
@@ -158,10 +158,210 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ScrollView
+            android:id="@+id/dailyInvestmentScrollView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/generatedText">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:id="@+id/dailyInvestmentLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:text="Today's Investment"
+                    android:textColor="@color/gray"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/dailyTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:text="0 mins"
+                    android:textColor="@color/black"
+                    android:textSize="28sp" />
+
+                <HorizontalScrollView
+                    android:id="@+id/sparkScrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:scrollbars="none">
+
+                    <com.robinhood.spark.SparkView
+                        android:id="@+id/dailySparkView"
+                        android:layout_width="800dp"
+                        android:layout_height="match_parent"
+                        app:spark_lineColor="@color/black"
+                        app:spark_lineWidth="2dp" />
+
+                </HorizontalScrollView>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <RadioGroup
+                        android:id="@+id/dailyRangeGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/dailyRange1d"
+                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/range_button_background"
+                            android:button="@null"
+                            android:fontFamily="@font/neuehaas45"
+                            android:minHeight="0dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="1D"
+                            android:textColor="@color/range_button_text" />
+
+                        <RadioButton
+                            android:id="@+id/dailyRange1w"
+                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/range_button_background"
+                            android:button="@null"
+                            android:fontFamily="@font/neuehaas45"
+                            android:minHeight="0dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="1W"
+                            android:textColor="@color/range_button_text" />
+
+                        <RadioButton
+                            android:id="@+id/dailyRange1m"
+                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/range_button_background"
+                            android:button="@null"
+                            android:fontFamily="@font/neuehaas45"
+                            android:minHeight="0dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="1M"
+                            android:textColor="@color/range_button_text" />
+
+                        <RadioButton
+                            android:id="@+id/dailyRange3m"
+                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/range_button_background"
+                            android:button="@null"
+                            android:fontFamily="@font/neuehaas45"
+                            android:minHeight="0dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="3M"
+                            android:textColor="@color/range_button_text" />
+
+                        <RadioButton
+                            android:id="@+id/dailyRange1y"
+                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/range_button_background"
+                            android:button="@null"
+                            android:fontFamily="@font/neuehaas45"
+                            android:minHeight="0dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="1Y"
+                            android:textColor="@color/range_button_text" />
+
+                        <RadioButton
+                            android:id="@+id/dailyRangeAll"
+                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/range_button_background"
+                            android:button="@null"
+                            android:fontFamily="@font/neuehaas45"
+                            android:minHeight="0dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="8dp"
+                            android:text="All"
+                            android:textColor="@color/range_button_text" />
+
+                    </RadioGroup>
+
+                </HorizontalScrollView>
+
+                <TextView
+                    android:id="@+id/projectsListLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:text="Projects"
+                    android:textColor="#4A4343"
+                    android:textSize="18sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/projectTimeRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
         <ImageView
             android:id="@+id/imageView20"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/generatedText"
@@ -172,6 +372,7 @@
             android:name="com.example.iaso.Home.PersonalHomePageFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

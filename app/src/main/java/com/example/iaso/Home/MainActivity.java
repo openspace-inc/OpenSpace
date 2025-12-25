@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
@@ -32,17 +35,23 @@ import com.example.iaso.Introduction.WelcomeActivity;
 import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
+import com.example.iaso.PersonalPage.dataStorage;
 import com.example.iaso.Projects;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.TaskLister;
 import com.example.iaso.workhorse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.robinhood.spark.SparkAdapter;
+import com.robinhood.spark.SparkView;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -54,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
     LottieAnimationView dynamicLogo2;
     LinearLayout projectContainer;
+
+    // Daily Investment Spark Graph
+    private SparkView dailySparkView;
+    private TextView dailyTotalTime;
+    private TextView dailyInvestmentLabel;
+    private RadioGroup dailyRangeGroup;
+    private RecyclerView projectTimeRecyclerView;
+    private ProjectTimeAdapter projectTimeAdapter;
+    private ArrayList<dataStorage> userStorageList = new ArrayList<>();
+    private DailyRange currentDailyRange = DailyRange.DAY_1;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -132,6 +151,9 @@ public class MainActivity extends AppCompatActivity {
         });
         loadPersonalHabits();
         populateProjectRow();
+
+        // Initialize Daily Investment Spark Graph
+        setupDailyInvestmentGraph();
     }
 
     private void loadPersonalHabits() {
@@ -361,6 +383,249 @@ public class MainActivity extends AppCompatActivity {
     public void exitProText(View view){
         CardView welcome = findViewById(R.id.welcomeToPro);
         welcome.setVisibility(View.GONE);
+    }
+
+    private void setupDailyInvestmentGraph() {
+        dailySparkView = findViewById(R.id.dailySparkView);
+        dailyTotalTime = findViewById(R.id.dailyTotalTime);
+        dailyInvestmentLabel = findViewById(R.id.dailyInvestmentLabel);
+        dailyRangeGroup = findViewById(R.id.dailyRangeGroup);
+        projectTimeRecyclerView = findViewById(R.id.projectTimeRecyclerView);
+
+        // Load user storage data
+        loadUserStorageData();
+
+        // Setup RecyclerView
+        projectTimeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        projectTimeAdapter = new ProjectTimeAdapter(this, new ArrayList<>());
+        projectTimeRecyclerView.setAdapter(projectTimeAdapter);
+
+        // Setup range buttons
+        setupDailyRangeButtons();
+
+        // Initial update with default range (1 Day)
+        dailyRangeGroup.check(R.id.dailyRange1d);
+        updateDailyInvestmentForRange(currentDailyRange);
+    }
+
+    private void loadUserStorageData() {
+        SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_PRIVATE);
+        String json = userStorage.getString("userStorageList", null);
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+            userStorageList = gson.fromJson(json, type);
+            if (userStorageList == null) {
+                userStorageList = new ArrayList<>();
+            }
+        }
+    }
+
+    private void setupDailyRangeButtons() {
+        if (dailyRangeGroup == null) {
+            return;
+        }
+
+        dailyRangeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            DailyRange selected = mapDailyRangeFromId(checkedId);
+            if (selected != null && selected != currentDailyRange) {
+                currentDailyRange = selected;
+                updateDailyInvestmentForRange(currentDailyRange);
+            }
+        });
+    }
+
+    private DailyRange mapDailyRangeFromId(int checkedId) {
+        if (checkedId == R.id.dailyRange1d) {
+            return DailyRange.DAY_1;
+        } else if (checkedId == R.id.dailyRange1w) {
+            return DailyRange.WEEK_1;
+        } else if (checkedId == R.id.dailyRange1m) {
+            return DailyRange.MONTH_1;
+        } else if (checkedId == R.id.dailyRange3m) {
+            return DailyRange.MONTH_3;
+        } else if (checkedId == R.id.dailyRange1y) {
+            return DailyRange.YEAR_1;
+        } else if (checkedId == R.id.dailyRangeAll) {
+            return DailyRange.ALL;
+        }
+        return null;
+    }
+
+    private void updateDailyInvestmentForRange(DailyRange range) {
+        // Get the current date info
+        Calendar now = Calendar.getInstance();
+        int currentDayOfYear = now.get(Calendar.DAY_OF_YEAR);
+
+        // Calculate the number of days to look back (minimum 7 for graph visibility)
+        int rangeDays = range == DailyRange.ALL ? 365 : range.getDays();
+        int daysToLookBack = Math.max(7, rangeDays);
+
+        // Build a set of valid day numbers for the range
+        ArrayList<Integer> validDays = new ArrayList<>();
+        for (int i = 0; i < rangeDays; i++) {
+            int day = currentDayOfYear - i;
+            if (day < 1) {
+                day += 365; // Handle year wrap-around
+            }
+            validDays.add(day);
+        }
+
+        // Filter and aggregate data by project
+        Map<String, ProjectTimeData> projectTimeMap = new HashMap<>();
+
+        // Group data by day for spark graph
+        Map<Integer, Double> dailyTotals = new HashMap<>();
+
+        double totalMinutes = 0;
+
+        for (dataStorage entry : userStorageList) {
+            if (entry == null) continue;
+
+            int entryDay = entry.getDate();
+            String projectName = entry.getName();
+
+            // Skip entries with null or empty project names
+            if (projectName == null || projectName.trim().isEmpty()) continue;
+            projectName = projectName.trim();
+
+            // Check if this entry falls within our valid days
+            boolean inRange = (range == DailyRange.ALL) || validDays.contains(entryDay);
+
+            if (inRange) {
+                double minutes = entry.getHours();
+                totalMinutes += minutes;
+
+                // Aggregate by project - sum up all time for this project in the range
+                if (projectTimeMap.containsKey(projectName)) {
+                    projectTimeMap.get(projectName).addMinutes(minutes);
+                } else {
+                    String imageName = getImageNameForProject(projectName);
+                    projectTimeMap.put(projectName, new ProjectTimeData(projectName, imageName, minutes));
+                }
+
+                // Aggregate by day for spark graph
+                if (dailyTotals.containsKey(entryDay)) {
+                    dailyTotals.put(entryDay, dailyTotals.get(entryDay) + minutes);
+                } else {
+                    dailyTotals.put(entryDay, minutes);
+                }
+            }
+        }
+
+        // Update label based on range
+        updateRangeLabel(range);
+
+        // Update total time display
+        int totalMins = (int) totalMinutes;
+        if (totalMins >= 60) {
+            int hours = totalMins / 60;
+            int mins = totalMins % 60;
+            dailyTotalTime.setText(hours + "h " + mins + "m");
+        } else {
+            dailyTotalTime.setText(totalMins + " mins");
+        }
+
+        // Build spark data points - oldest to newest (left to right)
+        // Use daysToLookBack (minimum 7) for graph display
+        ArrayList<Float> sparkData = new ArrayList<>();
+        for (int i = daysToLookBack - 1; i >= 0; i--) {
+            int day = currentDayOfYear - i;
+            if (day < 1) day += 365;
+            Double value = dailyTotals.get(day);
+            sparkData.add(value != null ? value.floatValue() : 0f);
+        }
+
+        // Update spark view
+        if (dailySparkView != null && sparkData.size() >= 2) {
+            dailySparkView.setAdapter(new DailySparkAdapter(sparkData));
+        }
+
+        // Update project list with all projects that have time in this range
+        ArrayList<ProjectTimeData> projectList = new ArrayList<>(projectTimeMap.values());
+        projectTimeAdapter.updateData(projectList);
+    }
+
+    private void updateRangeLabel(DailyRange range) {
+        if (dailyInvestmentLabel == null) return;
+
+        switch (range) {
+            case DAY_1:
+                dailyInvestmentLabel.setText("Today's Investment");
+                break;
+            case WEEK_1:
+                dailyInvestmentLabel.setText("This Week's Investment");
+                break;
+            case MONTH_1:
+                dailyInvestmentLabel.setText("This Month's Investment");
+                break;
+            case MONTH_3:
+                dailyInvestmentLabel.setText("Last 3 Months Investment");
+                break;
+            case YEAR_1:
+                dailyInvestmentLabel.setText("This Year's Investment");
+                break;
+            case ALL:
+                dailyInvestmentLabel.setText("Total Investment");
+                break;
+        }
+    }
+
+    private String getImageNameForProject(String projectName) {
+        for (DynamicHabit habit : dynamicHabitList) {
+            if (habit.getName3().equals(projectName)) {
+                return habit.getImageName();
+            }
+        }
+        return "orb2";
+    }
+
+    private enum DailyRange {
+        DAY_1("1D", 1),
+        WEEK_1("1W", 7),
+        MONTH_1("1M", 30),
+        MONTH_3("3M", 90),
+        YEAR_1("1Y", 365),
+        ALL("All", -1);
+
+        private final String label;
+        private final int days;
+
+        DailyRange(String label, int days) {
+            this.label = label;
+            this.days = days;
+        }
+
+        int getDays() {
+            return days;
+        }
+
+        String getLabel() {
+            return label;
+        }
+    }
+
+    private class DailySparkAdapter extends SparkAdapter {
+        private final ArrayList<Float> data;
+
+        DailySparkAdapter(ArrayList<Float> data) {
+            this.data = data;
+        }
+
+        @Override
+        public int getCount() {
+            return data.size();
+        }
+
+        @Override
+        public Object getItem(int index) {
+            return data.get(index);
+        }
+
+        @Override
+        public float getY(int index) {
+            return data.get(index);
+        }
     }
 
 }
