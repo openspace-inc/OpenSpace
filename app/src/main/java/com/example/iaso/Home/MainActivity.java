@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView projectTimeRecyclerView;
     private ProjectTimeAdapter projectTimeAdapter;
     private ArrayList<dataStorage> userStorageList = new ArrayList<>();
-    private DailyRange currentDailyRange = DailyRange.DAY_1;
+    private DailyRange currentDailyRange = DailyRange.WEEK_1;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -154,6 +154,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Daily Investment Spark Graph
         setupDailyInvestmentGraph();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserStorageData();
+        updateDailyInvestmentForRange(currentDailyRange);
     }
 
     private void loadPersonalHabits() {
@@ -403,8 +410,8 @@ public class MainActivity extends AppCompatActivity {
         // Setup range buttons
         setupDailyRangeButtons();
 
-        // Initial update with default range (1 Day)
-        dailyRangeGroup.check(R.id.dailyRange1d);
+        // Initial update with default range (1 Week)
+        dailyRangeGroup.check(R.id.dailyRange1w);
         updateDailyInvestmentForRange(currentDailyRange);
     }
 
@@ -418,6 +425,8 @@ public class MainActivity extends AppCompatActivity {
             if (userStorageList == null) {
                 userStorageList = new ArrayList<>();
             }
+        } else {
+            userStorageList = new ArrayList<>();
         }
     }
 
@@ -436,9 +445,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private DailyRange mapDailyRangeFromId(int checkedId) {
-        if (checkedId == R.id.dailyRange1d) {
-            return DailyRange.DAY_1;
-        } else if (checkedId == R.id.dailyRange1w) {
+        if (checkedId == R.id.dailyRange1w) {
             return DailyRange.WEEK_1;
         } else if (checkedId == R.id.dailyRange1m) {
             return DailyRange.MONTH_1;
@@ -458,24 +465,15 @@ public class MainActivity extends AppCompatActivity {
         int currentDayOfYear = now.get(Calendar.DAY_OF_YEAR);
 
         // Calculate the number of days to look back (minimum 7 for graph visibility)
-        int rangeDays = range == DailyRange.ALL ? 365 : range.getDays();
+        boolean isAllTime = range == DailyRange.ALL;
+        int rangeDays = isAllTime ? 365 : range.getDays();
         int daysToLookBack = Math.max(7, rangeDays);
-
-        // Build a set of valid day numbers for the range
-        ArrayList<Integer> validDays = new ArrayList<>();
-        for (int i = 0; i < rangeDays; i++) {
-            int day = currentDayOfYear - i;
-            if (day < 1) {
-                day += 365; // Handle year wrap-around
-            }
-            validDays.add(day);
-        }
 
         // Filter and aggregate data by project
         Map<String, ProjectTimeData> projectTimeMap = new HashMap<>();
 
         // Group data by day for spark graph
-        Map<Integer, Double> dailyTotals = new HashMap<>();
+        double[] dailyTotals = new double[daysToLookBack];
 
         double totalMinutes = 0;
 
@@ -490,10 +488,13 @@ public class MainActivity extends AppCompatActivity {
             projectName = projectName.trim();
 
             // Check if this entry falls within our valid days
-            boolean inRange = (range == DailyRange.ALL) || validDays.contains(entryDay);
+            boolean inRange = isAllTime || isWithinRange(entryDay, currentDayOfYear, rangeDays);
 
             if (inRange) {
                 double minutes = entry.getHours();
+                if (minutes <= 0) {
+                    continue;
+                }
                 totalMinutes += minutes;
 
                 // Aggregate by project - sum up all time for this project in the range
@@ -505,10 +506,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Aggregate by day for spark graph
-                if (dailyTotals.containsKey(entryDay)) {
-                    dailyTotals.put(entryDay, dailyTotals.get(entryDay) + minutes);
-                } else {
-                    dailyTotals.put(entryDay, minutes);
+                int dayOffset = getDayOffset(entryDay, currentDayOfYear);
+                if (dayOffset >= 0 && dayOffset < daysToLookBack) {
+                    dailyTotals[dayOffset] += minutes;
                 }
             }
         }
@@ -530,29 +530,40 @@ public class MainActivity extends AppCompatActivity {
         // Use daysToLookBack (minimum 7) for graph display
         ArrayList<Float> sparkData = new ArrayList<>();
         for (int i = daysToLookBack - 1; i >= 0; i--) {
-            int day = currentDayOfYear - i;
-            if (day < 1) day += 365;
-            Double value = dailyTotals.get(day);
-            sparkData.add(value != null ? value.floatValue() : 0f);
+            sparkData.add((float) dailyTotals[i]);
         }
 
         // Update spark view
-        if (dailySparkView != null && sparkData.size() >= 2) {
+        if (dailySparkView != null) {
+            if (sparkData.size() == 1) {
+                sparkData.add(sparkData.get(0));
+            }
             dailySparkView.setAdapter(new DailySparkAdapter(sparkData));
         }
 
         // Update project list with all projects that have time in this range
         ArrayList<ProjectTimeData> projectList = new ArrayList<>(projectTimeMap.values());
+        projectList.sort((first, second) -> Double.compare(second.getTotalMinutes(), first.getTotalMinutes()));
         projectTimeAdapter.updateData(projectList);
+    }
+
+    private boolean isWithinRange(int entryDay, int currentDayOfYear, int rangeDays) {
+        int dayOffset = getDayOffset(entryDay, currentDayOfYear);
+        return dayOffset >= 0 && dayOffset < rangeDays;
+    }
+
+    private int getDayOffset(int entryDay, int currentDayOfYear) {
+        int offset = currentDayOfYear - entryDay;
+        if (offset < 0) {
+            offset += 365;
+        }
+        return offset;
     }
 
     private void updateRangeLabel(DailyRange range) {
         if (dailyInvestmentLabel == null) return;
 
         switch (range) {
-            case DAY_1:
-                dailyInvestmentLabel.setText("Today's Investment");
-                break;
             case WEEK_1:
                 dailyInvestmentLabel.setText("This Week's Investment");
                 break;
@@ -581,7 +592,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private enum DailyRange {
-        DAY_1("1D", 1),
         WEEK_1("1W", 7),
         MONTH_1("1M", 30),
         MONTH_3("3M", 90),
@@ -629,5 +639,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-
-

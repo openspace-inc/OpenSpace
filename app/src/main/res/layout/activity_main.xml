@@ -163,6 +163,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="8dp"
+            android:fillViewport="true"
             android:scrollbars="none"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -173,7 +174,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="16dp">
+                android:paddingBottom="120dp">
 
                 <TextView
                     android:id="@+id/dailyInvestmentLabel"
@@ -200,7 +201,7 @@
                 <HorizontalScrollView
                     android:id="@+id/sparkScrollView"
                     android:layout_width="match_parent"
-                    android:layout_height="120dp"
+                    android:layout_height="320dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
@@ -208,7 +209,7 @@
 
                     <com.robinhood.spark.SparkView
                         android:id="@+id/dailySparkView"
-                        android:layout_width="800dp"
+                        android:layout_width="1000dp"
                         android:layout_height="match_parent"
                         app:spark_lineColor="@color/black"
                         app:spark_lineWidth="2dp" />
@@ -231,27 +232,10 @@
                         android:orientation="horizontal">
 
                         <RadioButton
-                            android:id="@+id/dailyRange1d"
-                            style="@style/Widget.AppCompat.CompoundButton.RadioButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/range_button_background"
-                            android:button="@null"
-                            android:fontFamily="@font/neuehaas45"
-                            android:minHeight="0dp"
-                            android:paddingStart="16dp"
-                            android:paddingTop="8dp"
-                            android:paddingEnd="16dp"
-                            android:paddingBottom="8dp"
-                            android:text="1D"
-                            android:textColor="@color/range_button_text" />
-
-                        <RadioButton
                             android:id="@+id/dailyRange1w"
                             style="@style/Widget.AppCompat.CompoundButton.RadioButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
                             android:background="@drawable/range_button_background"
                             android:button="@null"
                             android:fontFamily="@font/neuehaas45"
