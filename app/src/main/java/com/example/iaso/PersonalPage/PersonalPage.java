@@ -72,7 +72,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
     private TextView portfolioPercentageView;
     private TextView portfolioRangeLabelView;
     private ImageView portfolioTrendArrowView;
-    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
+    private final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,15 +81,14 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         setContentView(R.layout.activity_personal_page);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+            // Set padding to 0 to use full screen, allowing content to draw behind system bars
+            v.setPadding(0, 0, 0, 0);
             return insets;
         });
 
         emptyText = findViewById(R.id.textView19);
 
-        TextView Title = findViewById(R.id.PersonalPageHeader);
-        String title = "Your Projects";
-        Title.setText(title);
+        ImageView Title = findViewById(R.id.PersonalPageHeader);
 
         //set the achievement cardview to invisible
         achievementCard = findViewById(R.id.AchievementPage);
@@ -417,7 +416,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
         if (display == null || display.isEmpty()) {
             // Nothing to display yet, reset to defaults
-            portfolioValueView.setText(currencyFormat.format(0d));
+            portfolioValueView.setText(numberFormat.format(0d));
             portfolioPercentageView.setText(String.format(Locale.getDefault(), "%+.2f%%", 0f));
             portfolioRangeLabelView.setText(String.format(Locale.getDefault(), "VS %s", range.getLabel()));
             portfolioTrendArrowView.setImageResource(R.drawable.os5_uparrow1);
@@ -426,7 +425,7 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
 
         StockDataPoint latest = display.get(display.size() - 1);
         double latestValue = latest.getPrice();
-        portfolioValueView.setText(currencyFormat.format(latestValue));
+        portfolioValueView.setText(numberFormat.format(latestValue));
 
         StockDataPoint referencePoint = findPortfolioReferencePoint(range, latest);
         double referenceValue = referencePoint != null ? referencePoint.getPrice() : latestValue;
