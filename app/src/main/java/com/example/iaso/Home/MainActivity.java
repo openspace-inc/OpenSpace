@@ -5,32 +5,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.TextPaint;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.bumptech.glide.Glide;
+import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
-import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.PersonalPage.dataStorage;
@@ -40,20 +33,19 @@ import com.example.iaso.ToDoList.TaskLister;
 import com.example.iaso.workhorse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.robinhood.spark.SparkView;
 import com.robinhood.spark.SparkAdapter;
-import com.robinhood.ticker.TickerView;
+import com.robinhood.spark.SparkView;
 import com.robinhood.ticker.TickerUtils;
+import com.robinhood.ticker.TickerView;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,8 +56,11 @@ public class MainActivity extends AppCompatActivity {
     SparkView timeInvestedSparkView;
     TickerView totalMinutesTickerView;
     android.widget.RadioGroup timeRangeGroup;
+    RecyclerView habitTimeRecyclerView;
+    HabitTimeAdapter habitTimeAdapter;
     Map<Integer, Double> aggregatedTimeData = new HashMap<>();
     List<Float> currentGraphData = new ArrayList<>();
+    int currentDaysToShow = 7;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -125,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Set initial value to 0 so it animates from 0 on first load
         totalMinutesTickerView.setText("0 min");
+
+        // Setup RecyclerView
+        habitTimeRecyclerView = findViewById(R.id.habitTimeRecyclerView);
+        habitTimeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        habitTimeAdapter = new HabitTimeAdapter(this);
+        habitTimeRecyclerView.setAdapter(habitTimeAdapter);
 
         // Load and aggregate time data
         loadTimeInvestedData();
@@ -294,6 +295,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateTimeInvestedGraph(int daysToShow) {
+        // Store current days to show for habit data aggregation
+        currentDaysToShow = daysToShow;
+
         // Get current day of year
         Calendar cal = Calendar.getInstance();
         int currentDay = cal.get(Calendar.DAY_OF_YEAR);
@@ -302,33 +306,46 @@ public class MainActivity extends AppCompatActivity {
         List<Float> graphData = new ArrayList<>();
 
         if (daysToShow == -1) {
-            // Show all time data
-            // Find the earliest day in the data
-            int minDay = currentDay;
-            for (int day : aggregatedTimeData.keySet()) {
-                if (day < minDay) {
-                    minDay = day;
+            // Show all time data - get all unique days from aggregatedTimeData
+            if (aggregatedTimeData.isEmpty()) {
+                // No data available
+                graphData.add(0f);
+            } else {
+                // Find the earliest and latest days in the data
+                int minDay = Integer.MAX_VALUE;
+                int maxDay = Integer.MIN_VALUE;
+
+                for (int day : aggregatedTimeData.keySet()) {
+                    if (day < minDay) minDay = day;
+                    if (day > maxDay) maxDay = day;
                 }
+
+                // For simplicity, show from minDay to maxDay (assuming same year)
+                // If data spans across years, this needs more complex handling
+                for (int day = minDay; day <= maxDay; day++) {
+                    Double hours = aggregatedTimeData.get(day);
+                    graphData.add(hours != null ? hours.floatValue() : 0f);
+                }
+
+                // Update currentDaysToShow to the actual range
+                currentDaysToShow = maxDay - minDay + 1;
             }
+        } else {
+            // Build graph data from (currentDay - daysToShow + 1) to currentDay
+            int startDay = currentDay - daysToShow + 1;
 
-            // Calculate how many days to show
-            daysToShow = currentDay - minDay + 1;
-        }
+            for (int i = 0; i < daysToShow; i++) {
+                int day = startDay + i;
 
-        // Build graph data from (currentDay - daysToShow + 1) to currentDay
-        int startDay = currentDay - daysToShow + 1;
+                // Handle year wrap-around (day could be negative if we go back past Jan 1)
+                if (day <= 0) {
+                    // Previous year - assume 365 days for simplicity
+                    day = 365 + day;
+                }
 
-        for (int i = 0; i < daysToShow; i++) {
-            int day = startDay + i;
-
-            // Handle year wrap-around (day could be negative if we go back past Jan 1)
-            if (day <= 0) {
-                // Previous year - assume 365 days for simplicity
-                day = 365 + day;
+                Double hours = aggregatedTimeData.get(day);
+                graphData.add(hours != null ? hours.floatValue() : 0f);
             }
-
-            Double hours = aggregatedTimeData.get(day);
-            graphData.add(hours != null ? hours.floatValue() : 0f);
         }
 
         // Store current graph data
@@ -343,6 +360,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Update ticker view with animated transition
         totalMinutesTickerView.setText(String.valueOf(totalMinutes) + " min");
+
+        // Update habit time breakdown RecyclerView
+        updateHabitTimeBreakdown();
 
         // Create and set the adapter
         SparkAdapter adapter = new SparkAdapter() {
@@ -363,6 +383,96 @@ public class MainActivity extends AppCompatActivity {
         };
 
         timeInvestedSparkView.setAdapter(adapter);
+    }
+
+    private void updateHabitTimeBreakdown() {
+        // Load userStorageList
+        SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_MULTI_PROCESS);
+        String json = userStorage.getString("userStorageList", null);
+
+        // Map to store habit name -> total minutes
+        Map<String, Integer> habitMinutesMap = new HashMap<>();
+
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+            ArrayList<dataStorage> storageList = gson.fromJson(json, type);
+
+            // Check if we're showing all time data
+            if (currentDaysToShow == -1) {
+                // Show all data - no date filtering
+                for (dataStorage entry : storageList) {
+                    String habitName = entry.getName();
+                    int minutes = Math.round((float) (entry.getHours()));
+
+                    if (habitMinutesMap.containsKey(habitName)) {
+                        habitMinutesMap.put(habitName, habitMinutesMap.get(habitName) + minutes);
+                    } else {
+                        habitMinutesMap.put(habitName, minutes);
+                    }
+                }
+            } else {
+                // Filter by date range
+                Calendar cal = Calendar.getInstance();
+                int currentDay = cal.get(Calendar.DAY_OF_YEAR);
+                int startDay = currentDay - currentDaysToShow + 1;
+
+                for (dataStorage entry : storageList) {
+                    int day = entry.getDate();
+
+                    // Check if day is in range
+                    boolean inRange = false;
+                    if (startDay > 0) {
+                        inRange = (day >= startDay && day <= currentDay);
+                    } else {
+                        // Handle year wrap-around
+                        int adjustedStartDay = 365 + startDay;
+                        inRange = (day >= adjustedStartDay || day <= currentDay);
+                    }
+
+                    if (inRange) {
+                        String habitName = entry.getName();
+                        int minutes = Math.round((float) (entry.getHours()));
+
+                        if (habitMinutesMap.containsKey(habitName)) {
+                            habitMinutesMap.put(habitName, habitMinutesMap.get(habitName) + minutes);
+                        } else {
+                            habitMinutesMap.put(habitName, minutes);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Create HabitTimeData list with images from PersonalHabits
+        List<HabitTimeData> habitTimeDataList = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : habitMinutesMap.entrySet()) {
+            String habitName = entry.getKey();
+            int totalMinutes = entry.getValue();
+
+            // Find the image name from dynamicHabitList
+            String imageName = "ionlogo"; // Default image
+            for (DynamicHabit habit : dynamicHabitList) {
+                if (habit.getName3().equals(habitName)) {
+                    imageName = habit.getImageName();
+                    break;
+                }
+            }
+
+            habitTimeDataList.add(new HabitTimeData(habitName, imageName, totalMinutes));
+        }
+
+        // Sort by total minutes in descending order (highest first)
+        Collections.sort(habitTimeDataList, new Comparator<HabitTimeData>() {
+            @Override
+            public int compare(HabitTimeData h1, HabitTimeData h2) {
+                return Integer.compare(h2.getTotalMinutes(), h1.getTotalMinutes());
+            }
+        });
+
+        // Update adapter with new data
+        habitTimeAdapter.updateData(habitTimeDataList);
     }
 
 }
