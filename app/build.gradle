@@ -49,6 +49,9 @@ dependencies {
     //SparkView for graphs
     implementation 'com.robinhood.spark:spark:1.2.0'
 
+    //TickerView for animated numbers
+    implementation 'com.robinhood.ticker:ticker:2.0.4'
+
     implementation 'com.google.android.material:material:1.12.0' // Cardview border
 
     implementation 'com.airbnb.android:lottie:6.1.0' // Use the latest version available

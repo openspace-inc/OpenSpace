@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.view.View;
@@ -32,28 +33,39 @@ import com.example.iaso.Introduction.WelcomeActivity;
 import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
+import com.example.iaso.PersonalPage.dataStorage;
 import com.example.iaso.Projects;
 import com.example.iaso.R;
 import com.example.iaso.ToDoList.TaskLister;
 import com.example.iaso.workhorse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.robinhood.spark.SparkView;
+import com.robinhood.spark.SparkAdapter;
+import com.robinhood.ticker.TickerView;
+import com.robinhood.ticker.TickerUtils;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    //Back Button For Fragments
-    ImageButton back;
-
     SharedPreferences dynamicHabits;
     public ArrayList<DynamicHabit> dynamicHabitList = new ArrayList<DynamicHabit>();
-    LottieAnimationView dynamicLogo2;
     LinearLayout projectContainer;
+
+    SparkView timeInvestedSparkView;
+    TickerView totalMinutesTickerView;
+    android.widget.RadioGroup timeRangeGroup;
+    Map<Integer, Double> aggregatedTimeData = new HashMap<>();
+    List<Float> currentGraphData = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -77,18 +89,6 @@ public class MainActivity extends AppCompatActivity {
         CardView welcomeToPro = findViewById(R.id.welcomeToPro);
         welcomeToPro.setVisibility(View.INVISIBLE);
 
-        //Create Animation of ImageButtons
-        ImageButton toDoList = findViewById(R.id.todolistButton);
-        ImageButton storeButton = findViewById(R.id.storeButton);
-
-        Animation fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
-        Animation fadeInAnimation3 = AnimationUtils.loadAnimation(this, R.anim.fade_in_animation);
-        fadeInAnimation.setStartOffset(300);
-        fadeInAnimation3.setStartOffset(900);
-
-        toDoList.startAnimation(fadeInAnimation);
-        storeButton.startAnimation(fadeInAnimation3);
-
         //Profile Page Setup
         ImageButton profile = findViewById(R.id.profileIcon);
         profile.setOnClickListener(new View.OnClickListener(){
@@ -102,26 +102,6 @@ public class MainActivity extends AppCompatActivity {
         // Setup bottom navigation bar
         BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, MainActivity.class);
 
-        //Create Habits
-
-        //Set IntroText
-        TextView introText = findViewById(R.id.generatedText);
-        setIntroText(introText);
-
-        //Set Dynamic Logo(old gif file)
-        //ImageView dynamicLogoIaso = findViewById(R.id.dynamicLogo);
-        //Glide.with(this).asGif().load(R.drawable.iasodyanmiclogo).into(dynamicLogoIaso);
-
-        //Set Dynamic Logo2
-        dynamicLogo2 = findViewById(R.id.dynamicLogo);
-        dynamicLogo2.setAnimation(R.raw.iasodynamiclogo);
-        dynamicLogo2.setRepeatCount(LottieDrawable.INFINITE);
-        dynamicLogo2.playAnimation();
-
-        //Set BackButton
-        back = findViewById(R.id.backButtonForFragments);
-        back.setVisibility(View.GONE);
-
         //Set up horizontal list of projects
         projectContainer = findViewById(R.id.projectContainer);
 
@@ -132,6 +112,45 @@ public class MainActivity extends AppCompatActivity {
         });
         loadPersonalHabits();
         populateProjectRow();
+
+        // Setup time invested spark graph and ticker
+        timeInvestedSparkView = findViewById(R.id.timeInvestedSparkView);
+        totalMinutesTickerView = findViewById(R.id.totalMinutesTickerView);
+        timeRangeGroup = findViewById(R.id.timeRangeGroup);
+
+        // Initialize ticker view with number list and font
+        totalMinutesTickerView.setCharacterLists(TickerUtils.provideNumberList());
+        Typeface neuehaas45 = getResources().getFont(R.font.neuehaas45);
+        totalMinutesTickerView.setTypeface(neuehaas45);
+
+        // Set initial value to 0 so it animates from 0 on first load
+        totalMinutesTickerView.setText("0 min");
+
+        // Load and aggregate time data
+        loadTimeInvestedData();
+
+        // Set default selection to 7 days
+        timeRangeGroup.check(R.id.timeRange7d);
+        updateTimeInvestedGraph(7);
+
+        // Setup button listeners
+        timeRangeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.timeRange7d) {
+                updateTimeInvestedGraph(7);
+            } else if (checkedId == R.id.timeRange2w) {
+                updateTimeInvestedGraph(14);
+            } else if (checkedId == R.id.timeRange1m) {
+                updateTimeInvestedGraph(30);
+            } else if (checkedId == R.id.timeRange3m) {
+                updateTimeInvestedGraph(90);
+            } else if (checkedId == R.id.timeRange6m) {
+                updateTimeInvestedGraph(180);
+            } else if (checkedId == R.id.timeRange12m) {
+                updateTimeInvestedGraph(365);
+            } else if (checkedId == R.id.timeRangeAll) {
+                updateTimeInvestedGraph(-1); // -1 means all time
+            }
+        });
     }
 
     private void loadPersonalHabits() {
@@ -242,125 +261,108 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void goBack(View v){
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, PersonalHomePageFragment.class, null)
-                .setReorderingAllowed(true)
-                .addToBackStack("name")
-                .commit();
-
-        back.setVisibility(View.GONE);
-    }
-
-    //Set Introduction text based on time of day
-    public void setIntroText(View v){
-        //Get Data
-        SharedPreferences userData = getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        String name = userData.getString("name","");
-        Boolean firstRun = userData.getBoolean("firstRun", false);
-        String timingText = "";
-
-        //Get only first name
-        String firstName = "";
-        int firstSpaceIndex = name.indexOf(" ");
-
-        if (firstSpaceIndex != -1) {
-            firstName= name.substring(0, firstSpaceIndex);
-        } else {
-            firstName = name;
-        }
-        //Get Time
-        Date thisDate2 = new Date();
-        SimpleDateFormat dateForm2 = new SimpleDateFormat("HH");
-        String stringTime = dateForm2.format(thisDate2);
-        int currentTime = Integer.parseInt(stringTime);
-
-        //Generate random number
-        Random random = new Random();
-        int randomNumber = random.nextInt(4 - 1 + 1) + 1;
-
-        //Get data to test if it is the first run
-        if(firstRun){
-            CardView welcome = findViewById(R.id.welcomeToPro);
-            welcome.setVisibility(View.VISIBLE);
-            timingText = "Welcome to Iaso";
-            SharedPreferences.Editor editor = userData.edit();
-            editor.putBoolean("firstRun", false);
-            editor.apply();
-        }
-        //Decide what time it is and set randomized text based on it.
-        else{
-            if((currentTime >= 4) && (currentTime < 10)){
-                if(randomNumber == 1){
-                    timingText = "Good Morning";
-                }
-                else if(randomNumber == 2){
-                    timingText = "A New Day Awaits";
-                }
-                else if (randomNumber == 3){
-                    timingText = "Rise and Shine";
-                }
-                else{
-                    timingText = "Bonjour";
-                }
-
-            }
-            else if ((currentTime >= 11) && (currentTime < 19)){
-                if(randomNumber == 1){
-                    timingText = "Good Afternoon";
-                }
-                else if(randomNumber == 2){
-                    timingText = "One Step At A Time";
-                }
-                else if (randomNumber == 3){
-                    timingText = "Keep Going";
-                }
-                else{
-                    timingText = "It Will Be Worth It";
-                }
-
-            }
-            else {
-                if(randomNumber == 1){
-                    timingText = "Good Night";
-                }
-                else if(randomNumber == 2){
-                    timingText = "Almost There";
-                }
-                else if (randomNumber == 3){
-                    timingText = "Times Ticking";
-                }
-                else{
-                    timingText = "Have A Nice Night";
-                }
-            }
-        }
-
-        //Combine Text
-        String generatedText = timingText + ", " + firstName;
-
-        //Set Calculations To Text In Display
-        TextView textDisplay;
-        textDisplay = findViewById(R.id.generatedText);
-        textDisplay.setText(generatedText);
-
-        //Gradient Color
-        TextPaint paint = textDisplay.getPaint();
-        float width = paint.measureText(generatedText);
-
-        Shader textShader = new LinearGradient(0, 0, width, textDisplay.getTextSize(),
-                new int[]{
-                        Color.parseColor("#de6262"),
-                        Color.parseColor("#ffb88c"),
-                }, null, Shader.TileMode.CLAMP);
-        textDisplay.getPaint().setShader(textShader);
-
-    }
-
     public void exitProText(View view){
         CardView welcome = findViewById(R.id.welcomeToPro);
         welcome.setVisibility(View.GONE);
+    }
+
+    private void loadTimeInvestedData() {
+        // Clear existing data
+        aggregatedTimeData.clear();
+
+        // Load userStorageList from SharedPreferences
+        SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_MULTI_PROCESS);
+        String json = userStorage.getString("userStorageList", null);
+
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+            ArrayList<dataStorage> storageList = gson.fromJson(json, type);
+
+            // Aggregate time by day
+            for (dataStorage entry : storageList) {
+                int day = entry.getDate();
+                double hours = entry.getHours();
+
+                if (aggregatedTimeData.containsKey(day)) {
+                    aggregatedTimeData.put(day, aggregatedTimeData.get(day) + hours);
+                } else {
+                    aggregatedTimeData.put(day, hours);
+                }
+            }
+        }
+    }
+
+    private void updateTimeInvestedGraph(int daysToShow) {
+        // Get current day of year
+        Calendar cal = Calendar.getInstance();
+        int currentDay = cal.get(Calendar.DAY_OF_YEAR);
+
+        // Prepare data for the selected time range
+        List<Float> graphData = new ArrayList<>();
+
+        if (daysToShow == -1) {
+            // Show all time data
+            // Find the earliest day in the data
+            int minDay = currentDay;
+            for (int day : aggregatedTimeData.keySet()) {
+                if (day < minDay) {
+                    minDay = day;
+                }
+            }
+
+            // Calculate how many days to show
+            daysToShow = currentDay - minDay + 1;
+        }
+
+        // Build graph data from (currentDay - daysToShow + 1) to currentDay
+        int startDay = currentDay - daysToShow + 1;
+
+        for (int i = 0; i < daysToShow; i++) {
+            int day = startDay + i;
+
+            // Handle year wrap-around (day could be negative if we go back past Jan 1)
+            if (day <= 0) {
+                // Previous year - assume 365 days for simplicity
+                day = 365 + day;
+            }
+
+            Double hours = aggregatedTimeData.get(day);
+            graphData.add(hours != null ? hours.floatValue() : 0f);
+        }
+
+        // Store current graph data
+        currentGraphData = new ArrayList<>(graphData);
+
+        // Calculate total minutes from the graph data
+        float totalHours = 0f;
+        for (Float hours : graphData) {
+            totalHours += hours;
+        }
+        int totalMinutes = Math.round(totalHours);
+
+        // Update ticker view with animated transition
+        totalMinutesTickerView.setText(String.valueOf(totalMinutes) + " min");
+
+        // Create and set the adapter
+        SparkAdapter adapter = new SparkAdapter() {
+            @Override
+            public int getCount() {
+                return graphData.size();
+            }
+
+            @Override
+            public Object getItem(int index) {
+                return graphData.get(index);
+            }
+
+            @Override
+            public float getY(int index) {
+                return graphData.get(index);
+            }
+        };
+
+        timeInvestedSparkView.setAdapter(adapter);
     }
 
 }

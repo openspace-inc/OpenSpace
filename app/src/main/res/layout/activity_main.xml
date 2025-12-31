@@ -16,17 +16,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/topgradient2" />
 
-    <ImageView
-        android:id="@+id/topGradient"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:rotation="180"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/tabBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/topgradient2" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/Spacer"
         android:layout_width="150dp"
@@ -56,20 +45,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/iasologo" />
-
-        <ImageButton
-            android:id="@+id/backButtonForFragments"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="16dp"
-            android:background="@null"
-            android:onClick="goBack"
-            android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView16"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/back"
-            app:tint="#000000" />
 
         <ImageButton
             android:id="@+id/profileIcon"
@@ -142,40 +117,192 @@
         app:layout_constraintTop_toBottomOf="@+id/Row">
 
         <TextView
-            android:id="@+id/generatedText"
+            android:id="@+id/timeInvestedLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/neuehaas45"
+            android:text="Time Invested"
+            android:textColor="@color/grey"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.robinhood.ticker.TickerView
+            android:id="@+id/totalMinutesTickerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/black"
+            android:textSize="64sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/timeInvestedLabel"
+            app:ticker_animationDuration="1500" />
+
+        <com.robinhood.spark.SparkView
+            android:id="@+id/timeInvestedSparkView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            app:layout_constraintBottom_toTopOf="@+id/timeRangeScrollView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/totalMinutesTickerView"
+            app:spark_lineColor="@color/black" />
+
+        <HorizontalScrollView
+            android:id="@+id/timeRangeScrollView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/neuehaas65"
-            android:freezesText="true"
-            android:text="loading..."
-            android:textAlignment="center"
-            android:textColor="#4A4343"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="16dp"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@+id/timeInvestedSparkView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView20"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/generatedText"
-            app:srcCompat="@drawable/graphscomingsoon" />
+            <RadioGroup
+                android:id="@+id/timeRangeGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragmentContainerView"
-            android:name="com.example.iaso.Home.PersonalHomePageFragment"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <RadioButton
+                    android:id="@+id/timeRange7d"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="7D"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/timeRange2w"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="2W"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/timeRange1m"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="1M"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/timeRange3m"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="3M"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/timeRange6m"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="6M"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/timeRange12m"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="12M"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/timeRangeAll"
+                    style="@style/Widget.AppCompat.CompoundButton.RadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/range_button_background"
+                    android:button="@null"
+                    android:fontFamily="@font/neuehaas65"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="8dp"
+                    android:text="All"
+                    android:textColor="@color/range_button_text"
+                    android:textSize="12sp" />
+
+            </RadioGroup>
+        </HorizontalScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -203,123 +330,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/titleBar"
-        android:layout_width="413dp"
-        android:layout_height="81dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <ImageView
-            android:id="@+id/otherButton"
-            android:layout_width="37dp"
-            android:layout_height="37dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageView16"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/leftcircle" />
-
-        <!-- Old Gif File XML, remove when needed
-        <ImageView
-            android:id="@+id/dynamicLogo"
-            android:layout_width="134dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/iasodyanmiclogo" />
-         -->
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/dynamicLogo"
-            android:layout_width="134dp"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_fileName="iasodynamiclogo.json"
-            app:lottie_loop="true"
-            tools:visibility="gone" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/PersonalPage"
-        android:layout_width="415dp"
-        android:layout_height="582dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/tabBar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleBar">
-
-        <LinearLayout
-            android:id="@+id/taskBar"
-            android:layout_width="411dp"
-            android:layout_height="150dp"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/generatedText"
-            app:layout_constraintVertical_bias="0.005"
-            tools:visibility="gone">
-
-            <ImageButton
-                android:id="@+id/todolistButton"
-                android:layout_width="136dp"
-                android:layout_height="152dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="Click here"
-                android:onClick="goToDoList"
-                android:scaleType="fitCenter"
-                android:src="@drawable/todolisticon" />
-
-            <ImageButton
-                android:id="@+id/habitButton"
-                android:layout_width="136dp"
-                android:layout_height="152dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="Click here"
-                android:scaleType="fitCenter"
-                android:src="@drawable/habiticon" />
-
-            <ImageButton
-                android:id="@+id/storeButton"
-                android:layout_width="136dp"
-                android:layout_height="152dp"
-                android:layout_weight="1"
-                android:background="@null"
-                android:contentDescription="Click here"
-                android:onClick="goToStore"
-                android:scaleType="fitCenter"
-                android:src="@drawable/storeicon" />
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <androidx.cardview.widget.CardView
         android:id="@+id/welcomeToPro"
         android:layout_width="match_parent"
@@ -330,7 +340,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.65"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

@@ -5,6 +5,7 @@
     <color name="red">#de6262</color>
     <color name="tan">#fdeacf</color>
     <color name="gray">#808080</color>
+    <color name="grey">#909090</color>
     <color name="lavender_gray">#B4B4CD</color>
     <color name="pure_white">#FFFFFFFF</color>
 </resources>
