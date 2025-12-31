@@ -591,6 +591,14 @@ public class workhorse extends AppCompatActivity {
                     milestoneAdapter.setMilestones(milestones);
                 }
 
+                // ==================== SAVE MILESTONES TO STORAGE ====================
+                // Store the parsed milestones with the habit name (ticker symbol)
+                // for later retrieval throughout the app
+                if (!milestones.isEmpty() && tickerSymbol != null && !tickerSymbol.isEmpty()) {
+                    MilestoneStorage milestoneStorage = new MilestoneStorage(workhorse.this);
+                    milestoneStorage.saveMilestones(tickerSymbol, milestones);
+                }
+
                 // Calculate total days from milestones and check against user's timeline
                 int totalMilestoneDays = calculateTotalMilestoneDays(milestones);
                 int userTargetDays = calculateDaysUntilCompletion();
