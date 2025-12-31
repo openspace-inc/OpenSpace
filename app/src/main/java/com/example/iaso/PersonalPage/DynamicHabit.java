@@ -11,6 +11,7 @@ public class DynamicHabit {
     String imageName;
     int timeInvested;
     String stockSymbol;
+    long creationDate; // Timestamp when the habit/project was created (in milliseconds)
 
     public DynamicHabit(String name1, int streak1, String type1, String description1, int amount1, int time1, String imageName1, int timeInvested1){
         name = name1;
@@ -23,6 +24,7 @@ public class DynamicHabit {
         imageName = imageName1;
         timeInvested = timeInvested1;
         stockSymbol = generateStockSymbol(name1);
+        creationDate = System.currentTimeMillis(); // Set creation date to current time
     }
 
     public DynamicHabit(String name1, int streak1, String type1, String description1, int time1, String imageName1, int timeInvested1, int blocks1){
@@ -36,6 +38,7 @@ public class DynamicHabit {
         imageName = imageName1;
         timeInvested = timeInvested1;
         stockSymbol = generateStockSymbol(name1);
+        creationDate = System.currentTimeMillis(); // Set creation date to current time
     }
 
     public String getName3(){
@@ -71,6 +74,14 @@ public class DynamicHabit {
             stockSymbol = generateStockSymbol(name);
         }
         return stockSymbol;
+    }
+
+    public long getCreationDate(){
+        return creationDate;
+    }
+
+    public void setCreationDate(long date){
+        this.creationDate = date;
     }
 
     private String generateStockSymbol(String habitName){

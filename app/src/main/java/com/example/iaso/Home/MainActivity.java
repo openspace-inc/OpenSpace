@@ -75,6 +75,13 @@ public class MainActivity extends AppCompatActivity {
     TextView habitDetailCompletionTime;
     androidx.constraintlayout.widget.ConstraintLayout hubContainer;
 
+    // Timeline views
+    ImageView timelineImage;
+    ImageView timelineArrow;
+    TextView timelineDaysNumber;
+    TextView timelineDaysLabel;
+    TextView timelineUpgradeMessage;
+
     // Project indicator
     ImageView projectIndicator;
     ImageButton featuredProjectButton;
@@ -124,6 +131,13 @@ public class MainActivity extends AppCompatActivity {
         habitDetailMilestone = findViewById(R.id.habitDetailMilestone);
         habitDetailCompletionTime = findViewById(R.id.habitDetailCompletionTime);
         hubContainer = findViewById(R.id.Hub);
+
+        // Setup timeline views
+        timelineImage = findViewById(R.id.timelineImage);
+        timelineArrow = findViewById(R.id.timelineArrow);
+        timelineDaysNumber = findViewById(R.id.timelineDaysNumber);
+        timelineDaysLabel = findViewById(R.id.timelineDaysLabel);
+        timelineUpgradeMessage = findViewById(R.id.timelineUpgradeMessage);
 
         //Set up horizontal list of projects
         projectContainer = findViewById(R.id.projectContainer);
@@ -304,17 +318,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Calculate and set total completion time
+        int totalCompletionDays = 0;
         if (habitDetailCompletionTime != null) {
             if (milestones.isEmpty()) {
                 habitDetailCompletionTime.setText("0 days");
             } else {
-                int totalDays = 0;
                 for (Milestone milestone : milestones) {
-                    totalDays += milestone.getDays();
+                    totalCompletionDays += milestone.getDays();
                 }
-                habitDetailCompletionTime.setText(totalDays + " days");
+                habitDetailCompletionTime.setText(totalCompletionDays + " days");
             }
         }
+
+        // Setup and animate timeline
+        setupTimeline(habit, totalCompletionDays);
     }
 
     /**
@@ -333,6 +350,95 @@ public class MainActivity extends AppCompatActivity {
         if (habitDetailContainer != null) {
             habitDetailContainer.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * Sets up and animates the timeline visualization for the selected habit.
+     * Calculates the progress percentage based on days elapsed since creation.
+     *
+     * @param habit The DynamicHabit to display timeline for
+     * @param totalCompletionDays Total planned days to complete the habit (from milestones)
+     */
+    private void setupTimeline(DynamicHabit habit, int totalCompletionDays) {
+        // Check if we have all necessary data
+        long creationDate = habit.getCreationDate();
+        boolean hasValidData = creationDate > 0 && totalCompletionDays > 0;
+
+        if (!hasValidData) {
+            // Show fallback state: timeline at start, upgrade message
+            if (timelineUpgradeMessage != null) {
+                timelineUpgradeMessage.setVisibility(View.VISIBLE);
+            }
+            if (timelineDaysNumber != null) {
+                timelineDaysNumber.setText("0");
+            }
+            // Position arrow at the very left (0% progress)
+            if (timelineArrow != null) {
+                timelineArrow.post(() -> animateTimelineArrow(0f));
+            }
+            return;
+        }
+
+        // Hide upgrade message when we have valid data
+        if (timelineUpgradeMessage != null) {
+            timelineUpgradeMessage.setVisibility(View.GONE);
+        }
+
+        // Calculate days elapsed since project creation
+        long currentTime = System.currentTimeMillis();
+        long elapsedMillis = currentTime - creationDate;
+        int daysElapsed = (int) (elapsedMillis / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+
+        // Calculate progress percentage: (days elapsed / total completion days) * 100
+        // Cap at 100% maximum
+        float calculatedPercentage = ((float) daysElapsed / (float) totalCompletionDays) * 100f;
+        final float progressPercentage = Math.min(calculatedPercentage, 100f);
+
+        // Update timeline days display
+        if (timelineDaysNumber != null) {
+            timelineDaysNumber.setText(String.valueOf(totalCompletionDays));
+        }
+
+        // Animate the arrow to the calculated position after layout is complete
+        if (timelineArrow != null && timelineImage != null) {
+            timelineArrow.post(() -> animateTimelineArrow(progressPercentage));
+        }
+    }
+
+    /**
+     * Animates the timeline arrow from the left to its target position based on progress percentage.
+     *
+     * @param progressPercentage The progress percentage (0-100) indicating how far along the timeline the arrow should be
+     */
+    private void animateTimelineArrow(float progressPercentage) {
+        if (timelineArrow == null || timelineImage == null) {
+            return;
+        }
+
+        // Get the width of the timeline image (75% of container width)
+        int timelineWidth = timelineImage.getWidth();
+        if (timelineWidth == 0) {
+            // Layout not complete yet, try again
+            timelineArrow.post(() -> animateTimelineArrow(progressPercentage));
+            return;
+        }
+
+        // Calculate target X position within the timeline
+        // At 0%: arrow is at the left edge of timeline
+        // At 100%: arrow is at the right edge of timeline
+        // Account for arrow width so it doesn't go past the timeline edge
+        int arrowWidth = timelineArrow.getWidth();
+        float maxTranslation = timelineWidth - arrowWidth;
+        float targetTranslationX = (progressPercentage / 100f) * maxTranslation;
+
+        // Reset arrow to start position (left edge)
+        timelineArrow.setTranslationX(0f);
+
+        // Animate arrow from left to target position with smooth easing
+        ObjectAnimator animator = ObjectAnimator.ofFloat(timelineArrow, "translationX", 0f, targetTranslationX);
+        animator.setDuration(800); // 800ms for smooth animation
+        animator.setInterpolator(new DecelerateInterpolator(1.5f)); // Ease out with deceleration
+        animator.start();
     }
 
     /**

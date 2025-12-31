@@ -345,9 +345,7 @@
                 android:id="@+id/habitDetailContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -357,6 +355,7 @@
                     android:id="@+id/habitDetailName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:fontFamily="@font/neuehaas65"
                     android:text="Project Name"
                     android:textColor="@color/black"
@@ -365,22 +364,103 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!-- Timeline Section -->
+                <TextView
+                    android:id="@+id/timelineLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:text="Timeline"
+                    android:textColor="@color/black"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/habitDetailName" />
+
+                <!-- Timeline visualization container -->
+                <ImageView
+                    android:id="@+id/timelineImage"
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="16dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/os_timeline"
+                    app:layout_constraintEnd_toStartOf="@+id/timelineDaysNumber"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/timelineLabel"
+                    app:layout_constraintWidth_percent="0.8" />
+
+                <ImageView
+                    android:id="@+id/timelineArrow"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/os_timeline_arrow"
+                    app:layout_constraintBottom_toBottomOf="@+id/timelineImage"
+                    app:layout_constraintStart_toStartOf="@+id/timelineImage"
+                    app:layout_constraintTop_toTopOf="@+id/timelineImage" />
+
+                <TextView
+                    android:id="@+id/timelineDaysNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/timelineImage"
+                    app:layout_constraintStart_toEndOf="@+id/timelineImage"
+                    app:layout_constraintTop_toTopOf="@+id/timelineImage" />
+
+                <TextView
+                    android:id="@+id/timelineDaysLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="@font/neuehaas25"
+                    android:text="dys"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/timelineDaysNumber"
+                    app:layout_constraintStart_toEndOf="@+id/timelineDaysNumber"
+                    app:layout_constraintTop_toTopOf="@+id/timelineDaysNumber" />
+
+                <TextView
+                    android:id="@+id/timelineUpgradeMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/neuehaas45"
+                    android:gravity="center"
+                    android:text="upgrade to pro to access timeline"
+                    android:textColor="@color/grey"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/timelineImage" />
+
                 <TextView
                     android:id="@+id/habitDetailMilestoneLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="32dp"
                     android:fontFamily="@font/neuehaas45"
                     android:text="Next Milestone"
                     android:textColor="@color/grey"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/habitDetailName" />
+                    app:layout_constraintTop_toBottomOf="@+id/timelineUpgradeMessage" />
 
                 <TextView
                     android:id="@+id/habitDetailMilestone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/neuehaas45"
                     android:text="Milestone description here"
@@ -394,6 +474,7 @@
                     android:id="@+id/habitDetailCompletionLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="24dp"
                     android:fontFamily="@font/neuehaas45"
                     android:text="Total Completion Time"
@@ -406,8 +487,9 @@
                     android:id="@+id/habitDetailCompletionTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/neuehaas65"
+                    android:fontFamily="@font/neuehaas45"
                     android:text="0 days"
                     android:textColor="@color/black"
                     android:textSize="48sp"
