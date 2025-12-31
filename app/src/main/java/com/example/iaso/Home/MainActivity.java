@@ -1,5 +1,6 @@
 package com.example.iaso.Home;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +9,13 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -24,6 +28,8 @@ import com.bumptech.glide.Glide;
 import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
+import com.example.iaso.Milestone;
+import com.example.iaso.MilestoneStorage;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.PersonalPage.dataStorage;
@@ -62,6 +68,21 @@ public class MainActivity extends AppCompatActivity {
     List<Float> currentGraphData = new ArrayList<>();
     int currentDaysToShow = 7;
 
+    // Habit detail views
+    androidx.constraintlayout.widget.ConstraintLayout habitDetailContainer;
+    TextView habitDetailName;
+    TextView habitDetailMilestone;
+    TextView habitDetailCompletionTime;
+    androidx.constraintlayout.widget.ConstraintLayout hubContainer;
+
+    // Project indicator
+    ImageView projectIndicator;
+    ImageButton featuredProjectButton;
+    HorizontalScrollView projectScrollView;
+    List<View> projectButtons = new ArrayList<>();
+    View currentSelectedButton = null;
+    int currentSelectedProjectIndex = -1;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,16 +118,51 @@ public class MainActivity extends AppCompatActivity {
         // Setup bottom navigation bar
         BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, MainActivity.class);
 
+        // Setup habit detail views before featuredProjectButton
+        habitDetailContainer = findViewById(R.id.habitDetailContainer);
+        habitDetailName = findViewById(R.id.habitDetailName);
+        habitDetailMilestone = findViewById(R.id.habitDetailMilestone);
+        habitDetailCompletionTime = findViewById(R.id.habitDetailCompletionTime);
+        hubContainer = findViewById(R.id.Hub);
+
         //Set up horizontal list of projects
         projectContainer = findViewById(R.id.projectContainer);
+        projectIndicator = findViewById(R.id.projectIndicator);
+        projectScrollView = findViewById(R.id.projectScrollView);
 
-        ImageButton featuredProjectButton = findViewById(R.id.featuredProjectButton);
-        featuredProjectButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Projects.class);
-            startActivity(intent);
+        // Add scroll listener to update indicator position while scrolling
+        projectScrollView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            // Update indicator position without animation during scroll
+            if (currentSelectedButton != null) {
+                updateIndicatorPosition();
+            }
         });
+
+        featuredProjectButton = findViewById(R.id.featuredProjectButton);
+        featuredProjectButton.setOnClickListener(v -> {
+            // Check if habit detail view is currently shown
+            if (habitDetailContainer != null && habitDetailContainer.getVisibility() == View.VISIBLE) {
+                // Restore main view
+                showMainView();
+            } else {
+                // Navigate to workhorse activity
+                Intent intent = new Intent(MainActivity.this, workhorse.class);
+                startActivity(intent);
+            }
+
+            // Always animate indicator to featuredProjectButton when clicked
+            currentSelectedButton = featuredProjectButton;
+            animateIndicatorToButton(featuredProjectButton, 0, true);
+        });
+
         loadPersonalHabits();
         populateProjectRow();
+
+        // Initialize indicator position to featuredProjectButton after layout
+        featuredProjectButton.post(() -> {
+            currentSelectedButton = featuredProjectButton;
+            animateIndicatorToButton(featuredProjectButton, 0, false);
+        });
 
         // Setup time invested spark graph and ticker
         timeInvestedSparkView = findViewById(R.id.timeInvestedSparkView);
@@ -169,6 +225,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        // Clear existing buttons list
+        projectButtons.clear();
+
+        int index = 0;
         for (DynamicHabit habit : dynamicHabitList) {
             int imageRes = getResources().getIdentifier(habit.getImageName(), "drawable", getPackageName());
 
@@ -187,13 +247,158 @@ public class MainActivity extends AppCompatActivity {
             button.setBackgroundColor(Color.TRANSPARENT);
             button.setScaleType(ImageView.ScaleType.CENTER_CROP);
             Glide.with(this).load(imageRes).circleCrop().into(button);
-            button.setOnClickListener(v ->
-                    Toast.makeText(getApplicationContext(), habit.getDescription(), Toast.LENGTH_SHORT).show()
-            );
+
+            // Store button reference
+            projectButtons.add(frame);
+
+            // Set click listener to show habit details and animate indicator
+            final int buttonIndex = index + 1; // +1 because featuredProjectButton is index 0
+            button.setOnClickListener(v -> {
+                showHabitDetail(habit);
+                currentSelectedButton = frame;
+                animateIndicatorToButton(frame, buttonIndex, true);
+            });
 
             frame.addView(button);
             projectContainer.addView(frame);
+            index++;
         }
+    }
+
+    /**
+     * Shows the habit detail view with milestone information
+     * @param habit The DynamicHabit to display details for
+     */
+    private void showHabitDetail(DynamicHabit habit) {
+        // Hide Hub and RecyclerView
+        if (hubContainer != null) {
+            hubContainer.setVisibility(View.GONE);
+        }
+        if (habitTimeRecyclerView != null) {
+            habitTimeRecyclerView.setVisibility(View.GONE);
+        }
+
+        // Show habit detail container
+        if (habitDetailContainer != null) {
+            habitDetailContainer.setVisibility(View.VISIBLE);
+        }
+
+        // Set habit name
+        if (habitDetailName != null) {
+            habitDetailName.setText(habit.getName3());
+        }
+
+        // Load milestones for this habit
+        MilestoneStorage milestoneStorage = new MilestoneStorage(this);
+        List<Milestone> milestones = milestoneStorage.getMilestonesForHabit(habit.getName3());
+
+        // Set milestone text
+        if (habitDetailMilestone != null) {
+            if (milestones.isEmpty()) {
+                habitDetailMilestone.setText("no milestones exist, upgrade to pro to generate.");
+            } else {
+                // Show first milestone
+                Milestone firstMilestone = milestones.get(0);
+                habitDetailMilestone.setText(firstMilestone.getName());
+            }
+        }
+
+        // Calculate and set total completion time
+        if (habitDetailCompletionTime != null) {
+            if (milestones.isEmpty()) {
+                habitDetailCompletionTime.setText("0 days");
+            } else {
+                int totalDays = 0;
+                for (Milestone milestone : milestones) {
+                    totalDays += milestone.getDays();
+                }
+                habitDetailCompletionTime.setText(totalDays + " days");
+            }
+        }
+    }
+
+    /**
+     * Shows the main view (Hub and RecyclerView) and hides habit detail view
+     */
+    private void showMainView() {
+        // Show Hub and RecyclerView
+        if (hubContainer != null) {
+            hubContainer.setVisibility(View.VISIBLE);
+        }
+        if (habitTimeRecyclerView != null) {
+            habitTimeRecyclerView.setVisibility(View.VISIBLE);
+        }
+
+        // Hide habit detail container
+        if (habitDetailContainer != null) {
+            habitDetailContainer.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Animates the project indicator to center underneath the specified button
+     * @param targetButton The button to position the indicator under
+     * @param index The index of the button (0 for featuredProjectButton, 1+ for dynamic habits)
+     * @param animate Whether to animate the movement (false for initial positioning)
+     */
+    private void animateIndicatorToButton(View targetButton, int index, boolean animate) {
+        if (projectIndicator == null || targetButton == null) {
+            return;
+        }
+
+        // Make indicator visible if this is a new selection
+        if (currentSelectedProjectIndex != index) {
+            projectIndicator.setVisibility(View.VISIBLE);
+            currentSelectedProjectIndex = index;
+        }
+
+        // Calculate the center X position of the target button
+        int[] buttonLocation = new int[2];
+        targetButton.getLocationOnScreen(buttonLocation);
+
+        int[] indicatorLocation = new int[2];
+        projectIndicator.getLocationOnScreen(indicatorLocation);
+
+        // Calculate the translation needed to center the indicator under the button
+        float buttonCenterX = buttonLocation[0] + (targetButton.getWidth() / 2f);
+        float indicatorCenterX = indicatorLocation[0] + (projectIndicator.getWidth() / 2f);
+        float targetTranslationX = projectIndicator.getTranslationX() + (buttonCenterX - indicatorCenterX);
+
+        if (animate) {
+            // Animate with smooth decelerate interpolator and spline-like easing
+            ObjectAnimator animator = ObjectAnimator.ofFloat(projectIndicator, "translationX", targetTranslationX);
+            animator.setDuration(350);
+            animator.setInterpolator(new DecelerateInterpolator(1.5f));
+            animator.start();
+        } else {
+            // Set position immediately without animation
+            projectIndicator.setTranslationX(targetTranslationX);
+        }
+    }
+
+    /**
+     * Updates the indicator position to stay aligned with the currently selected button.
+     * Called during scrolling to keep the indicator synced with the button.
+     */
+    private void updateIndicatorPosition() {
+        if (projectIndicator == null || currentSelectedButton == null) {
+            return;
+        }
+
+        // Calculate the center X position of the current selected button
+        int[] buttonLocation = new int[2];
+        currentSelectedButton.getLocationOnScreen(buttonLocation);
+
+        int[] indicatorLocation = new int[2];
+        projectIndicator.getLocationOnScreen(indicatorLocation);
+
+        // Calculate the translation needed to center the indicator under the button
+        float buttonCenterX = buttonLocation[0] + (currentSelectedButton.getWidth() / 2f);
+        float indicatorCenterX = indicatorLocation[0] + (projectIndicator.getWidth() / 2f);
+        float targetTranslationX = projectIndicator.getTranslationX() + (buttonCenterX - indicatorCenterX);
+
+        // Update position immediately without animation
+        projectIndicator.setTranslationX(targetTranslationX);
     }
 
     private int dpToPx(int dp) {
