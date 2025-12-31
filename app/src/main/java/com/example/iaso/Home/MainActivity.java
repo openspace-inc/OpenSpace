@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Habit detail views
     androidx.constraintlayout.widget.ConstraintLayout habitDetailContainer;
+    ImageView habitDetailImage;
     TextView habitDetailName;
     TextView habitDetailMilestone;
     TextView habitDetailCompletionTime;
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup habit detail views before featuredProjectButton
         habitDetailContainer = findViewById(R.id.habitDetailContainer);
+        habitDetailImage = findViewById(R.id.habitDetailImage);
         habitDetailName = findViewById(R.id.habitDetailName);
         habitDetailMilestone = findViewById(R.id.habitDetailMilestone);
         habitDetailCompletionTime = findViewById(R.id.habitDetailCompletionTime);
@@ -300,6 +302,12 @@ public class MainActivity extends AppCompatActivity {
         // Set habit name
         if (habitDetailName != null) {
             habitDetailName.setText(habit.getName3());
+        }
+
+        // Load and display habit image
+        if (habitDetailImage != null) {
+            int imageRes = getResources().getIdentifier(habit.getImageName(), "drawable", getPackageName());
+            Glide.with(this).load(imageRes).circleCrop().into(habitDetailImage);
         }
 
         // Load milestones for this habit

@@ -351,17 +351,28 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/Row">
 
+                <ImageView
+                    android:id="@+id/habitDetailImage"
+                    android:layout_width="32sp"
+                    android:layout_height="32sp"
+                    android:layout_marginStart="16dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ionlogo"
+                    app:layout_constraintBottom_toBottomOf="@+id/habitDetailName"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/habitDetailName" />
+
                 <TextView
                     android:id="@+id/habitDetailName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="12dp"
                     android:fontFamily="@font/neuehaas65"
                     android:text="Project Name"
                     android:textColor="@color/black"
                     android:textSize="32sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/habitDetailImage"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <!-- Timeline Section -->
@@ -411,7 +422,6 @@
                     android:textColor="@color/black"
                     android:textSize="32sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/timelineImage"
                     app:layout_constraintStart_toEndOf="@+id/timelineImage"
                     app:layout_constraintTop_toTopOf="@+id/timelineImage" />
 
@@ -419,14 +429,12 @@
                     android:id="@+id/timelineDaysLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
                     android:fontFamily="@font/neuehaas25"
                     android:text="dys"
                     android:textColor="@color/grey"
                     android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/timelineDaysNumber"
-                    app:layout_constraintStart_toEndOf="@+id/timelineDaysNumber"
-                    app:layout_constraintTop_toTopOf="@+id/timelineDaysNumber" />
+                    app:layout_constraintStart_toStartOf="@+id/timelineDaysNumber"
+                    app:layout_constraintTop_toBottomOf="@+id/timelineDaysNumber" />
 
                 <TextView
                     android:id="@+id/timelineUpgradeMessage"
