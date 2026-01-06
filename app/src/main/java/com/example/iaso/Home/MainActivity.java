@@ -226,6 +226,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Cleanup timer resources
+        BottomNavigationHelper.cleanup();
+    }
+
     private void loadPersonalHabits() {
         dynamicHabits = getSharedPreferences("PersonalHabits", Context.MODE_MULTI_PROCESS);
         String json = dynamicHabits.getString("personalHabitList", null);
@@ -273,6 +280,19 @@ public class MainActivity extends AppCompatActivity {
                 showHabitDetail(habit);
                 currentSelectedButton = frame;
                 animateIndicatorToButton(frame, buttonIndex, true);
+            });
+            
+            // Set long-press listener to start focus timer
+            button.setOnLongClickListener(v -> {
+                // Start focus timer for this habit
+                BottomNavigationHelper.startFocusTimer(
+                    MainActivity.this,
+                    habit.getName3(),
+                    habit.getImageName(),
+                    habit.getTime()
+                );
+                Toast.makeText(MainActivity.this, "Focus timer started for " + habit.getName3(), Toast.LENGTH_SHORT).show();
+                return true; // Consume the long click
             });
 
             frame.addView(button);

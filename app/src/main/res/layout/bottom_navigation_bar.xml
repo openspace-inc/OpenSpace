@@ -30,18 +30,94 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:maxWidth="300dp"
-        app:cardCornerRadius="60dp"
+        app:cardCornerRadius="40dp"
         app:cardElevation="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent="0.85">
+        app:layout_constraintWidth_percent="0.95">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp">
+
+            <!-- Focus Timer Container - Initially GONE, shown when timer is active -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/focusTimerContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:alpha="0"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.90">
+
+                <!-- Habit Image (24dp x 24dp, left side) -->
+                <ImageView
+                    android:id="@+id/focusTimerHabitImage"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ionlogo"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Progress Bar Container (between image and timer) -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/progressBarContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="10dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/focusTimerMinutesText"
+                    app:layout_constraintStart_toEndOf="@+id/focusTimerHabitImage"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!-- Grey background bar (full width) -->
+                    <View
+                        android:id="@+id/progressBarBackground"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/rounded_progress_background"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Black progress bar (grows with timer) -->
+                    <View
+                        android:id="@+id/progressBarForeground"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@drawable/rounded_progress_foreground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintWidth_percent="0" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Minutes Counter (right side, with ticker animation) -->
+                <com.robinhood.ticker.TickerView
+                    android:id="@+id/focusTimerMinutesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/neuehaas75"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:ticker_animationDuration="800" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageButton
                 android:id="@+id/navButtonWorkhorse"
@@ -49,14 +125,13 @@
                 android:layout_height="80dp"
                 android:layout_marginEnd="28dp"
                 android:background="@null"
+                android:contentDescription="Workhorse Activity"
                 android:scaleType="fitCenter"
                 android:src="@drawable/activity_black_menu"
-                android:contentDescription="Workhorse Activity"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/navButtonHub"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <ImageButton
                 android:id="@+id/navButtonHub"
@@ -64,26 +139,24 @@
                 android:layout_height="80dp"
                 android:layout_marginEnd="28dp"
                 android:background="@null"
+                android:contentDescription="Hub Activity"
                 android:scaleType="fitCenter"
                 android:src="@drawable/hub_white_menu"
-                android:contentDescription="Hub Activity"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/navButtonAnalytics"
-                app:layout_constraintStart_toEndOf="@+id/navButtonWorkhorse"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/navButtonWorkhorse" />
 
             <ImageButton
                 android:id="@+id/navButtonAnalytics"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:background="@null"
+                android:contentDescription="Analytics Activity"
                 android:scaleType="fitCenter"
                 android:src="@drawable/block_black_menu"
-                android:contentDescription="Analytics Activity"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/navButtonHub"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/navButtonHub" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

@@ -149,6 +149,13 @@ public class PersonalPage extends AppCompatActivity implements RecyclerViewInter
         // Setup bottom navigation bar
         BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, PersonalPage.class);
     }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Cleanup timer resources
+        BottomNavigationHelper.cleanup();
+    }
 
     //Add a data entry to the dataStorage sharedPref
     private void addToDataStorage(dataStorage newData) {
