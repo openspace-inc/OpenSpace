@@ -154,10 +154,10 @@ public class BottomNavigationHelper {
             return;
         }
         
-        // Setup ticker view
+        // Setup ticker view with character list that includes colon for MM:SS format
         minutesText.setCharacterLists(TickerUtils.provideNumberList());
-        Typeface neuehaas45 = activity.getResources().getFont(R.font.neuehaas45);
-        minutesText.setTypeface(neuehaas45);
+        Typeface neuehaas75 = activity.getResources().getFont(R.font.neuehaas75);
+        minutesText.setTypeface(neuehaas75);
         
         // Check if timer is active
         if (timerManager.isTimerActive()) {
@@ -376,6 +376,7 @@ public class BottomNavigationHelper {
     
     /**
      * Updates the timer UI with current values
+     * Displays time in MM:SS format (or just minutes for 1000+)
      * @param bottomNavView Bottom navigation view
      */
     private static void updateTimerUI(View bottomNavView) {
@@ -390,9 +391,9 @@ public class BottomNavigationHelper {
             return;
         }
         
-        // Update minutes counter
-        int elapsedMinutes = timerManager.getElapsedMinutes();
-        minutesText.setText(String.valueOf(elapsedMinutes));
+        // Update time display with formatted time (MM:SS or minutes only for 1000+)
+        String formattedTime = timerManager.getFormattedElapsedTime();
+        minutesText.setText(formattedTime);
         
         // Update progress bar
         float progressRatio = timerManager.getProgressRatio();

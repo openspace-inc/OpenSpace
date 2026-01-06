@@ -182,27 +182,53 @@ public class FocusTimerManager {
             return 0;
         }
         
-        long startTime = prefs.getLong(KEY_START_TIME, 0);
-        long currentTime = System.currentTimeMillis();
-        long totalPaused = prefs.getLong(KEY_TOTAL_PAUSED, 0);
-        
-        // If currently paused, add the current pause duration
-        if (isTimerPaused()) {
-            long pausedTime = prefs.getLong(KEY_PAUSED_TIME, 0);
-            long currentPauseDuration = currentTime - pausedTime;
-            totalPaused += currentPauseDuration;
-        }
-        
-        // Calculate elapsed time: (current time - start time) - total paused time
-        long elapsedMillis = currentTime - startTime - totalPaused;
+        long elapsedMillis = getElapsedMillis();
         
         // Convert to minutes (rounded down)
         return (int) (elapsedMillis / (1000 * 60));
     }
     
     /**
+     * Gets the elapsed time in seconds (excluding paused time)
+     * @return Elapsed seconds since timer started
+     */
+    public int getElapsedSeconds() {
+        if (!isTimerActive()) {
+            return 0;
+        }
+        
+        long elapsedMillis = getElapsedMillis();
+        
+        // Convert to seconds (rounded down)
+        return (int) (elapsedMillis / 1000);
+    }
+    
+    /**
+     * Gets the elapsed time formatted as MM:SS or just minutes for 1000+
+     * @return Formatted time string
+     */
+    public String getFormattedElapsedTime() {
+        if (!isTimerActive()) {
+            return "0:00";
+        }
+        
+        int totalSeconds = getElapsedSeconds();
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+        
+        // If 1000+ minutes, display only minutes
+        if (minutes >= 1000) {
+            return String.valueOf(minutes);
+        }
+        
+        // Otherwise display MM:SS format
+        return String.format("%d:%02d", minutes, seconds);
+    }
+    
+    /**
      * Gets the elapsed time in milliseconds (excluding paused time)
      * Used for more precise calculations and UI updates
+     * This method correctly handles paused time even when app is closed
      * @return Elapsed milliseconds since timer started
      */
     public long getElapsedMillis() {
@@ -215,6 +241,7 @@ public class FocusTimerManager {
         long totalPaused = prefs.getLong(KEY_TOTAL_PAUSED, 0);
         
         // If currently paused, add the current pause duration
+        // This ensures accurate calculation even after app restart while paused
         if (isTimerPaused()) {
             long pausedTime = prefs.getLong(KEY_PAUSED_TIME, 0);
             long currentPauseDuration = currentTime - pausedTime;
@@ -222,7 +249,10 @@ public class FocusTimerManager {
         }
         
         // Calculate elapsed time: (current time - start time) - total paused time
-        return currentTime - startTime - totalPaused;
+        long elapsedMillis = currentTime - startTime - totalPaused;
+        
+        // Ensure non-negative (edge case protection)
+        return Math.max(0, elapsedMillis);
     }
     
     /**
@@ -258,6 +288,8 @@ public class FocusTimerManager {
             getHabitImageName(),
             getDailyGoalMinutes(),
             getElapsedMinutes(),
+            getElapsedSeconds(),
+            getFormattedElapsedTime(),
             getProgressRatio()
         );
     }
@@ -274,17 +306,22 @@ public class FocusTimerManager {
         public final String habitImageName;
         public final int dailyGoalMinutes;
         public final int elapsedMinutes;
+        public final int elapsedSeconds;
+        public final String formattedTime;
         public final float progressRatio;
         
         public FocusTimerState(boolean isActive, boolean isPaused, String habitName, 
                               String habitImageName, int dailyGoalMinutes, 
-                              int elapsedMinutes, float progressRatio) {
+                              int elapsedMinutes, int elapsedSeconds, 
+                              String formattedTime, float progressRatio) {
             this.isActive = isActive;
             this.isPaused = isPaused;
             this.habitName = habitName;
             this.habitImageName = habitImageName;
             this.dailyGoalMinutes = dailyGoalMinutes;
             this.elapsedMinutes = elapsedMinutes;
+            this.elapsedSeconds = elapsedSeconds;
+            this.formattedTime = formattedTime;
             this.progressRatio = progressRatio;
         }
     }

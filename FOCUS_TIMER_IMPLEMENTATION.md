@@ -29,10 +29,17 @@ The timer UI displays above the navigation buttons with the following elements:
 - Rounded edges (4dp corner radius)
 - 16dp padding between image and bar, and bar and timer
 
-#### c. Live Minutes Counter (right side)
+#### c. Live Time Counter (right side)
 - Uses Robinhood TickerView for smooth animated number transitions
+- Displays time in **MM:SS format** (e.g., "5:42", "23:08")
+- For 1000+ minutes, displays only minutes (e.g., "1234")
 - Updates every second while timer is running
+- Accurately calculates seconds even after:
+  - App is closed and reopened
+  - Timer is paused and resumed
+  - Multiple pause/resume cycles
 - **Tap to pause/resume timer**
+- **Note**: When timer is stopped, only minutes are saved (seconds are for display only)
 
 ### 3. **Timer States**
 
@@ -67,22 +74,33 @@ The timer state persists across app restarts with the following fields:
 - `totalPausedDurationMillis`: Total time spent paused (accumulated)
 
 #### Time Calculation
-Elapsed time is calculated as:
+Elapsed time is calculated with millisecond precision:
 ```
-elapsed = (current time - start time) - total paused duration
+elapsed_millis = (current_time - start_time) - total_paused_duration
+elapsed_seconds = elapsed_millis / 1000
+minutes = elapsed_seconds / 60
+seconds = elapsed_seconds % 60
+
+Display format:
+  if minutes < 1000: "MM:SS"
+  else: "MMMM" (minutes only)
 ```
 
 This ensures:
 - Timer continues correctly after app restart
 - Paused time is excluded from elapsed time
 - Multiple pause/resume cycles are handled correctly
+- Seconds are accurately calculated and displayed
+- When timer is paused, the pause duration is dynamically added to total paused time
 
 #### Data Recording (SharedPreferences: "userStorage")
 When timer is stopped, a `dataStorage` object is created and saved with:
 - `name`: Habit name
 - `type`: "Personal" (verified from habit data)
-- `hours`: Elapsed minutes (converted from milliseconds)
+- `hours`: Elapsed **minutes only** (rounded down, seconds are not saved)
 - `day`: Current day of year (Calendar.DAY_OF_YEAR)
+
+**Note**: Seconds are displayed for user feedback but only minutes are recorded in the data storage, as per the original specification.
 
 ### 5. **Animations**
 
@@ -131,7 +149,10 @@ When timer is stopped, a `dataStorage` object is created and saved with:
 - `pauseTimer()`: Pauses active timer
 - `resumeTimer()`: Resumes paused timer
 - `stopTimer()`: Stops timer and returns elapsed minutes
-- `getElapsedMinutes()`: Returns current elapsed time (excluding paused time)
+- `getElapsedMinutes()`: Returns current elapsed time in minutes (excluding paused time)
+- `getElapsedSeconds()`: Returns current elapsed time in seconds (excluding paused time)
+- `getElapsedMillis()`: Returns current elapsed time in milliseconds for precise calculation
+- `getFormattedElapsedTime()`: Returns formatted time string ("MM:SS" or minutes only for 1000+)
 - `getProgressRatio()`: Returns progress (0.0 to 1.0) toward daily goal
 - `getState()`: Returns immutable FocusTimerState object for UI
 
@@ -251,21 +272,25 @@ When timer is stopped, a `dataStorage` object is created and saved with:
 - [ ] Timer UI appears with animation
 - [ ] Habit image loads correctly
 - [ ] Progress bar is visible (grey background)
-- [ ] Minutes counter starts at 0 or 1
-- [ ] Tap minutes to pause - updates stop
-- [ ] Tap minutes again to resume - updates restart
-- [ ] Progress bar grows proportionally
+- [ ] Time counter displays "0:00" initially
+- [ ] Seconds increment correctly (0:01, 0:02, etc.)
+- [ ] Minutes increment correctly (0:59 → 1:00)
+- [ ] Format shows MM:SS up to 999:59
+- [ ] Format switches to minutes only at 1000 (displays "1000", "1001", etc.)
+- [ ] Tap time counter to pause - display freezes with accurate time
+- [ ] Tap time counter again to resume - continues from exact paused time
+- [ ] Progress bar grows proportionally based on minutes
 - [ ] Progress bar stops at 100% when goal is reached
-- [ ] Timer continues past goal
+- [ ] Timer continues past goal (counter still updates)
 - [ ] Tap habit image to stop timer
 - [ ] Timer UI disappears with animation
-- [ ] Data is saved to userStorage
-- [ ] Toast shows confirmation
-- [ ] Close app with active timer - reopens correctly
-- [ ] Close app with paused timer - reopens in paused state
-- [ ] Elapsed time is accurate after app restart
-- [ ] Multiple pause/resume cycles work correctly
-- [ ] Navigation between MainActivity and PersonalPage preserves timer
+- [ ] Data is saved to userStorage (minutes only, no seconds)
+- [ ] Toast shows confirmation with minutes
+- [ ] Close app with active timer - reopens with correct MM:SS time
+- [ ] Close app with paused timer - reopens in paused state with correct time
+- [ ] Seconds are accurate after app restart (not reset to :00)
+- [ ] Multiple pause/resume cycles maintain accurate seconds
+- [ ] Navigation between MainActivity and PersonalPage preserves timer with seconds
 - [ ] Timer updates stop after navigating away
 
 ## Future Enhancements (Not Implemented)
