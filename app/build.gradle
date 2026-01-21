@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace 'com.example.iaso'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.iaso.iaso"
         minSdk 24
-        targetSdk 34
-        versionCode 3
-        versionName "2024.3.22"
+        targetSdk 35
+        versionCode 5
+        versionName "Aurelian 2026.54"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

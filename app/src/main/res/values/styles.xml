@@ -2,6 +2,6 @@
 <resources>
     <style name="NumberPickerCustomText">
         <item name="android:textSize">30sp</item> // add if you want to change size
-        <item name="android:fontFamily">@font/sfuidisplayheavy</item>// add font (this font folder is present in res folder)
+        <item name="android:fontFamily">@font/neuehaas45</item>// add font (this font folder is present in res folder)
     </style>
 </resources>

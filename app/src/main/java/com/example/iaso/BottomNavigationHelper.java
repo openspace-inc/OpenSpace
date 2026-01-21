@@ -156,7 +156,7 @@ public class BottomNavigationHelper {
         
         // Setup ticker view with character list that includes colon for MM:SS format
         minutesText.setCharacterLists(TickerUtils.provideNumberList());
-        Typeface neuehaas75 = activity.getResources().getFont(R.font.neuehaas75);
+        Typeface neuehaas75 = activity.getResources().getFont(R.font.neuehaas45);
         minutesText.setTypeface(neuehaas75);
         
         // Check if timer is active
