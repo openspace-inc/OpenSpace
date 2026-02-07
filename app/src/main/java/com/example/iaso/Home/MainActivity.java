@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Feature 4: Task list views
     LinearLayout habitTaskListContainer;
-    TextView addTaskButton;
+    CardView addTaskButton;
 
     // Currently selected habit for toggle behavior
     DynamicHabit currentlySelectedHabit = null;
@@ -349,13 +349,12 @@ public class MainActivity extends AppCompatActivity {
      * @param habit The DynamicHabit to display details for
      */
     private void showHabitDetail(DynamicHabit habit) {
-        // Toggle off if same habit tapped again
+        // If same habit tapped again, just show a toast
         if (currentlySelectedHabit != null
                 && currentlySelectedHabit.getName3().equals(habit.getName3())
                 && habitDetailContainer != null
                 && habitDetailContainer.getVisibility() == View.VISIBLE) {
-            currentlySelectedHabit = null;
-            showMainView();
+            Toast.makeText(this, "You are already on this project!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -385,6 +384,11 @@ public class MainActivity extends AppCompatActivity {
             Glide.with(this).load(imageRes).circleCrop().into(habitDetailImage);
         }
 
+        // Show the fixed "Add Data" button
+        if (addTaskButton != null) {
+            addTaskButton.setVisibility(View.VISIBLE);
+        }
+
         // Populate all 4 features
         updateProgressBar(habit);
         updateTimeline(habit);
@@ -409,6 +413,11 @@ public class MainActivity extends AppCompatActivity {
         // Hide habit detail container
         if (habitDetailContainer != null) {
             habitDetailContainer.setVisibility(View.GONE);
+        }
+
+        // Hide the fixed "Add Data" button
+        if (addTaskButton != null) {
+            addTaskButton.setVisibility(View.GONE);
         }
     }
 

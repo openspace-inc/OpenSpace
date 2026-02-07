@@ -452,6 +452,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="-16dp"
                     android:layout_marginTop="12dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -465,6 +466,7 @@
                             android:id="@+id/timelineImage"
                             android:layout_width="match_parent"
                             android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
                             android:scaleType="fitXY"
                             android:src="@drawable/os_timeline" />
 
@@ -597,28 +599,38 @@
                     android:layout_marginTop="8dp"
                     android:orientation="vertical" />
 
-                <!-- Add Task button -->
-                <TextView
-                    android:id="@+id/addTaskButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@drawable/add_task_button_bg"
-                    android:fontFamily="@font/neuehaas65"
-                    android:paddingStart="24dp"
-                    android:paddingTop="10dp"
-                    android:paddingEnd="24dp"
-                    android:paddingBottom="10dp"
-                    android:text="Add Task"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp" />
-
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Fixed "Add Data" button above tab bar -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/addTaskButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#000000"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/tabBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:fontFamily="@font/neuehaas65"
+            android:paddingStart="24dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="10dp"
+            android:text="All Data"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/tabBar"
