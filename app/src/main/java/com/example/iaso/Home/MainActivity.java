@@ -8,8 +8,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
@@ -19,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.iaso.BottomNavigationHelper;
+import com.example.iaso.HabitTask;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
 import com.example.iaso.Milestone;
@@ -69,19 +77,33 @@ public class MainActivity extends AppCompatActivity {
     int currentDaysToShow = 7;
 
     // Habit detail views
-    androidx.constraintlayout.widget.ConstraintLayout habitDetailContainer;
+    LinearLayout habitDetailContainer;
     ImageView habitDetailImage;
     TextView habitDetailName;
-    TextView habitDetailMilestone;
-    TextView habitDetailCompletionTime;
     androidx.constraintlayout.widget.ConstraintLayout hubContainer;
 
-    // Timeline views
+    // Feature 1: Daily Progress Bar views
+    View progressBarFillGreen;
+    FrameLayout progressBarFrame;
+    TextView minutesLeftNumber;
+
+    // Feature 2: Timeline views
     ImageView timelineImage;
     ImageView timelineArrow;
     TextView timelineDaysNumber;
     TextView timelineDaysLabel;
     TextView timelineUpgradeMessage;
+
+    // Feature 3: Milestone card views
+    TextView milestoneCardName;
+    TextView milestoneCardDaysLeft;
+
+    // Feature 4: Task list views
+    LinearLayout habitTaskListContainer;
+    CardView addTaskButton;
+
+    // Currently selected habit for toggle behavior
+    DynamicHabit currentlySelectedHabit = null;
 
     // Project indicator
     ImageView projectIndicator;
@@ -126,20 +148,36 @@ public class MainActivity extends AppCompatActivity {
         // Setup bottom navigation bar
         BottomNavigationHelper.setupBottomNavigation(this, R.id.bottom_nav_include, MainActivity.class);
 
-        // Setup habit detail views before featuredProjectButton
+        // Setup habit detail views
         habitDetailContainer = findViewById(R.id.habitDetailContainer);
         habitDetailImage = findViewById(R.id.habitDetailImage);
         habitDetailName = findViewById(R.id.habitDetailName);
-        habitDetailMilestone = findViewById(R.id.habitDetailMilestone);
-        habitDetailCompletionTime = findViewById(R.id.habitDetailCompletionTime);
         hubContainer = findViewById(R.id.Hub);
 
-        // Setup timeline views
+        // Feature 1: Progress bar views
+        progressBarFillGreen = findViewById(R.id.progressBarFillGreen);
+        progressBarFrame = findViewById(R.id.progressBarFrame);
+        minutesLeftNumber = findViewById(R.id.minutesLeftNumber);
+
+        // Feature 2: Timeline views
         timelineImage = findViewById(R.id.timelineImage);
         timelineArrow = findViewById(R.id.timelineArrow);
         timelineDaysNumber = findViewById(R.id.timelineDaysNumber);
         timelineDaysLabel = findViewById(R.id.timelineDaysLabel);
         timelineUpgradeMessage = findViewById(R.id.timelineUpgradeMessage);
+
+        // Feature 3: Milestone card views
+        milestoneCardName = findViewById(R.id.milestoneCardName);
+        milestoneCardDaysLeft = findViewById(R.id.milestoneCardDaysLeft);
+
+        // Feature 4: Task list views
+        habitTaskListContainer = findViewById(R.id.habitTaskListContainer);
+        addTaskButton = findViewById(R.id.addTaskButton);
+        addTaskButton.setOnClickListener(v -> {
+            if (currentlySelectedHabit != null) {
+                showAddTaskDialog(currentlySelectedHabit.getName3());
+            }
+        });
 
         //Set up horizontal list of projects
         projectContainer = findViewById(R.id.projectContainer);
@@ -301,11 +339,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // ==================== HABIT DETAIL METHODS ====================
+
     /**
-     * Shows the habit detail view with milestone information
+     * Shows or toggles the habit detail expansion panel.
+     * If the same habit is tapped again, the panel is hidden and the main view restored.
+     * If a different habit is tapped, the panel switches to that habit's data.
+     *
      * @param habit The DynamicHabit to display details for
      */
     private void showHabitDetail(DynamicHabit habit) {
+        // If same habit tapped again, just show a toast
+        if (currentlySelectedHabit != null
+                && currentlySelectedHabit.getName3().equals(habit.getName3())
+                && habitDetailContainer != null
+                && habitDetailContainer.getVisibility() == View.VISIBLE) {
+            Toast.makeText(this, "You are already on this project!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        currentlySelectedHabit = habit;
+
         // Hide Hub and RecyclerView
         if (hubContainer != null) {
             hubContainer.setVisibility(View.GONE);
@@ -314,58 +368,40 @@ public class MainActivity extends AppCompatActivity {
             habitTimeRecyclerView.setVisibility(View.GONE);
         }
 
-        // Show habit detail container
+        // Show habit detail container with fade-in
         if (habitDetailContainer != null) {
+            habitDetailContainer.setAlpha(0f);
             habitDetailContainer.setVisibility(View.VISIBLE);
+            habitDetailContainer.animate().alpha(1f).setDuration(250).start();
         }
 
-        // Set habit name
+        // Set habit header (image + ticker symbol)
         if (habitDetailName != null) {
-            habitDetailName.setText(habit.getName3());
+            habitDetailName.setText(habit.getStockSymbol());
         }
-
-        // Load and display habit image
         if (habitDetailImage != null) {
             int imageRes = getResources().getIdentifier(habit.getImageName(), "drawable", getPackageName());
             Glide.with(this).load(imageRes).circleCrop().into(habitDetailImage);
         }
 
-        // Load milestones for this habit
-        MilestoneStorage milestoneStorage = new MilestoneStorage(this);
-        List<Milestone> milestones = milestoneStorage.getMilestonesForHabit(habit.getName3());
-
-        // Set milestone text
-        if (habitDetailMilestone != null) {
-            if (milestones.isEmpty()) {
-                habitDetailMilestone.setText("no milestones exist, upgrade to pro to generate.");
-            } else {
-                // Show first milestone
-                Milestone firstMilestone = milestones.get(0);
-                habitDetailMilestone.setText(firstMilestone.getName());
-            }
+        // Show the fixed "Add Data" button
+        if (addTaskButton != null) {
+            addTaskButton.setVisibility(View.VISIBLE);
         }
 
-        // Calculate and set total completion time
-        int totalCompletionDays = 0;
-        if (habitDetailCompletionTime != null) {
-            if (milestones.isEmpty()) {
-                habitDetailCompletionTime.setText("0 days");
-            } else {
-                for (Milestone milestone : milestones) {
-                    totalCompletionDays += milestone.getDays();
-                }
-                habitDetailCompletionTime.setText(totalCompletionDays + " days");
-            }
-        }
-
-        // Setup and animate timeline
-        setupTimeline(habit, totalCompletionDays);
+        // Populate all 4 features
+        updateProgressBar(habit);
+        updateTimeline(habit);
+        updateCurrentMilestone(habit);
+        updateTaskList(habit);
     }
 
     /**
-     * Shows the main view (Hub and RecyclerView) and hides habit detail view
+     * Shows the main view (Hub and RecyclerView) and hides habit detail view.
      */
     private void showMainView() {
+        currentlySelectedHabit = null;
+
         // Show Hub and RecyclerView
         if (hubContainer != null) {
             hubContainer.setVisibility(View.VISIBLE);
@@ -378,95 +414,374 @@ public class MainActivity extends AppCompatActivity {
         if (habitDetailContainer != null) {
             habitDetailContainer.setVisibility(View.GONE);
         }
+
+        // Hide the fixed "Add Data" button
+        if (addTaskButton != null) {
+            addTaskButton.setVisibility(View.GONE);
+        }
     }
 
+    // ==================== FEATURE 1: DAILY PROGRESS BAR ====================
+
     /**
-     * Sets up and animates the timeline visualization for the selected habit.
-     * Calculates the progress percentage based on days elapsed since creation.
+     * Updates the vertical progress bar and minutes-left display for the selected habit.
+     * Reads today's logged minutes from userStorage and compares against the daily target.
+     *
+     * @param habit The DynamicHabit whose progress to display
+     */
+    private void updateProgressBar(DynamicHabit habit) {
+        int dailyTarget = habit.getTime();
+
+        // Load today's logged minutes from userStorage SharedPreferences
+        SharedPreferences userStorage = getSharedPreferences("userStorage", Context.MODE_MULTI_PROCESS);
+        String json = userStorage.getString("userStorageList", null);
+
+        double minutesWorkedToday = 0;
+        if (json != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<ArrayList<dataStorage>>(){}.getType();
+            ArrayList<dataStorage> storageList = gson.fromJson(json, type);
+
+            Calendar cal = Calendar.getInstance();
+            int todayDayOfYear = cal.get(Calendar.DAY_OF_YEAR);
+
+            if (storageList != null) {
+                for (dataStorage entry : storageList) {
+                    if (entry.getName().equals(habit.getName3()) && entry.getDate() == todayDayOfYear) {
+                        minutesWorkedToday += entry.getHours();
+                    }
+                }
+            }
+        }
+
+        // Calculate percentage and remaining minutes
+        double percentage = dailyTarget > 0 ? Math.min(1.0, minutesWorkedToday / dailyTarget) : 0;
+        int minutesLeft = Math.max(0, dailyTarget - (int) minutesWorkedToday);
+
+        // Update the minutes-left number
+        if (minutesLeftNumber != null) {
+            minutesLeftNumber.setText(String.valueOf(minutesLeft));
+        }
+
+        // Update the green fill height as a percentage of the total bar height
+        if (progressBarFillGreen != null && progressBarFrame != null) {
+            progressBarFrame.post(() -> {
+                int totalHeight = progressBarFrame.getHeight();
+                int fillHeight = (int) (totalHeight * percentage);
+                ViewGroup.LayoutParams params = progressBarFillGreen.getLayoutParams();
+                params.height = fillHeight;
+                progressBarFillGreen.setLayoutParams(params);
+            });
+        }
+    }
+
+    // ==================== FEATURE 2: TIMELINE ====================
+
+    /**
+     * Updates the timeline section for the selected habit.
+     * Calculates progress based on days elapsed since creation vs total completion days.
+     * Displays remaining time in years (or days if < 1 year).
      *
      * @param habit The DynamicHabit to display timeline for
-     * @param totalCompletionDays Total planned days to complete the habit (from milestones)
      */
-    private void setupTimeline(DynamicHabit habit, int totalCompletionDays) {
-        // Check if we have all necessary data
+    private void updateTimeline(DynamicHabit habit) {
+        // Load milestones to get total completion days
+        MilestoneStorage milestoneStorage = new MilestoneStorage(this);
+        List<Milestone> milestones = milestoneStorage.getMilestonesForHabit(habit.getName3());
+
+        int totalCompletionDays = 0;
+        for (Milestone milestone : milestones) {
+            totalCompletionDays += milestone.getDays();
+        }
+
         long creationDate = habit.getCreationDate();
         boolean hasValidData = creationDate > 0 && totalCompletionDays > 0;
 
         if (!hasValidData) {
-            // Show fallback state: timeline at start, upgrade message
             if (timelineUpgradeMessage != null) {
                 timelineUpgradeMessage.setVisibility(View.VISIBLE);
             }
             if (timelineDaysNumber != null) {
                 timelineDaysNumber.setText("0");
             }
-            // Position arrow at the very left (0% progress)
+            if (timelineDaysLabel != null) {
+                timelineDaysLabel.setText("Yrs left");
+            }
             if (timelineArrow != null) {
                 timelineArrow.post(() -> animateTimelineArrow(0f));
             }
             return;
         }
 
-        // Hide upgrade message when we have valid data
         if (timelineUpgradeMessage != null) {
             timelineUpgradeMessage.setVisibility(View.GONE);
         }
 
-        // Calculate days elapsed since project creation
+        // Calculate days elapsed and remaining
         long currentTime = System.currentTimeMillis();
         long elapsedMillis = currentTime - creationDate;
-        int daysElapsed = (int) (elapsedMillis / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+        int daysElapsed = (int) (elapsedMillis / (1000L * 60 * 60 * 24));
+        int daysRemaining = Math.max(0, totalCompletionDays - daysElapsed);
 
-        // Calculate progress percentage: (days elapsed / total completion days) * 100
-        // Cap at 100% maximum
+        // Progress percentage for the arrow
         float calculatedPercentage = ((float) daysElapsed / (float) totalCompletionDays) * 100f;
         final float progressPercentage = Math.min(calculatedPercentage, 100f);
 
-        // Update timeline days display
-        if (timelineDaysNumber != null) {
-            timelineDaysNumber.setText(String.valueOf(totalCompletionDays));
+        // Display remaining time as years (with 1 decimal) or days
+        if (timelineDaysNumber != null && timelineDaysLabel != null) {
+            if (daysRemaining >= 365) {
+                double yearsLeft = daysRemaining / 365.0;
+                timelineDaysNumber.setText(String.format("%.1f", yearsLeft));
+                timelineDaysLabel.setText("Yrs left");
+            } else {
+                timelineDaysNumber.setText(String.valueOf(daysRemaining));
+                timelineDaysLabel.setText("days left");
+            }
         }
 
-        // Animate the arrow to the calculated position after layout is complete
+        // Animate the arrow
         if (timelineArrow != null && timelineImage != null) {
             timelineArrow.post(() -> animateTimelineArrow(progressPercentage));
         }
     }
 
     /**
-     * Animates the timeline arrow from the left to its target position based on progress percentage.
+     * Animates the timeline arrow to its target position based on progress percentage.
      *
-     * @param progressPercentage The progress percentage (0-100) indicating how far along the timeline the arrow should be
+     * @param progressPercentage The progress percentage (0-100)
      */
     private void animateTimelineArrow(float progressPercentage) {
         if (timelineArrow == null || timelineImage == null) {
             return;
         }
 
-        // Get the width of the timeline image (75% of container width)
         int timelineWidth = timelineImage.getWidth();
         if (timelineWidth == 0) {
-            // Layout not complete yet, try again
             timelineArrow.post(() -> animateTimelineArrow(progressPercentage));
             return;
         }
 
-        // Calculate target X position within the timeline
-        // At 0%: arrow is at the left edge of timeline
-        // At 100%: arrow is at the right edge of timeline
-        // Account for arrow width so it doesn't go past the timeline edge
         int arrowWidth = timelineArrow.getWidth();
         float maxTranslation = timelineWidth - arrowWidth;
         float targetTranslationX = (progressPercentage / 100f) * maxTranslation;
 
-        // Reset arrow to start position (left edge)
         timelineArrow.setTranslationX(0f);
 
-        // Animate arrow from left to target position with smooth easing
         ObjectAnimator animator = ObjectAnimator.ofFloat(timelineArrow, "translationX", 0f, targetTranslationX);
-        animator.setDuration(800); // 800ms for smooth animation
-        animator.setInterpolator(new DecelerateInterpolator(1.5f)); // Ease out with deceleration
+        animator.setDuration(800);
+        animator.setInterpolator(new DecelerateInterpolator(1.5f));
         animator.start();
+    }
+
+    // ==================== FEATURE 3: CURRENT MILESTONE CARD ====================
+
+    /**
+     * Updates the milestone card with the first (current) milestone for the habit.
+     * Shows the milestone name and remaining time. Displays fallback if no milestones exist.
+     *
+     * @param habit The DynamicHabit whose current milestone to display
+     */
+    private void updateCurrentMilestone(DynamicHabit habit) {
+        MilestoneStorage milestoneStorage = new MilestoneStorage(this);
+        List<Milestone> milestones = milestoneStorage.getMilestonesForHabit(habit.getName3());
+
+        if (milestones == null || milestones.isEmpty()) {
+            if (milestoneCardName != null) {
+                milestoneCardName.setText("No milestones set");
+            }
+            if (milestoneCardDaysLeft != null) {
+                milestoneCardDaysLeft.setText("");
+            }
+            return;
+        }
+
+        Milestone current = milestones.get(0);
+        if (milestoneCardName != null) {
+            milestoneCardName.setText(current.getName());
+        }
+        if (milestoneCardDaysLeft != null) {
+            String timeStr = current.getTime();
+            if (timeStr != null && !timeStr.isEmpty()) {
+                milestoneCardDaysLeft.setText(timeStr + " left");
+            } else {
+                milestoneCardDaysLeft.setText("");
+            }
+        }
+    }
+
+    // ==================== FEATURE 4: DYNAMIC TO-DO LIST ====================
+
+    /**
+     * Loads and displays the task list for the selected habit.
+     * Clears previous task rows and repopulates from SharedPreferences.
+     *
+     * @param habit The DynamicHabit whose tasks to display
+     */
+    private void updateTaskList(DynamicHabit habit) {
+        if (habitTaskListContainer == null) return;
+
+        habitTaskListContainer.removeAllViews();
+
+        String habitName = habit.getName3();
+        ArrayList<HabitTask> tasks = loadHabitTasks(habitName);
+
+        if (tasks.isEmpty()) {
+            // Show empty state
+            TextView emptyText = new TextView(this);
+            emptyText.setText("No tasks yet");
+            emptyText.setTextColor(Color.GRAY);
+            emptyText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            emptyText.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
+            habitTaskListContainer.addView(emptyText);
+            return;
+        }
+
+        for (int i = 0; i < tasks.size(); i++) {
+            HabitTask task = tasks.get(i);
+            View row = createTaskRow(task, i, habitName);
+            habitTaskListContainer.addView(row);
+        }
+    }
+
+    /**
+     * Creates a single task row View with icon and text.
+     * Completed tasks show a green checkmark; incomplete tasks show os_circle and
+     * support tap-to-complete with an animated removal after 5 seconds.
+     *
+     * @param task      The HabitTask to render
+     * @param index     Position in the task list
+     * @param habitName The habit name used as storage key
+     * @return The constructed row View
+     */
+    private View createTaskRow(HabitTask task, int index, String habitName) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
+
+        ImageView icon = new ImageView(this);
+        LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(dpToPx(24), dpToPx(24));
+        icon.setLayoutParams(iconParams);
+
+        TextView text = new TextView(this);
+        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        textParams.setMarginStart(dpToPx(12));
+        text.setLayoutParams(textParams);
+        text.setText(task.getTaskText());
+        text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        text.setTextColor(Color.BLACK);
+
+        if (task.isCompleted()) {
+            icon.setImageResource(R.drawable.checkmarkv3);
+        } else {
+            icon.setImageResource(R.drawable.os_circle);
+            icon.setOnClickListener(v -> {
+                icon.setImageResource(R.drawable.checkmarkv3);
+                task.setCompleted(true);
+                // Reload, update the matching task, and save back
+                ArrayList<HabitTask> allTasks = loadHabitTasks(habitName);
+                for (HabitTask t : allTasks) {
+                    if (t.getCreatedAt() == task.getCreatedAt()
+                            && t.getTaskText().equals(task.getTaskText())) {
+                        t.setCompleted(true);
+                        break;
+                    }
+                }
+                saveHabitTasks(habitName, allTasks);
+
+                // Remove after 5 seconds with animation
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    row.animate()
+                            .alpha(0f)
+                            .translationX(-row.getWidth())
+                            .setDuration(300)
+                            .withEndAction(() -> {
+                                if (row.getParent() != null) {
+                                    ((ViewGroup) row.getParent()).removeView(row);
+                                }
+                                removeTask(habitName, task);
+                            })
+                            .start();
+                }, 5000);
+            });
+        }
+
+        row.addView(icon);
+        row.addView(text);
+        return row;
+    }
+
+    /**
+     * Shows an AlertDialog to add a new task for the given habit.
+     *
+     * @param habitName The habit name to associate the new task with
+     */
+    private void showAddTaskDialog(String habitName) {
+        EditText input = new EditText(this);
+        input.setHint("Enter task description");
+        input.setPadding(dpToPx(16), dpToPx(12), dpToPx(16), dpToPx(12));
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add Task")
+                .setView(input)
+                .setPositiveButton("Add", (dialog, which) -> {
+                    String taskText = input.getText().toString().trim();
+                    if (!taskText.isEmpty()) {
+                        ArrayList<HabitTask> tasks = loadHabitTasks(habitName);
+                        tasks.add(new HabitTask(taskText));
+                        saveHabitTasks(habitName, tasks);
+                        // Refresh the task list
+                        if (currentlySelectedHabit != null) {
+                            updateTaskList(currentlySelectedHabit);
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Loads the task list for a habit from SharedPreferences.
+     *
+     * @param habitName The habit name key
+     * @return ArrayList of HabitTask objects (never null)
+     */
+    private ArrayList<HabitTask> loadHabitTasks(String habitName) {
+        SharedPreferences prefs = getSharedPreferences("HabitTasks", Context.MODE_PRIVATE);
+        String json = prefs.getString("tasks_" + habitName, null);
+        if (json == null) return new ArrayList<>();
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<HabitTask>>(){}.getType();
+        ArrayList<HabitTask> tasks = gson.fromJson(json, type);
+        return tasks != null ? tasks : new ArrayList<>();
+    }
+
+    /**
+     * Saves the given task list for a habit to SharedPreferences.
+     *
+     * @param habitName The habit name key
+     * @param tasks     The task list to persist
+     */
+    private void saveHabitTasks(String habitName, ArrayList<HabitTask> tasks) {
+        SharedPreferences prefs = getSharedPreferences("HabitTasks", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = gson.toJson(tasks);
+        prefs.edit().putString("tasks_" + habitName, json).apply();
+    }
+
+    /**
+     * Removes a specific task from the persisted list and refreshes the UI if needed.
+     *
+     * @param habitName The habit name key
+     * @param task      The HabitTask to remove
+     */
+    private void removeTask(String habitName, HabitTask task) {
+        ArrayList<HabitTask> tasks = loadHabitTasks(habitName);
+        tasks.removeIf(t -> t.getCreatedAt() == task.getCreatedAt()
+                && t.getTaskText().equals(task.getTaskText()));
+        saveHabitTasks(habitName, tasks);
     }
 
     /**
