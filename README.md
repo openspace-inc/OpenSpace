@@ -16,7 +16,7 @@ No starting over. Just a system that adapts as fast as reality does.
 Every project tracks your time investment and reflects it back as a "stock" — 
 a living signal of what your daily discipline is actually worth over time.
 
-> The future belongs to those who build toward it — one day at a time.
+The future belongs to those who build toward it — one day at a time.
 
 > Complex goals, simplified by AI.
 
