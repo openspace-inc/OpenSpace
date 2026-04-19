@@ -1,0 +1,95 @@
+package com.example.iaso.matrix;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class matrixmilestone {
+
+    public enum Status {
+        PENDING,
+        ACTIVE,
+        COMPLETED,
+        SKIPPED
+    }
+
+    private String milestoneId;
+    private String parentGoalId;
+    private String name;
+    private String description;
+    private int orderIndex;
+    private int allocatedDays;
+    private int bufferDays;
+    private int startDay;
+    private Status status;
+    private List<matrixdailytaskslot> dailyTaskSlots;
+
+    public matrixmilestone(String parentGoalId, String name, String description,
+                            int orderIndex, int allocatedDays, int startDay) {
+        this.milestoneId = UUID.randomUUID().toString();
+        this.parentGoalId = parentGoalId;
+        this.name = name;
+        this.description = description;
+        this.orderIndex = orderIndex;
+        this.allocatedDays = allocatedDays;
+        this.bufferDays = 0;
+        this.startDay = startDay;
+        this.status = Status.PENDING;
+        this.dailyTaskSlots = new ArrayList<>();
+    }
+
+    public matrixmilestone() {
+        this.milestoneId = UUID.randomUUID().toString();
+        this.status = Status.PENDING;
+        this.bufferDays = 0;
+        this.dailyTaskSlots = new ArrayList<>();
+    }
+
+    public String getMilestoneId() { return milestoneId; }
+    public void setMilestoneId(String milestoneId) { this.milestoneId = milestoneId; }
+
+    public String getParentGoalId() { return parentGoalId; }
+    public void setParentGoalId(String parentGoalId) { this.parentGoalId = parentGoalId; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public int getOrderIndex() { return orderIndex; }
+    public void setOrderIndex(int orderIndex) { this.orderIndex = orderIndex; }
+
+    public int getAllocatedDays() { return allocatedDays; }
+    public void setAllocatedDays(int allocatedDays) { this.allocatedDays = allocatedDays; }
+
+    public int getBufferDays() { return bufferDays; }
+    public void setBufferDays(int bufferDays) { this.bufferDays = bufferDays; }
+
+    public int getStartDay() { return startDay; }
+    public void setStartDay(int startDay) { this.startDay = startDay; }
+
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
+
+    public List<matrixdailytaskslot> getDailyTaskSlots() { return dailyTaskSlots; }
+    public void setDailyTaskSlots(List<matrixdailytaskslot> slots) {
+        this.dailyTaskSlots = slots != null ? slots : new ArrayList<>();
+    }
+
+    public int getEndDay() {
+        return startDay + allocatedDays + bufferDays - 1;
+    }
+
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    public void activate() {
+        this.status = Status.ACTIVE;
+    }
+
+    public void complete() {
+        this.status = Status.COMPLETED;
+    }
+}
