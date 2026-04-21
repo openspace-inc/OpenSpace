@@ -3,7 +3,7 @@ package com.example.iaso.matrix;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class MatrixGoal {
+public class matrixgoal {
 
     public enum Status {
         ACTIVE,
@@ -21,7 +21,7 @@ public class MatrixGoal {
     private Status status;
     private long createdAt;
 
-    public MatrixGoal(String habitName, String goalDescription, int totalDays, long startDate) {
+    public matrixgoal(String habitName, String goalDescription, int totalDays, long startDate) {
         if (totalDays < 0) throw new IllegalArgumentException("totalDays must be non-negative");
         if (startDate < 0) throw new IllegalArgumentException("startDate must be non-negative");
 
@@ -36,7 +36,7 @@ public class MatrixGoal {
         this.createdAt       = System.currentTimeMillis();
     }
 
-    public MatrixGoal() {
+    public matrixgoal() {
         this.goalId     = UUID.randomUUID().toString();
         this.status     = Status.ACTIVE;
         this.createdAt  = System.currentTimeMillis();
@@ -63,7 +63,7 @@ public class MatrixGoal {
         this.targetDate = computeTargetDate(this.startDate, totalDays);
     }
 
-    public int  getBufferDays()               { return bufferDays; }
+    public int  getBufferDays() { return bufferDays; }
     public void setBufferDays(int bufferDays) {
         if (bufferDays < 0) throw new IllegalArgumentException("bufferDays must be non-negative");
         this.bufferDays = bufferDays;

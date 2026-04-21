@@ -2,7 +2,7 @@ package com.example.iaso.matrix;
 
 import java.util.UUID;
 
-public class MatrixDailyTaskSlot {
+public class matrixdailytaskslot{
 
     public enum Status {
         PENDING,
@@ -18,7 +18,7 @@ public class MatrixDailyTaskSlot {
     private Status status;
     private String taskPayload;
 
-    public MatrixDailyTaskSlot(String parentMilestoneId, int dayNumber, long date) {
+    public matrixdailytaskslot(String parentMilestoneId, int dayNumber, long date) {
         if (dayNumber < 1) throw new IllegalArgumentException("dayNumber must be >= 1");
         if (date < 0)      throw new IllegalArgumentException("date must be non-negative");
 
@@ -30,8 +30,9 @@ public class MatrixDailyTaskSlot {
         this.taskPayload       = "";
     }
 
-    public MatrixDailyTaskSlot() {
+    public matrixdailytaskslot() {
         this.slotId      = UUID.randomUUID().toString();
+        this.dayNumber   = 1;
         this.status      = Status.PENDING;
         this.taskPayload = "";
     }
@@ -60,13 +61,13 @@ public class MatrixDailyTaskSlot {
     public String getTaskPayload()                   { return taskPayload; }
     public void   setTaskPayload(String taskPayload) { this.taskPayload = taskPayload != null ? taskPayload : ""; }
 
-    public boolean hasTask()       { return taskPayload != null && !taskPayload.isEmpty(); }
+    public boolean hasTask()      { return taskPayload != null && !taskPayload.isEmpty(); }
 
-    public boolean isCompleted()   { return status == Status.COMPLETED; }
+    public boolean isCompleted()  { return status == Status.COMPLETED; }
 
-    public void markCompleted()    { this.status = Status.COMPLETED; }
+    public void markCompleted()   { this.status = Status.COMPLETED; }
 
-    public void markMissed()       { this.status = Status.MISSED; }
+    public void markMissed()      { this.status = Status.MISSED; }
 
-    public void markRescheduled()  { this.status = Status.RESCHEDULED; }
+    public void markRescheduled() { this.status = Status.RESCHEDULED; }
 }

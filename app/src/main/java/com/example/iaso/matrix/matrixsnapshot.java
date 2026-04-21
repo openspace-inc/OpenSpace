@@ -1,6 +1,6 @@
 package com.example.iaso.matrix;
 
-public class MatrixSnapshot {
+public class matrixsnapshot {
 
     private String activeGoalId;
     private int activeMilestoneIndex;
@@ -10,7 +10,7 @@ public class MatrixSnapshot {
     private int bufferRemaining;
     private long lastUpdated;
 
-    public MatrixSnapshot(String activeGoalId,
+    public matrixsnapshot(String activeGoalId,
                             int activeMilestoneIndex,
                             int currentDayInMilestone,
                             int totalDaysElapsed,
@@ -31,9 +31,10 @@ public class MatrixSnapshot {
         this.lastUpdated           = System.currentTimeMillis();
     }
 
-    public MatrixSnapshot() {
-        this.bufferRemaining = 0;
-        this.lastUpdated     = System.currentTimeMillis();
+    public matrixsnapshot() {
+        this.currentDayInMilestone = 1;
+        this.bufferRemaining       = 0;
+        this.lastUpdated           = System.currentTimeMillis();
     }
 
     public String getActiveGoalId()                    { return activeGoalId; }
@@ -69,8 +70,8 @@ public class MatrixSnapshot {
         this.bufferRemaining = bufferRemaining;
     }
 
-    public long getLastUpdated()               { return lastUpdated; }
-    public void setLastUpdated(long lastUpdated){ this.lastUpdated = lastUpdated; }
+    public long getLastUpdated()                    { return lastUpdated; }
+    public void setLastUpdated(long lastUpdated) { this.lastUpdated = lastUpdated; }
 
     public void touch() { this.lastUpdated = System.currentTimeMillis(); }
 

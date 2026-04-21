@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class MatrixMilestone {
+public class matrixmilestone {
 
     public enum Status {
         PENDING,
@@ -22,9 +22,9 @@ public class MatrixMilestone {
     private int bufferDays;
     private int startDay;
     private Status status;
-    private List<MatrixDailyTaskSlot> dailyTaskSlots;
+    private List<matrixdailytaskslot> dailyTaskSlots;
 
-    public MatrixMilestone(String parentGoalId, String name, String description,
+    public matrixmilestone(String parentGoalId, String name, String description,
                             int orderIndex, int allocatedDays, int startDay) {
         if (allocatedDays < 0) throw new IllegalArgumentException("allocatedDays must be non-negative");
         if (orderIndex < 0)    throw new IllegalArgumentException("orderIndex must be non-negative");
@@ -42,7 +42,7 @@ public class MatrixMilestone {
         this.dailyTaskSlots = new ArrayList<>();
     }
 
-    public MatrixMilestone() {
+    public matrixmilestone() {
         this.milestoneId    = UUID.randomUUID().toString();
         this.status         = Status.PENDING;
         this.bufferDays     = 0;
@@ -61,7 +61,7 @@ public class MatrixMilestone {
     public String getDescription()                   { return description; }
     public void   setDescription(String description) { this.description = description; }
 
-    public int  getOrderIndex()               { return orderIndex; }
+    public int  getOrderIndex() { return orderIndex; }
     public void setOrderIndex(int orderIndex) {
         if (orderIndex < 0) throw new IllegalArgumentException("orderIndex must be non-negative");
         this.orderIndex = orderIndex;
@@ -79,7 +79,7 @@ public class MatrixMilestone {
         this.bufferDays = bufferDays;
     }
 
-    public int  getStartDay()             { return startDay; }
+    public int  getStartDay() { return startDay; }
     public void setStartDay(int startDay) {
         if (startDay < 0) throw new IllegalArgumentException("startDay must be non-negative");
         this.startDay = startDay;
@@ -88,20 +88,20 @@ public class MatrixMilestone {
     public Status getStatus()              { return status; }
     public void   setStatus(Status status) { this.status = status; }
 
-    public List<MatrixDailyTaskSlot> getDailyTaskSlots() { return dailyTaskSlots; }
-    public void setDailyTaskSlots(List<MatrixDailyTaskSlot> slots) {
+    public List<matrixdailytaskslot> getDailyTaskSlots() { return dailyTaskSlots; }
+    public void setDailyTaskSlots(List<matrixdailytaskslot> slots) {
         this.dailyTaskSlots = slots != null ? slots : new ArrayList<>();
     }
 
     public int getEndDay() {
-        int totalDays = allocatedDays + bufferDays;
-        if (totalDays <= 0) return startDay;
-        return startDay + totalDays - 1;
+        int total = allocatedDays + bufferDays;
+        if (total <= 0) return startDay;
+        return startDay + total - 1;
     }
 
     public boolean isActive() { return status == Status.ACTIVE; }
 
-    public void activate()  { this.status = Status.ACTIVE; }
+    public void activate() { this.status = Status.ACTIVE; }
 
-    public void complete()  { this.status = Status.COMPLETED; }
+    public void complete() { this.status = Status.COMPLETED; }
 }
