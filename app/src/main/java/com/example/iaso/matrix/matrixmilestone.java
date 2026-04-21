@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class matrixmilestone {
+public class MatrixMilestone {
 
     public enum Status {
         PENDING,
@@ -22,74 +22,86 @@ public class matrixmilestone {
     private int bufferDays;
     private int startDay;
     private Status status;
-    private List<matrixdailytaskslot> dailyTaskSlots;
+    private List<MatrixDailyTaskSlot> dailyTaskSlots;
 
-    public matrixmilestone(String parentGoalId, String name, String description,
+    public MatrixMilestone(String parentGoalId, String name, String description,
                             int orderIndex, int allocatedDays, int startDay) {
-        this.milestoneId = UUID.randomUUID().toString();
-        this.parentGoalId = parentGoalId;
-        this.name = name;
-        this.description = description;
+        if (allocatedDays < 0) throw new IllegalArgumentException("allocatedDays must be non-negative");
+        if (orderIndex < 0)    throw new IllegalArgumentException("orderIndex must be non-negative");
+        if (startDay < 0)      throw new IllegalArgumentException("startDay must be non-negative");
+
+        this.milestoneId    = UUID.randomUUID().toString();
+        this.parentGoalId   = parentGoalId;
+        this.name           = name;
+        this.description    = description;
+        this.orderIndex     = orderIndex;
+        this.allocatedDays  = allocatedDays;
+        this.bufferDays     = 0;
+        this.startDay       = startDay;
+        this.status         = Status.PENDING;
+        this.dailyTaskSlots = new ArrayList<>();
+    }
+
+    public MatrixMilestone() {
+        this.milestoneId    = UUID.randomUUID().toString();
+        this.status         = Status.PENDING;
+        this.bufferDays     = 0;
+        this.dailyTaskSlots = new ArrayList<>();
+    }
+
+    public String getMilestoneId()                     { return milestoneId; }
+    public void   setMilestoneId(String milestoneId)   { this.milestoneId = milestoneId; }
+
+    public String getParentGoalId()                    { return parentGoalId; }
+    public void   setParentGoalId(String parentGoalId) { this.parentGoalId = parentGoalId; }
+
+    public String getName()            { return name; }
+    public void   setName(String name) { this.name = name; }
+
+    public String getDescription()                   { return description; }
+    public void   setDescription(String description) { this.description = description; }
+
+    public int  getOrderIndex()               { return orderIndex; }
+    public void setOrderIndex(int orderIndex) {
+        if (orderIndex < 0) throw new IllegalArgumentException("orderIndex must be non-negative");
         this.orderIndex = orderIndex;
+    }
+
+    public int  getAllocatedDays() { return allocatedDays; }
+    public void setAllocatedDays(int allocatedDays) {
+        if (allocatedDays < 0) throw new IllegalArgumentException("allocatedDays must be non-negative");
         this.allocatedDays = allocatedDays;
-        this.bufferDays = 0;
+    }
+
+    public int  getBufferDays() { return bufferDays; }
+    public void setBufferDays(int bufferDays) {
+        if (bufferDays < 0) throw new IllegalArgumentException("bufferDays must be non-negative");
+        this.bufferDays = bufferDays;
+    }
+
+    public int  getStartDay()             { return startDay; }
+    public void setStartDay(int startDay) {
+        if (startDay < 0) throw new IllegalArgumentException("startDay must be non-negative");
         this.startDay = startDay;
-        this.status = Status.PENDING;
-        this.dailyTaskSlots = new ArrayList<>();
     }
 
-    public matrixmilestone() {
-        this.milestoneId = UUID.randomUUID().toString();
-        this.status = Status.PENDING;
-        this.bufferDays = 0;
-        this.dailyTaskSlots = new ArrayList<>();
-    }
+    public Status getStatus()              { return status; }
+    public void   setStatus(Status status) { this.status = status; }
 
-    public String getMilestoneId() { return milestoneId; }
-    public void setMilestoneId(String milestoneId) { this.milestoneId = milestoneId; }
-
-    public String getParentGoalId() { return parentGoalId; }
-    public void setParentGoalId(String parentGoalId) { this.parentGoalId = parentGoalId; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    public int getOrderIndex() { return orderIndex; }
-    public void setOrderIndex(int orderIndex) { this.orderIndex = orderIndex; }
-
-    public int getAllocatedDays() { return allocatedDays; }
-    public void setAllocatedDays(int allocatedDays) { this.allocatedDays = allocatedDays; }
-
-    public int getBufferDays() { return bufferDays; }
-    public void setBufferDays(int bufferDays) { this.bufferDays = bufferDays; }
-
-    public int getStartDay() { return startDay; }
-    public void setStartDay(int startDay) { this.startDay = startDay; }
-
-    public Status getStatus() { return status; }
-    public void setStatus(Status status) { this.status = status; }
-
-    public List<matrixdailytaskslot> getDailyTaskSlots() { return dailyTaskSlots; }
-    public void setDailyTaskSlots(List<matrixdailytaskslot> slots) {
+    public List<MatrixDailyTaskSlot> getDailyTaskSlots() { return dailyTaskSlots; }
+    public void setDailyTaskSlots(List<MatrixDailyTaskSlot> slots) {
         this.dailyTaskSlots = slots != null ? slots : new ArrayList<>();
     }
 
     public int getEndDay() {
-        return startDay + allocatedDays + bufferDays - 1;
+        int totalDays = allocatedDays + bufferDays;
+        if (totalDays <= 0) return startDay;
+        return startDay + totalDays - 1;
     }
 
-    public boolean isActive() {
-        return status == Status.ACTIVE;
-    }
+    public boolean isActive() { return status == Status.ACTIVE; }
 
-    public void activate() {
-        this.status = Status.ACTIVE;
-    }
+    public void activate()  { this.status = Status.ACTIVE; }
 
-    public void complete() {
-        this.status = Status.COMPLETED;
-    }
+    public void complete()  { this.status = Status.COMPLETED; }
 }
