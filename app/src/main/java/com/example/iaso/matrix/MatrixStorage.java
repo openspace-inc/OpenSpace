@@ -577,17 +577,27 @@ public final class MatrixStorage {
         int bufferRemaining = Math.max(0, obj.optInt("bufferRemaining", 0));
         long lastUpdated = Math.max(0L, obj.optLong("lastUpdated", System.currentTimeMillis()));
 
-        return new MatrixSnapshot(
+        MatrixSnapshot snapshot = new MatrixSnapshot(
                 activeGoalId,
                 activeMilestoneIndex,
                 currentDayInMilestone,
                 totalDaysElapsed,
                 totalDaysRemaining,
-                bufferRemaining,
-                lastUpdated
+                bufferRemaining
         );
+        return restoreLastUpdated(snapshot, lastUpdated);
     }
 
+    private static MatrixSnapshot restoreLastUpdated(MatrixSnapshot snapshot, long lastUpdated) {
+        try {
+            java.lang.reflect.Field field = MatrixSnapshot.class.getDeclaredField("lastUpdated");
+            field.setAccessible(true);
+            field.setLong(snapshot, lastUpdated);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            Log.w("MatrixStorage", "Unable to restore MatrixSnapshot lastUpdated", e);
+        }
+        return snapshot;
+    }
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
     }
