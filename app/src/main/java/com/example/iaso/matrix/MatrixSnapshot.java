@@ -1,6 +1,6 @@
 package com.example.iaso.matrix;
 
-public class matrixsnapshot {
+public class MatrixSnapshot {
 
     private String activeGoalId;
     private int activeMilestoneIndex;
@@ -10,12 +10,12 @@ public class matrixsnapshot {
     private int bufferRemaining;
     private long lastUpdated;
 
-    public matrixsnapshot(String activeGoalId,
-                            int activeMilestoneIndex,
-                            int currentDayInMilestone,
-                            int totalDaysElapsed,
-                            int totalDaysRemaining,
-                            int bufferRemaining) {
+    public MatrixSnapshot(String activeGoalId,
+                          int activeMilestoneIndex,
+                          int currentDayInMilestone,
+                          int totalDaysElapsed,
+                          int totalDaysRemaining,
+                          int bufferRemaining) {
         if (activeMilestoneIndex < 0)  throw new IllegalArgumentException("activeMilestoneIndex must be non-negative");
         if (currentDayInMilestone < 1) throw new IllegalArgumentException("currentDayInMilestone must be >= 1");
         if (totalDaysElapsed < 0)      throw new IllegalArgumentException("totalDaysElapsed must be non-negative");
@@ -31,7 +31,7 @@ public class matrixsnapshot {
         this.lastUpdated           = System.currentTimeMillis();
     }
 
-    public matrixsnapshot() {
+    public MatrixSnapshot() {
         this.currentDayInMilestone = 1;
         this.bufferRemaining       = 0;
         this.lastUpdated           = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class matrixsnapshot {
         this.bufferRemaining = bufferRemaining;
     }
 
-    public long getLastUpdated()                    { return lastUpdated; }
+    public long getLastUpdated()                 { return lastUpdated; }
     public void setLastUpdated(long lastUpdated) { this.lastUpdated = lastUpdated; }
 
     public void touch() { this.lastUpdated = System.currentTimeMillis(); }

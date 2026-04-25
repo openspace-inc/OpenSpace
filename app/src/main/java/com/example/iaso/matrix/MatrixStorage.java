@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public final class MatrixStorage {
 
@@ -312,40 +311,44 @@ public final class MatrixStorage {
 
             JSONArray currentGoals = readGoalsArray(matrixPrefs);
 
-            for (Map.Entry<String, ?> entry : legacyPrefs.getAll().entrySet()) {
-                String habitName = entry.getKey();
-                Object rawValue = entry.getValue();
-                if (!(rawValue instanceof String)) continue;
-
+            String legacyListJson = legacyPrefs.getString("habitMilestonesList", null);
+            if (legacyListJson != null) {
                 try {
-                    JSONArray legacyMilestones = new JSONArray((String) rawValue);
+                    JSONArray habitMilestonesList = new JSONArray(legacyListJson);
+                    for (int idx = 0; idx < habitMilestonesList.length(); idx++) {
+                        JSONObject habitMilestonesObj = habitMilestonesList.getJSONObject(idx);
+                        String habitName = habitMilestonesObj.optString("habitName", "");
+                        if (habitName.isEmpty()) continue;
 
-                    boolean goalExists = false;
-                    for (int i = 0; i < currentGoals.length(); i++) {
-                        JSONObject g = currentGoals.getJSONObject(i);
-                        if (habitName.equals(g.optString("habitName"))) {
-                            goalExists = true;
-                            break;
+                        JSONArray legacyMilestones = habitMilestonesObj.optJSONArray("milestones");
+                        if (legacyMilestones == null) legacyMilestones = new JSONArray();
+
+                        boolean goalExists = false;
+                        for (int i = 0; i < currentGoals.length(); i++) {
+                            JSONObject g = currentGoals.getJSONObject(i);
+                            if (habitName.equals(g.optString("habitName"))) {
+                                goalExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!goalExists) {
+                            MatrixGoal syntheticGoal = new MatrixGoal(
+                                    habitName,
+                                    "Migrated from legacy storage",
+                                    0,
+                                    System.currentTimeMillis()
+                            );
+
+                            JSONObject goalJson = goalToJson(syntheticGoal);
+                            List<MatrixMilestone> milestones =
+                                    migrateLegacyMilestones(legacyMilestones, syntheticGoal.getGoalId());
+                            goalJson.put("milestones", milestonesToJson(milestones));
+                            currentGoals.put(goalJson);
                         }
                     }
-
-                    if (!goalExists) {
-                        MatrixGoal syntheticGoal = new MatrixGoal(
-                                habitName,
-                                "Migrated from legacy storage",
-                                0,
-                                System.currentTimeMillis()
-                        );
-
-                        JSONObject goalJson = goalToJson(syntheticGoal);
-                        List<MatrixMilestone> milestones =
-                                migrateLegacyMilestones(legacyMilestones, syntheticGoal.getGoalId());
-                        goalJson.put("milestones", milestonesToJson(milestones));
-                        currentGoals.put(goalJson);
-                    }
-
                 } catch (JSONException e) {
-                    Log.e(TAG, "ensureMigrated: failed to migrate habit " + habitName, e);
+                    Log.e(TAG, "ensureMigrated: failed to parse legacy milestones list", e);
                 }
             }
 
@@ -358,32 +361,27 @@ public final class MatrixStorage {
 
     private static List<MatrixMilestone> migrateLegacyMilestones(JSONArray legacyArray, String parentGoalId) {
         List<MatrixMilestone> result = new ArrayList<>();
+        int cumulativeStartDay = 0;
 
         for (int i = 0; i < legacyArray.length(); i++) {
             try {
                 JSONObject obj = legacyArray.getJSONObject(i);
 
+                String name = obj.optString("name", "Migrated Milestone");
+                String time = obj.optString("time", "");
+                int days = Math.max(0, obj.optInt("days", 0));
+
                 MatrixMilestone ms = new MatrixMilestone();
-
-                String storedId = obj.optString("milestoneId", "");
-                if (!storedId.isEmpty()) ms.setMilestoneId(storedId);
-
                 ms.setParentGoalId(parentGoalId);
-                ms.setName(obj.optString("name", "Migrated Milestone"));
-                ms.setDescription(obj.optString("description", ""));
-                ms.setOrderIndex(Math.max(0, obj.optInt("orderIndex", i)));
-                ms.setAllocatedDays(Math.max(0, obj.optInt("allocatedDays", 0)));
-                ms.setBufferDays(Math.max(0, obj.optInt("bufferDays", 0)));
-                ms.setStartDay(Math.max(0, obj.optInt("startDay", 0)));
-
-                String statusStr = obj.optString("status", MatrixMilestone.Status.PENDING.name());
-                try {
-                    ms.setStatus(MatrixMilestone.Status.valueOf(statusStr));
-                } catch (IllegalArgumentException ignored) {
-                    ms.setStatus(MatrixMilestone.Status.PENDING);
-                }
+                ms.setName(name);
+                ms.setDescription(time);
+                ms.setOrderIndex(i);
+                ms.setAllocatedDays(days);
+                ms.setBufferDays(0);
+                ms.setStartDay(cumulativeStartDay);
 
                 result.add(ms);
+                cumulativeStartDay += days;
             } catch (JSONException ignored) {
             }
         }
@@ -585,19 +583,10 @@ public final class MatrixStorage {
                 totalDaysRemaining,
                 bufferRemaining
         );
-        return restoreLastUpdated(snapshot, lastUpdated);
-    }
-
-    private static MatrixSnapshot restoreLastUpdated(MatrixSnapshot snapshot, long lastUpdated) {
-        try {
-            java.lang.reflect.Field field = MatrixSnapshot.class.getDeclaredField("lastUpdated");
-            field.setAccessible(true);
-            field.setLong(snapshot, lastUpdated);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            Log.w("MatrixStorage", "Unable to restore MatrixSnapshot lastUpdated", e);
-        }
+        snapshot.setLastUpdated(lastUpdated);
         return snapshot;
     }
+
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
     }

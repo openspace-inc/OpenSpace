@@ -2,7 +2,7 @@ package com.example.iaso.matrix;
 
 import java.util.UUID;
 
-public class matrixdailytaskslot{
+public class MatrixDailyTaskSlot {
 
     public enum Status {
         PENDING,
@@ -18,7 +18,7 @@ public class matrixdailytaskslot{
     private Status status;
     private String taskPayload;
 
-    public matrixdailytaskslot(String parentMilestoneId, int dayNumber, long date) {
+    public MatrixDailyTaskSlot(String parentMilestoneId, int dayNumber, long date) {
         if (dayNumber < 1) throw new IllegalArgumentException("dayNumber must be >= 1");
         if (date < 0)      throw new IllegalArgumentException("date must be non-negative");
 
@@ -30,7 +30,7 @@ public class matrixdailytaskslot{
         this.taskPayload       = "";
     }
 
-    public matrixdailytaskslot() {
+    public MatrixDailyTaskSlot() {
         this.slotId      = UUID.randomUUID().toString();
         this.dayNumber   = 1;
         this.status      = Status.PENDING;
