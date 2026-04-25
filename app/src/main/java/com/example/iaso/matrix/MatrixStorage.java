@@ -211,7 +211,8 @@ public final class MatrixStorage {
                             break outer;
                         }
                     }
-                } catch (JSONException ignored) {
+                } catch (JSONException e) {
+                    Log.e(TAG, "updateMilestoneStatus: failed for milestone " + milestoneId, e);
                 }
             }
 
