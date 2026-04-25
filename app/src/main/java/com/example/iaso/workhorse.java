@@ -38,6 +38,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
+import com.example.iaso.matrix.MatrixGoal;
+import com.example.iaso.matrix.MatrixMilestone;
+import com.example.iaso.matrix.MatrixStorage;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
@@ -591,17 +594,22 @@ public class workhorse extends AppCompatActivity {
                     milestoneAdapter.setMilestones(milestones);
                 }
 
+                // Calculate total days from milestones and check against user's timeline
+                int totalMilestoneDays = calculateTotalMilestoneDays(milestones);
+                int userTargetDays = calculateDaysUntilCompletion();
+
                 // ==================== SAVE MILESTONES TO STORAGE ====================
                 // Store the parsed milestones with the habit name (ticker symbol)
                 // for later retrieval throughout the app
                 if (!milestones.isEmpty() && tickerSymbol != null && !tickerSymbol.isEmpty()) {
-                    MilestoneStorage milestoneStorage = new MilestoneStorage(workhorse.this);
-                    milestoneStorage.saveMilestones(tickerSymbol, milestones);
+                    MatrixGoal goal = MatrixStorage.getGoalByHabitName(workhorse.this, tickerSymbol);
+                    if (goal == null) {
+                        goal = new MatrixGoal(tickerSymbol, projectDescription, userTargetDays, System.currentTimeMillis());
+                        MatrixStorage.saveGoal(workhorse.this, goal);
+                    }
+                    List<MatrixMilestone> matrixMilestones = convertToMatrixMilestones(milestones, goal.getGoalId());
+                    MatrixStorage.saveMilestones(workhorse.this, goal.getGoalId(), matrixMilestones);
                 }
-
-                // Calculate total days from milestones and check against user's timeline
-                int totalMilestoneDays = calculateTotalMilestoneDays(milestones);
-                int userTargetDays = calculateDaysUntilCompletion();
 
                 // Show warning if milestones exceed user's timeline
                 if (timelineWarningContainer != null) {
@@ -690,6 +698,24 @@ public class workhorse extends AppCompatActivity {
             totalDays += extractDaysFromTime(milestone.getTime());
         }
         return totalDays;
+    }
+
+    /**
+     * Converts legacy Milestone objects into MatrixMilestone objects for MatrixStorage.
+     * @param milestones List of Milestone objects from the AI response
+     * @param goalId     The goal ID to associate with each milestone
+     * @return List of MatrixMilestone objects ready for MatrixStorage.saveMilestones()
+     */
+    private List<MatrixMilestone> convertToMatrixMilestones(List<Milestone> milestones, String goalId) {
+        List<MatrixMilestone> result = new ArrayList<>();
+        int startDay = 0;
+        for (int i = 0; i < milestones.size(); i++) {
+            Milestone m = milestones.get(i);
+            int days = m.getDays();
+            result.add(new MatrixMilestone(null, goalId, m.getName(), m.getTime(), i, days, 0, startDay));
+            startDay += days;
+        }
+        return result;
     }
 
     /**
