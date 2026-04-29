@@ -71,8 +71,11 @@ public class MatrixEngine {
         messages.add(new ChatMessage("system", MatrixPrompts.TIMELINE_SYSTEM_PROMPT));
         messages.add(new ChatMessage("user", userMessage));
 
-        Log.d(TAG, "SYSTEM_PROMPT: " + MatrixPrompts.TIMELINE_SYSTEM_PROMPT);
-        Log.d(TAG, "USER_MESSAGE: " + userMessage);
+        Log.d(
+                TAG,
+                "Preparing timeline request: messages=" + messages.size()
+                        + ", systemPromptLength=" + MatrixPrompts.TIMELINE_SYSTEM_PROMPT.length()
+                        + ", userMessageLength=" + userMessage.length());
 
         convexApiHelper.sendConversation(
                 messages,
