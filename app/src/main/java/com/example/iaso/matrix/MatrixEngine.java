@@ -266,10 +266,18 @@ public class MatrixEngine {
     }
 
     private void deliverSuccess(MatrixEngineCallback callback, MatrixGoal goal) {
+        if (callback == null) {
+            Log.w(TAG, "deliverSuccess called with null callback");
+            return;
+        }
         mainHandler.post(() -> callback.onTimelineGenerated(goal));
     }
 
     private void deliverError(MatrixEngineCallback callback, String message) {
+        if (callback == null) {
+            Log.w(TAG, "deliverError called with null callback");
+            return;
+        }
         mainHandler.post(() -> callback.onError(message));
     }
 }
