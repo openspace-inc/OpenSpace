@@ -311,41 +311,53 @@ public final class MatrixStorage {
                     context.getSharedPreferences(LEGACY_PREFS_FILE, Context.MODE_PRIVATE);
 
             JSONArray currentGoals = readGoalsArray(matrixPrefs);
+            String legacyHabitMilestonesJson =
+                    legacyPrefs.getString("habitMilestonesList", null);
 
-            for (Map.Entry<String, ?> entry : legacyPrefs.getAll().entrySet()) {
-                String habitName = entry.getKey();
-                Object rawValue = entry.getValue();
-                if (!(rawValue instanceof String)) continue;
-
+            if (legacyHabitMilestonesJson != null && !legacyHabitMilestonesJson.trim().isEmpty()) {
                 try {
-                    JSONArray legacyMilestones = new JSONArray((String) rawValue);
+                    JSONArray legacyHabitMilestonesList =
+                            new JSONArray(legacyHabitMilestonesJson);
 
-                    boolean goalExists = false;
-                    for (int i = 0; i < currentGoals.length(); i++) {
-                        JSONObject g = currentGoals.getJSONObject(i);
-                        if (habitName.equals(g.optString("habitName"))) {
-                            goalExists = true;
-                            break;
+                    for (int i = 0; i < legacyHabitMilestonesList.length(); i++) {
+                        JSONObject legacyHabitMilestones =
+                                legacyHabitMilestonesList.optJSONObject(i);
+                        if (legacyHabitMilestones == null) continue;
+
+                        String habitName = legacyHabitMilestones.optString("habitName", "");
+                        JSONArray legacyMilestones =
+                                legacyHabitMilestones.optJSONArray("milestones");
+
+                        if (habitName.isEmpty() || legacyMilestones == null) continue;
+
+                        boolean goalExists = false;
+                        for (int j = 0; j < currentGoals.length(); j++) {
+                            JSONObject g = currentGoals.getJSONObject(j);
+                            if (habitName.equals(g.optString("habitName"))) {
+                                goalExists = true;
+                                break;
+                            }
+                        }
+
+                        if (!goalExists) {
+                            MatrixGoal syntheticGoal = new MatrixGoal(
+                                    habitName,
+                                    "Migrated from legacy storage",
+                                    0,
+                                    System.currentTimeMillis()
+                            );
+
+                            JSONObject goalJson = goalToJson(syntheticGoal);
+                            List<MatrixMilestone> milestones =
+                                    migrateLegacyMilestones(
+                                            legacyMilestones, syntheticGoal.getGoalId());
+                            goalJson.put("milestones", milestonesToJson(milestones));
+                            currentGoals.put(goalJson);
                         }
                     }
 
-                    if (!goalExists) {
-                        MatrixGoal syntheticGoal = new MatrixGoal(
-                                habitName,
-                                "Migrated from legacy storage",
-                                0,
-                                System.currentTimeMillis()
-                        );
-
-                        JSONObject goalJson = goalToJson(syntheticGoal);
-                        List<MatrixMilestone> milestones =
-                                migrateLegacyMilestones(legacyMilestones, syntheticGoal.getGoalId());
-                        goalJson.put("milestones", milestonesToJson(milestones));
-                        currentGoals.put(goalJson);
-                    }
-
                 } catch (JSONException e) {
-                    Log.e(TAG, "ensureMigrated: failed to migrate habit " + habitName, e);
+                    Log.e(TAG, "ensureMigrated: failed to migrate legacy habit milestones", e);
                 }
             }
 
