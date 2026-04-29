@@ -25,7 +25,7 @@ public final class MatrixPrompts {
         "5. The first one or two milestones must be foundational: setup, core concepts, prerequisites.\n" +
         "6. Descriptions must be specific enough for a third party to verify completion. " +
         "   Never use 'understand', 'explore', or 'become familiar with'.\n" +
-        "7. Produce between 4 and 10 milestones. Never fewer than 3, never more than 15.\n" +
+        "7. Produce between 4 and 10 milestones.\n" +
         "8. Begin your response with '[' and end it with ']'. Nothing else.";
 
     public static final String TIMELINE_USER_TEMPLATE =
