@@ -22,7 +22,7 @@ public class matrixmilestone {
     private int bufferDays;
     private int startDay;
     private Status status;
-    private List<matrixdailytaskslot> dailyTaskSlots;
+    private List<MatrixDailyTaskSlot> dailyTaskSlots;
 
     public matrixmilestone(String parentGoalId, String name, String description,
                             int orderIndex, int allocatedDays, int startDay) {
