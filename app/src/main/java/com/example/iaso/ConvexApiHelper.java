@@ -118,8 +118,12 @@ public class ConvexApiHelper {
             try {
                 // Build messages JSON array
                 JSONArray messagesArray = new JSONArray();
-                for (ChatMessage msg : messages) {
-                    messagesArray.put(msg.toJson());
+                if (messages != null) {
+                    for (ChatMessage msg : messages) {
+                        if (msg != null) {
+                            messagesArray.put(msg.toJson());
+                        }
+                    }
                 }
 
                 // Build context object
