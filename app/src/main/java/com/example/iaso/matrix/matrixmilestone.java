@@ -26,17 +26,23 @@ public class matrixmilestone {
 
     public matrixmilestone(String parentGoalId, String name, String description,
                             int orderIndex, int allocatedDays, int startDay) {
+        this(UUID.randomUUID().toString(), parentGoalId, name, description, orderIndex, allocatedDays, 0, startDay);
+    }
+
+    public matrixmilestone(String milestoneId, String parentGoalId, String name, String description,
+                            int orderIndex, int allocatedDays, int bufferDays, int startDay) {
         if (allocatedDays < 0) throw new IllegalArgumentException("allocatedDays must be non-negative");
         if (orderIndex < 0)    throw new IllegalArgumentException("orderIndex must be non-negative");
+        if (bufferDays < 0)    throw new IllegalArgumentException("bufferDays must be non-negative");
         if (startDay < 0)      throw new IllegalArgumentException("startDay must be non-negative");
 
-        this.milestoneId    = UUID.randomUUID().toString();
+        this.milestoneId    = milestoneId;
         this.parentGoalId   = parentGoalId;
         this.name           = name;
         this.description    = description;
         this.orderIndex     = orderIndex;
         this.allocatedDays  = allocatedDays;
-        this.bufferDays     = 0;
+        this.bufferDays     = bufferDays;
         this.startDay       = startDay;
         this.status         = Status.PENDING;
         this.dailyTaskSlots = new ArrayList<>();
