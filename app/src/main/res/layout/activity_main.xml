@@ -341,104 +341,177 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/Hub" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Habit Detail Expansion Panel -->
+            <LinearLayout
                 android:id="@+id/habitDetailContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:paddingStart="0dp"
+                android:paddingEnd="16dp"
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/Row">
 
-                <ImageView
-                    android:id="@+id/habitDetailImage"
-                    android:layout_width="32sp"
-                    android:layout_height="32sp"
-                    android:layout_marginStart="16dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ionlogo"
-                    app:layout_constraintBottom_toBottomOf="@+id/habitDetailName"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/habitDetailName" />
-
-                <TextView
-                    android:id="@+id/habitDetailName"
+                <!-- ======== HEADER: Habit Image + Ticker Symbol ======== -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:fontFamily="@font/neuehaas65"
-                    android:text="Project Name"
-                    android:textColor="@color/black"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/habitDetailImage"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_marginStart="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <!-- Timeline Section -->
+                    <ImageView
+                        android:id="@+id/habitDetailImage"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ionlogo" />
+
+                    <TextView
+                        android:id="@+id/habitDetailName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:fontFamily="@font/neuehaas65"
+                        android:text="STRP"
+                        android:textColor="@color/black"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- ======== FEATURE 1: Daily Progress Bar ======== -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- Vertical progress bar -->
+                    <FrameLayout
+                        android:id="@+id/progressBarFrame"
+                        android:layout_width="8dp"
+                        android:layout_height="60dp">
+
+                        <View
+                            android:id="@+id/progressBarBgYellow"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/progress_bar_bg_yellow" />
+
+                        <View
+                            android:id="@+id/progressBarFillGreen"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_gravity="bottom"
+                            android:background="@drawable/progress_bar_fill_green" />
+                    </FrameLayout>
+
+                    <!-- Minutes left display -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/minutesLeftNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/neuehaas45"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="48sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/minutesLeftLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/neuehaas25"
+                            android:text="Mins Left"
+                            android:textColor="@color/grey"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ======== FEATURE 2: Timeline Section ======== -->
                 <TextView
                     android:id="@+id/timelineLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
                     android:fontFamily="@font/neuehaas45"
-                    android:text="Timeline"
+                    android:text="TimeLine"
                     android:textColor="@color/black"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/habitDetailName" />
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-                <!-- Timeline visualization container -->
-                <ImageView
-                    android:id="@+id/timelineImage"
-                    android:layout_width="0dp"
-                    android:layout_height="25dp"
-                    android:layout_marginTop="16dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/os_timeline"
-                    app:layout_constraintEnd_toStartOf="@+id/timelineDaysNumber"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/timelineLabel"
-                    app:layout_constraintWidth_percent="0.8" />
-
-                <ImageView
-                    android:id="@+id/timelineArrow"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/os_timeline_arrow"
-                    app:layout_constraintBottom_toBottomOf="@+id/timelineImage"
-                    app:layout_constraintStart_toStartOf="@+id/timelineImage"
-                    app:layout_constraintTop_toTopOf="@+id/timelineImage" />
-
-                <TextView
-                    android:id="@+id/timelineDaysNumber"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="0"
-                    android:textColor="@color/black"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/timelineImage"
-                    app:layout_constraintTop_toTopOf="@+id/timelineImage" />
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/timelineDaysLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/neuehaas25"
-                    android:text="dys"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="@+id/timelineDaysNumber"
-                    app:layout_constraintTop_toBottomOf="@+id/timelineDaysNumber" />
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:id="@+id/timelineImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center_vertical"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/os_timeline" />
+
+                        <ImageView
+                            android:id="@+id/timelineArrow"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:src="@drawable/os_timeline_arrow" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/timelineDaysNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/neuehaas45"
+                            android:text="0"
+                            android:textColor="@color/black"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/timelineDaysLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/neuehaas25"
+                            android:text="Yrs left"
+                            android:textColor="@color/grey"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/timelineUpgradeMessage"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/neuehaas45"
@@ -446,69 +519,125 @@
                     android:text="upgrade to pro to access timeline"
                     android:textColor="@color/grey"
                     android:textSize="14sp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/timelineImage" />
+                    android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/habitDetailMilestoneLabel"
-                    android:layout_width="wrap_content"
+                <!-- ======== FEATURE 3: Current Milestone Card ======== -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/milestoneCard"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="Next Milestone"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/timelineUpgradeMessage" />
+                    android:layout_marginTop="24dp"
+                    app:cardBackgroundColor="#1A1A1A"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
 
-                <TextView
-                    android:id="@+id/habitDetailMilestone"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="Milestone description here"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/habitDetailMilestoneLabel" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
 
-                <TextView
-                    android:id="@+id/habitDetailCompletionLabel"
+                        <TextView
+                            android:id="@+id/milestoneCardLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:fontFamily="@font/neuehaas25"
+                            android:text="Current Goal"
+                            android:textColor="#FAF9F6"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/milestoneCardDaysLeft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="@font/neuehaas25"
+                            android:text=""
+                            android:textColor="#FAF9F6"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/milestoneCardName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/milestoneCardLabel"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/neuehaas45"
+                            android:maxLines="2"
+                            android:text="No milestones set"
+                            android:textColor="@android:color/white"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- ======== FEATURE 4: Dynamic To-Do List ======== -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="24dp"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="Total Completion Time"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/habitDetailMilestone" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/habitDetailCompletionTime"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ionlogo" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:fontFamily="@font/neuehaas45"
+                        android:text="Your Tasks For Today"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Task list container (dynamically populated) -->
+                <LinearLayout
+                    android:id="@+id/habitTaskListContainer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/neuehaas45"
-                    android:text="0 days"
-                    android:textColor="@color/black"
-                    android:textSize="48sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/habitDetailCompletionLabel" />
+                    android:orientation="vertical" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <!-- Fixed "Add Data" button above tab bar -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/addTaskButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#000000"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/tabBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:fontFamily="@font/neuehaas45"
+            android:paddingStart="24dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="10dp"
+            android:text="Add Data"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+    </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/tabBar"
