@@ -1,5 +1,11 @@
 package com.example.iaso.matrix;
 
+//  MatrixSnapshot.java — A live progress summary for a goal. Instead of recalculating progress every time, it caches:
+//  - Which milestone you're currently on
+//  - How many total days have passed vs. remain
+//  - How much buffer time is left
+//  - A getProgressPercent() helper
+
 public class MatrixSnapshot {
 
     private String activeGoalId;

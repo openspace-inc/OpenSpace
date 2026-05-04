@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+//MatrixGoal.java — Represents one habit/goal a user is working toward (e.g., "Run every day"). It stores:
+//  - A name, description, and duration in days
+//  - A start date and auto-calculated target/end date
+//  - A status: ACTIVE, PAUSED, or COMPLETED
+//  - A list of milestones attached to it
+
 public class MatrixGoal {
 
     public enum Status {

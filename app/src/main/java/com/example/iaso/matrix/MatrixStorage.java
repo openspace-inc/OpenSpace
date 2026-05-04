@@ -11,20 +11,41 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+// MatrixStorage is the only class allowed to read/write goal data to the device.
+// Everything is saved as JSON strings inside Android's SharedPreferences (a simple key-value store on disk).
+// No external database is used — just two keys: one holds all goals, one holds all snapshots.
 public final class MatrixStorage {
 
     private static final String TAG = "MatrixStorage";
+
+    // The name of the SharedPreferences file on disk where all matrix data lives.
     private static final String PREFS_FILE = "MatrixData";
+
+    // The key under which the full list of goals (as a JSON array string) is stored.
     private static final String KEY_GOALS = "matrixGoals";
+
+    // The key under which all progress snapshots (as a JSON object string) are stored.
     private static final String KEY_SNAPSHOTS = "matrixSnapshots";
+
+    // The old SharedPreferences file name from before this system existed — used only for migration.
     private static final String LEGACY_PREFS_FILE = "HabitMilestones";
+
+    // A flag stored in prefs so we only run the migration from the old format once.
     private static final String KEY_MIGRATED = "legacyMigrationDone";
 
+    // A lock object used to prevent two threads from reading/writing at the same time.
     private static final Object LOCK = new Object();
 
+    // Private constructor — this class is never instantiated, all methods are static.
     private MatrixStorage() {
     }
 
+    // -----------------------------------------------------------------------
+    // PUBLIC API — Goal operations
+    // -----------------------------------------------------------------------
+
+    // Saves a goal to disk. If a goal with the same ID already exists, it is replaced.
+    // If it's brand new, it's appended to the list.
     public static void saveGoal(Context context, MatrixGoal goal) {
         if (context == null || goal == null) return;
         ensureMigrated(context);
@@ -41,6 +62,7 @@ public final class MatrixStorage {
                 return;
             }
 
+            // Walk the existing list and replace if we find a matching ID.
             boolean replaced = false;
             String incomingGoalId = safeStr(goal.getGoalId());
 
@@ -56,11 +78,13 @@ public final class MatrixStorage {
                 }
             }
 
+            // If no existing entry was replaced, add it as a new entry.
             if (!replaced) goals.put(incomingGoalJson);
             writeGoalsArray(prefs, goals);
         }
     }
 
+    // Finds and returns a single goal by its unique ID. Returns null if not found.
     public static MatrixGoal getGoal(Context context, String goalId) {
         if (context == null || goalId == null) return null;
         ensureMigrated(context);
@@ -78,6 +102,7 @@ public final class MatrixStorage {
         }
     }
 
+    // Looks up a goal by its habit name instead of its ID. Useful when you know the name but not the ID.
     public static MatrixGoal getGoalByHabitName(Context context, String habitName) {
         if (context == null || habitName == null) return null;
         ensureMigrated(context);
@@ -95,6 +120,7 @@ public final class MatrixStorage {
         }
     }
 
+    // Returns every saved goal as a list. Returns an empty list if nothing is saved yet.
     public static ArrayList<MatrixGoal> getAllGoals(Context context) {
         ArrayList<MatrixGoal> result = new ArrayList<>();
         if (context == null) return result;
@@ -112,6 +138,7 @@ public final class MatrixStorage {
         return result;
     }
 
+    // Removes a goal and its associated snapshot from disk permanently.
     public static void deleteGoal(Context context, String goalId) {
         if (context == null || goalId == null) return;
         ensureMigrated(context);
@@ -119,8 +146,9 @@ public final class MatrixStorage {
         synchronized (LOCK) {
             SharedPreferences prefs = getPrefs(context);
             JSONArray goals = readGoalsArray(prefs);
-            JSONArray updated = new JSONArray();
 
+            // Build a new array that contains everything except the goal being deleted.
+            JSONArray updated = new JSONArray();
             for (int i = 0; i < goals.length(); i++) {
                 try {
                     JSONObject obj = goals.getJSONObject(i);
@@ -129,6 +157,7 @@ public final class MatrixStorage {
                 }
             }
 
+            // Also remove the snapshot for this goal so no orphaned progress data is left behind.
             JSONObject snapshots = readSnapshotsObject(prefs);
             snapshots.remove(goalId);
 
@@ -139,6 +168,12 @@ public final class MatrixStorage {
         }
     }
 
+    // -----------------------------------------------------------------------
+    // PUBLIC API — Milestone operations
+    // -----------------------------------------------------------------------
+
+    // Replaces the entire milestones list for a specific goal.
+    // Use this when setting up or bulk-updating milestones.
     public static void saveMilestones(Context context, String goalId, List<MatrixMilestone> milestones) {
         if (context == null || goalId == null || milestones == null) return;
         ensureMigrated(context);
@@ -147,6 +182,7 @@ public final class MatrixStorage {
             SharedPreferences prefs = getPrefs(context);
             JSONArray goals = readGoalsArray(prefs);
 
+            // Find the matching goal and overwrite its milestones field.
             for (int i = 0; i < goals.length(); i++) {
                 try {
                     JSONObject obj = goals.getJSONObject(i);
@@ -164,6 +200,7 @@ public final class MatrixStorage {
         }
     }
 
+    // Returns the list of milestones for a given goal. Returns an empty list if the goal has none.
     public static List<MatrixMilestone> getMilestones(Context context, String goalId) {
         if (context == null || goalId == null) return new ArrayList<>();
         ensureMigrated(context);
@@ -184,6 +221,8 @@ public final class MatrixStorage {
         }
     }
 
+    // Updates the status of a single milestone (e.g. PENDING → ACTIVE) without rewriting the whole goal.
+    // Searches every goal's milestone list until it finds the matching milestoneId.
     public static void updateMilestoneStatus(Context context, String milestoneId, MatrixMilestone.Status newStatus) {
         if (context == null || milestoneId == null || newStatus == null) return;
         ensureMigrated(context);
@@ -193,6 +232,8 @@ public final class MatrixStorage {
             JSONArray goals = readGoalsArray(prefs);
             boolean changed = false;
 
+            // Outer loop: iterate over goals. Inner loop: iterate over each goal's milestones.
+            // "break outer" exits both loops at once once the target milestone is found.
             outer:
             for (int i = 0; i < goals.length(); i++) {
                 try {
@@ -216,10 +257,17 @@ public final class MatrixStorage {
                 }
             }
 
+            // Only write to disk if something actually changed.
             if (changed) writeGoalsArray(prefs, goals);
         }
     }
 
+    // -----------------------------------------------------------------------
+    // PUBLIC API — Daily task slot operations
+    // -----------------------------------------------------------------------
+
+    // Saves or updates a single daily task slot inside a milestone.
+    // If the slot already exists (matched by slotId), it is replaced. Otherwise it is added.
     public static void updateDailyTaskSlot(Context context, String milestoneId, MatrixDailyTaskSlot slot) {
         if (context == null || milestoneId == null || slot == null) return;
         ensureMigrated(context);
@@ -229,6 +277,8 @@ public final class MatrixStorage {
             JSONArray goals = readGoalsArray(prefs);
             boolean changed = false;
 
+            // Three nested loops: goals → milestones → slots.
+            // "break outer" exits all three once the work is done.
             outer:
             for (int i = 0; i < goals.length(); i++) {
                 try {
@@ -243,6 +293,7 @@ public final class MatrixStorage {
                         JSONArray slots = ms.optJSONArray("dailyTaskSlots");
                         if (slots == null) slots = new JSONArray();
 
+                        // Check if this slot already exists; if so replace it, otherwise append it.
                         boolean slotFound = false;
                         for (int k = 0; k < slots.length(); k++) {
                             JSONObject existingSlot = slots.getJSONObject(k);
@@ -271,6 +322,13 @@ public final class MatrixStorage {
         }
     }
 
+    // -----------------------------------------------------------------------
+    // PUBLIC API — Snapshot operations
+    // -----------------------------------------------------------------------
+
+    // Saves a progress snapshot for a goal. Snapshots are stored separately from goals
+    // (in their own JSON object keyed by goalId) so they can be updated frequently without
+    // rewriting the entire goals list.
     public static void saveSnapshot(Context context, MatrixSnapshot snapshot) {
         if (context == null || snapshot == null || snapshot.getActiveGoalId() == null) return;
         ensureMigrated(context);
@@ -288,6 +346,7 @@ public final class MatrixStorage {
         }
     }
 
+    // Returns the progress snapshot for a goal, or null if none has been saved yet.
     public static MatrixSnapshot getSnapshot(Context context, String goalId) {
         if (context == null || goalId == null) return null;
         ensureMigrated(context);
@@ -299,12 +358,20 @@ public final class MatrixStorage {
         }
     }
 
+    // -----------------------------------------------------------------------
+    // MIGRATION — Runs once to convert old HabitMilestones data to the new format
+    // -----------------------------------------------------------------------
+
+    // Called at the start of every public method. Checks if migration has already run;
+    // if not, it reads the old storage format and converts each habit into a MatrixGoal.
     private static void ensureMigrated(Context context) {
         SharedPreferences matrixPrefs = getPrefs(context);
 
+        // Fast path: migration already done, do nothing.
         if (matrixPrefs.getBoolean(KEY_MIGRATED, false)) return;
 
         synchronized (LOCK) {
+            // Double-check inside the lock in case another thread just finished migrating.
             if (matrixPrefs.getBoolean(KEY_MIGRATED, false)) return;
 
             SharedPreferences legacyPrefs =
@@ -324,6 +391,7 @@ public final class MatrixStorage {
                         JSONArray legacyMilestones = habitMilestonesObj.optJSONArray("milestones");
                         if (legacyMilestones == null) legacyMilestones = new JSONArray();
 
+                        // Skip this habit if a goal with the same name was already migrated.
                         boolean goalExists = false;
                         for (int i = 0; i < currentGoals.length(); i++) {
                             JSONObject g = currentGoals.getJSONObject(i);
@@ -334,6 +402,7 @@ public final class MatrixStorage {
                         }
 
                         if (!goalExists) {
+                            // Create a shell MatrixGoal to wrap the old habit data.
                             MatrixGoal syntheticGoal = new MatrixGoal(
                                     habitName,
                                     "Migrated from legacy storage",
@@ -353,6 +422,7 @@ public final class MatrixStorage {
                 }
             }
 
+            // Save the converted data and mark migration as done so this never runs again.
             matrixPrefs.edit()
                     .putString(KEY_GOALS, currentGoals.toString())
                     .putBoolean(KEY_MIGRATED, true)
@@ -360,6 +430,9 @@ public final class MatrixStorage {
         }
     }
 
+    // Converts old-format milestone JSON objects into MatrixMilestone objects.
+    // The old format only had name, time, and days — no IDs or statuses.
+    // startDay is calculated cumulatively so milestones chain end-to-end.
     private static List<MatrixMilestone> migrateLegacyMilestones(JSONArray legacyArray, String parentGoalId) {
         List<MatrixMilestone> result = new ArrayList<>();
         int cumulativeStartDay = 0;
@@ -382,7 +455,7 @@ public final class MatrixStorage {
                 ms.setStartDay(cumulativeStartDay);
 
                 result.add(ms);
-                cumulativeStartDay += days;
+                cumulativeStartDay += days; // next milestone starts right after this one ends
             } catch (JSONException ignored) {
             }
         }
@@ -390,6 +463,11 @@ public final class MatrixStorage {
         return result;
     }
 
+    // -----------------------------------------------------------------------
+    // SERIALIZATION — Converting Java objects → JSON and JSON → Java objects
+    // -----------------------------------------------------------------------
+
+    // Converts a MatrixGoal object into a JSON object so it can be stored as a string.
     private static JSONObject goalToJson(MatrixGoal g) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("goalId", safeStr(g.getGoalId()));
@@ -409,6 +487,8 @@ public final class MatrixStorage {
         return obj;
     }
 
+    // Rebuilds a MatrixGoal Java object from a JSON object read off disk.
+    // Uses safe defaults (e.g. 0 for missing numbers) so corrupt/partial data doesn't crash the app.
     private static MatrixGoal goalFromJson(JSONObject obj) {
         MatrixGoal g = new MatrixGoal();
         g.setGoalId(obj.optString("goalId"));
@@ -425,6 +505,7 @@ public final class MatrixStorage {
         g.setTargetDate(Math.max(0L, obj.optLong("targetDate", 0L)));
         g.setCreatedAt(nonNegativeLong(obj.optLong("createdAt", now), now));
 
+        // Parse the status enum from its string name; fall back to ACTIVE if unrecognised.
         String statusStr = obj.optString("status", MatrixGoal.Status.ACTIVE.name());
         try {
             g.setStatus(MatrixGoal.Status.valueOf(statusStr));
@@ -439,12 +520,14 @@ public final class MatrixStorage {
         return g;
     }
 
+    // Converts a list of milestones into a JSON array by serializing each one.
     private static JSONArray milestonesToJson(List<MatrixMilestone> milestones) throws JSONException {
         JSONArray arr = new JSONArray();
         for (MatrixMilestone ms : milestones) arr.put(milestoneToJson(ms));
         return arr;
     }
 
+    // Converts a single MatrixMilestone into a JSON object.
     private static JSONObject milestoneToJson(MatrixMilestone ms) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("milestoneId", safeStr(ms.getMilestoneId()));
@@ -464,6 +547,7 @@ public final class MatrixStorage {
         return obj;
     }
 
+    // Rebuilds a list of MatrixMilestone objects from a JSON array read off disk.
     private static List<MatrixMilestone> milestonesFromJson(JSONArray arr) {
         List<MatrixMilestone> list = new ArrayList<>();
 
@@ -491,6 +575,7 @@ public final class MatrixStorage {
                         startDay
                 );
 
+                // Parse the status enum from its string name; fall back to PENDING if unrecognised.
                 String statusStr = obj.optString("status", MatrixMilestone.Status.PENDING.name());
                 try {
                     ms.setStatus(MatrixMilestone.Status.valueOf(statusStr));
@@ -509,12 +594,14 @@ public final class MatrixStorage {
         return list;
     }
 
+    // Converts a list of daily task slots into a JSON array.
     private static JSONArray taskSlotsToJson(List<MatrixDailyTaskSlot> slots) throws JSONException {
         JSONArray arr = new JSONArray();
         for (MatrixDailyTaskSlot slot : slots) arr.put(taskSlotToJson(slot));
         return arr;
     }
 
+    // Converts a single MatrixDailyTaskSlot into a JSON object.
     private static JSONObject taskSlotToJson(MatrixDailyTaskSlot slot) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("slotId", safeStr(slot.getSlotId()));
@@ -526,6 +613,7 @@ public final class MatrixStorage {
         return obj;
     }
 
+    // Rebuilds a list of MatrixDailyTaskSlot objects from a JSON array read off disk.
     private static List<MatrixDailyTaskSlot> taskSlotsFromJson(JSONArray arr) {
         List<MatrixDailyTaskSlot> list = new ArrayList<>();
         for (int i = 0; i < arr.length(); i++) {
@@ -537,6 +625,7 @@ public final class MatrixStorage {
         return list;
     }
 
+    // Rebuilds a single MatrixDailyTaskSlot from a JSON object.
     private static MatrixDailyTaskSlot taskSlotFromJson(JSONObject obj) {
         MatrixDailyTaskSlot slot = new MatrixDailyTaskSlot();
         slot.setSlotId(obj.optString("slotId"));
@@ -544,6 +633,7 @@ public final class MatrixStorage {
         slot.setDayNumber(Math.max(1, obj.optInt("dayNumber", 1)));
         slot.setDate(Math.max(0L, obj.optLong("date", 0L)));
 
+        // Parse the status enum from its string name; fall back to PENDING if unrecognised.
         String statusStr = obj.optString("status", MatrixDailyTaskSlot.Status.PENDING.name());
         try {
             slot.setStatus(MatrixDailyTaskSlot.Status.valueOf(statusStr));
@@ -555,6 +645,7 @@ public final class MatrixStorage {
         return slot;
     }
 
+    // Converts a MatrixSnapshot into a JSON object.
     private static JSONObject snapshotToJson(MatrixSnapshot s) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("activeGoalId", safeStr(s.getActiveGoalId()));
@@ -567,6 +658,7 @@ public final class MatrixStorage {
         return obj;
     }
 
+    // Rebuilds a MatrixSnapshot from a JSON object read off disk.
     private static MatrixSnapshot snapshotFromJson(JSONObject obj) {
         String activeGoalId = obj.optString("activeGoalId");
         int activeMilestoneIndex = Math.max(0, obj.optInt("activeMilestoneIndex", 0));
@@ -588,10 +680,17 @@ public final class MatrixStorage {
         return snapshot;
     }
 
+    // -----------------------------------------------------------------------
+    // HELPERS — Low-level read/write utilities
+    // -----------------------------------------------------------------------
+
+    // Opens (or creates) the SharedPreferences file where all matrix data is stored.
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
     }
 
+    // Reads the raw goals JSON string from disk and parses it into a JSONArray.
+    // Returns an empty array if nothing is saved yet or the data is corrupted.
     private static JSONArray readGoalsArray(SharedPreferences prefs) {
         String raw = prefs.getString(KEY_GOALS, "[]");
         try {
@@ -601,10 +700,13 @@ public final class MatrixStorage {
         }
     }
 
+    // Writes the goals JSON array back to disk as a string.
     private static void writeGoalsArray(SharedPreferences prefs, JSONArray goals) {
         prefs.edit().putString(KEY_GOALS, goals.toString()).apply();
     }
 
+    // Reads the raw snapshots JSON string from disk and parses it into a JSONObject.
+    // Returns an empty object if nothing is saved yet or the data is corrupted.
     private static JSONObject readSnapshotsObject(SharedPreferences prefs) {
         String raw = prefs.getString(KEY_SNAPSHOTS, "{}");
         try {
@@ -614,10 +716,13 @@ public final class MatrixStorage {
         }
     }
 
+    // Returns an empty string instead of null so JSON serialization never writes "null" for string fields.
     private static String safeStr(String s) {
         return s != null ? s : "";
     }
 
+    // Returns the value if it's non-negative, otherwise returns the provided default.
+    // Used when reading timestamps from disk to guard against corrupted negative values.
     private static long nonNegativeLong(long value, long defaultValue) {
         return value >= 0L ? value : defaultValue;
     }

@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+//  MatrixMilestone.java — A phase or checkpoint within a goal (e.g., "Week 1: Light jogging"). It stores:
+//  - How many days are allocated to it and which day it starts on
+//  - Optional "buffer days" (slack time)
+//  - A status: PENDING, ACTIVE, COMPLETED, or SKIPPED
+//  - A list of daily task slots
+
 public class MatrixMilestone {
 
     public enum Status {
