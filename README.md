@@ -24,8 +24,8 @@ Website:
 https://openspaceinc.framer.website/
 
 
-Our Technologies:
-Matrix1.0
+Our Technologies:   
+Matrix1.0   
   MatrixGoal.java — Represents one habit/goal a user is working toward (e.g., "Run every day"). It stores:
   - A name, description, and duration in days                                                                                                                         
   - A start date and auto-calculated target/end date                                                                                                                  
@@ -54,5 +54,5 @@ Matrix1.0
   - Update just a milestone's status or a single task slot without rewriting everything                                                                               
   - Automatic migration: If a user had data in the old HabitMilestones storage format, it's automatically converted to this new format the first time the app runs.
 
-Convo1.0
+Convo1.0   
   A technology designed for multiturn conversation with AI, until a dream is fully defined and ready to be passed to Matrix to generate a timeline.
