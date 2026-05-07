@@ -3,6 +3,7 @@ package com.example.iaso.matrix;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.iaso.BuildConfig;
 import com.example.iaso.ChatMessage;
 import com.example.iaso.ConvexApiHelper;
 
@@ -105,8 +106,10 @@ public final class MatrixEngine {
 
         String userMessage = buildUserMessage(goalDescription, dailyMinutes, totalDays);
 
-        Log.d(TAG, "generateTimeline — system prompt:\n" + MatrixPrompts.MATRIX_TIMELINE_PROMPT);
-        Log.d(TAG, "generateTimeline — user message:\n" + userMessage);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "generateTimeline — system prompt:\n" + MatrixPrompts.MATRIX_TIMELINE_PROMPT);
+            Log.d(TAG, "generateTimeline — user message:\n" + userMessage);
+        }
 
         ArrayList<ChatMessage> messages = new ArrayList<>();
         messages.add(new ChatMessage("user", userMessage));
