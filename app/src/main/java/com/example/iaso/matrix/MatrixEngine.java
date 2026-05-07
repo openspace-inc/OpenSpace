@@ -199,6 +199,21 @@ public final class MatrixEngine {
             return;
         }
 
+        int allocatedDaysSum = 0;
+        for (MatrixMilestone milestone : milestones) {
+            allocatedDaysSum += milestone.getAllocatedDays();
+        }
+
+        if (allocatedDaysSum != totalDays) {
+            Log.w(TAG, "generateTimeline — milestone allocatedDays sum mismatch. Expected "
+                    + totalDays + " but got " + allocatedDaysSum + ".");
+            if (callback != null) {
+                callback.onError("Invalid milestone schedule from Claude: allocated days total "
+                        + allocatedDaysSum + " does not match expected totalDays " + totalDays + ".");
+            }
+            return;
+        }
+
         MatrixGoal goal = new MatrixGoal(
                 goalDescription,
                 goalDescription,
