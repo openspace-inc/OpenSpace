@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 public final class MatrixEngine {
 
     private static final String TAG = "MatrixEngine";
+    private static final String PHASE_GENERATING = "generating";
 
     /** Utility class — do not instantiate. */
     private MatrixEngine() {
@@ -110,15 +111,16 @@ public final class MatrixEngine {
         ArrayList<ChatMessage> messages = new ArrayList<>();
         messages.add(new ChatMessage("user", userMessage));
 
-        ConvexApiHelper convexApiHelper = new ConvexApiHelper();
+        final ConvexApiHelper convexApiHelper = new ConvexApiHelper();
         convexApiHelper.sendConversation(
                 messages,
                 dailyMinutes,
                 totalDays,
-                "generating",
+                PHASE_GENERATING,
                 new ConvexApiHelper.ClaudeResponseCallback() {
                     @Override
                     public void onSuccess(String rawResponse) {
+                        convexApiHelper.shutdown();
                         Log.d(
                                 TAG,
                                 "generateTimeline — received raw response"
@@ -129,6 +131,7 @@ public final class MatrixEngine {
 
                     @Override
                     public void onError(String error) {
+                        convexApiHelper.shutdown();
                         Log.e(TAG, "generateTimeline — Convex error: " + error);
                         if (callback != null) callback.onError(error);
                     }
