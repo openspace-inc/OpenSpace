@@ -3,8 +3,8 @@ package com.example.iaso.matrix;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.iaso.network.ConvexApiHelper;
-import com.example.iaso.model.ChatMessage;
+import com.example.iaso.ChatMessage;
+import com.example.iaso.ConvexApiHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,13 +107,16 @@ public final class MatrixEngine {
         Log.d(TAG, "generateTimeline — system prompt:\n" + MatrixPrompts.MATRIX_TIMELINE_PROMPT);
         Log.d(TAG, "generateTimeline — user message:\n" + userMessage);
 
-        List<ChatMessage> messages = new ArrayList<>();
+        ArrayList<ChatMessage> messages = new ArrayList<>();
         messages.add(new ChatMessage("user", userMessage));
 
-        ConvexApiHelper.sendConversation(
-                MatrixPrompts.MATRIX_TIMELINE_PROMPT,
+        ConvexApiHelper convexApiHelper = new ConvexApiHelper();
+        convexApiHelper.sendConversation(
                 messages,
-                new ConvexApiHelper.ConvexCallback() {
+                dailyMinutes,
+                totalDays,
+                "generating",
+                new ConvexApiHelper.ClaudeResponseCallback() {
                     @Override
                     public void onSuccess(String rawResponse) {
                         Log.d(
