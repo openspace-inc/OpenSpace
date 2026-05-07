@@ -116,7 +116,11 @@ public final class MatrixEngine {
                 new ConvexApiHelper.ConvexCallback() {
                     @Override
                     public void onSuccess(String rawResponse) {
-                        Log.d(TAG, "generateTimeline — raw response:\n" + rawResponse);
+                        Log.d(
+                                TAG,
+                                "generateTimeline — received raw response"
+                                        + (rawResponse == null ? " (null)" : " (length=" + rawResponse.length() + ")")
+                        );
                         handleResponse(context, rawResponse, goalDescription, totalDays, callback);
                     }
 
