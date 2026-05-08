@@ -117,7 +117,21 @@ public class ConvexApiHelper {
             String systemPrompt,
             String userMessage,
             ClaudeResponseCallback callback) {
+        int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
+        int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
+        sendMessageToClaude(systemPrompt, userMessage, dailyMinutes, totalDays, callback);
+    }
 
+    /**
+     * Matrix-specific overload that forwards to the current Convex action schema:
+     * args = { messages, context } where context includes timeline params.
+     */
+    public void sendMessageToClaude(
+            String systemPrompt,
+            String userMessage,
+            int dailyMinutes,
+            int totalDays,
+            ClaudeResponseCallback callback) {
         executor.execute(() -> {
             try {
                 JSONArray messagesArray = new JSONArray();
@@ -125,9 +139,6 @@ public class ConvexApiHelper {
                 userMsg.put("role", "user");
                 userMsg.put("content", userMessage);
                 messagesArray.put(userMsg);
-
-                int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
-                int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
 
                 JSONObject contextObj = new JSONObject();
                 contextObj.put("dailyMinutes", dailyMinutes);
@@ -268,7 +279,9 @@ public class ConvexApiHelper {
         if (matcher.find()) {
             try {
                 return Integer.parseInt(matcher.group(1));
-            } catch (NumberFormatException ignored) { }
+            } catch (NumberFormatException ignored) {
+                Log.w(TAG, "Failed parsing " + fieldName + " from input, using default " + fallback);
+            }
         }
         Log.w(TAG, "Falling back to default " + fieldName + "=" + fallback);
         return fallback;

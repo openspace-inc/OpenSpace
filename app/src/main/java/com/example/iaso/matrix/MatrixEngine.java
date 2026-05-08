@@ -58,7 +58,7 @@ public class MatrixEngine {
                 + ", userMessageLength=" + user.length());
 
         ConvexApiHelper api = new ConvexApiHelper();
-        api.sendMessageToClaude(system, user, new ConvexApiHelper.ClaudeResponseCallback() {
+        api.sendMessageToClaude(system, user, dailyMinutes, totalDays, new ConvexApiHelper.ClaudeResponseCallback() {
 
             @Override
             public void onSuccess(String response) {
