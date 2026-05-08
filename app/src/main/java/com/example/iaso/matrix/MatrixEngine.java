@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -50,14 +51,13 @@ public class MatrixEngine {
                 String.valueOf(dailyMinutes),
                 String.valueOf(totalDays)
         );
-        String prompt = system + "\n\n" + user;
 
         Log.d(TAG, "Generating timeline request: dailyMinutes=" + dailyMinutes
                 + ", totalDays=" + totalDays
-                + ", promptLength=" + prompt.length());
+                + ", promptLength=" + (system.length() + user.length()));
 
         ConvexApiHelper api = new ConvexApiHelper();
-        api.sendMessageToClaude(prompt, dailyMinutes, totalDays, new ConvexApiHelper.ClaudeResponseCallback() {
+        api.sendMessageToClaude(system, user, dailyMinutes, totalDays, new ConvexApiHelper.ClaudeResponseCallback() {
 
             @Override
             public void onSuccess(String response) {

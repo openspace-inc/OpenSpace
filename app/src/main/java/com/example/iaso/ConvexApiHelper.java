@@ -64,69 +64,31 @@ public class ConvexApiHelper {
      * Do NOT remove until workhorse.java is fully migrated
      */
     public void sendMessageToClaude(String userMessage, ClaudeResponseCallback callback) {
-        executor.execute(() -> {
-            try {
-                JSONObject argsObject = new JSONObject();
-                argsObject.put("userMessage", userMessage);
-
-                JSONObject requestJson = new JSONObject();
-                requestJson.put("path", CONVEX_ACTION_PATH);
-                requestJson.put("args", argsObject);
-
-                RequestBody body = RequestBody.create(requestJson.toString(), JSON);
-                Request request = new Request.Builder()
-                        .url(CONVEX_URL + "/api/action")
-                        .post(body)
-                        .addHeader("Content-Type", "application/json")
-                        .build();
-
-                try (Response response = client.newCall(request).execute()) {
-                    if (!response.isSuccessful()) {
-                        postError(callback, "Server error: " + response.code());
-                        return;
-                    }
-
-                    String responseBody = response.body() != null ? response.body().string() : "";
-                    JSONObject jsonResponse = new JSONObject(responseBody);
-                    String status = jsonResponse.optString("status", "");
-
-                    if ("success".equals(status)) {
-                        String claudeResponse = jsonResponse.optString("value", "");
-                        postSuccess(callback, claudeResponse);
-                    } else {
-                        String errorMessage = jsonResponse.optString("errorMessage", "Unknown error from Convex");
-                        postError(callback, "Convex error: " + errorMessage);
-                    }
-                }
-
-            } catch (IOException e) {
-                postError(callback, "Network error: " + e.getMessage());
-            } catch (JSONException e) {
-                postError(callback, "Error parsing response: " + e.getMessage());
-            }
-        });
+        int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
+        int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
+        sendMessageToClaude(null, userMessage, dailyMinutes, totalDays, callback);
     }
 
-    // ==================== MATRIX METHOD (system + user split) ====================
-
     /**
-     * MatrixEngine entry point for the current Convex action contract.
-     * Sends only the user message plus timeline context derived from that message.
+     * Matrix-specific overload that forwards to the current Convex action schema
+     * without a custom system prompt.
      */
     public void sendMessageToClaude(
             String userMessage,
+            int dailyMinutes,
+            int totalDays,
             ClaudeResponseCallback callback) {
-        int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
-        int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
-        sendMessageToClaude(userMessage, dailyMinutes, totalDays, callback);
+        sendMessageToClaude(null, userMessage, dailyMinutes, totalDays, callback);
     }
 
     /**
      * Matrix-specific overload that forwards to the current Convex action schema:
      * args = { messages, context } where messages contains only the user message
-     * and context includes timeline params.
+     * and context includes timeline params. A custom system prompt can be passed
+     * through to Convex for prompt-control use cases (e.g. Matrix JSON schema).
      */
     public void sendMessageToClaude(
+            String systemPrompt,
             String userMessage,
             int dailyMinutes,
             int totalDays,
@@ -147,6 +109,9 @@ public class ConvexApiHelper {
                 JSONObject argsObject = new JSONObject();
                 argsObject.put("messages", messagesArray);
                 argsObject.put("context", contextObj);
+                if (systemPrompt != null && !systemPrompt.trim().isEmpty()) {
+                    argsObject.put("systemPrompt", systemPrompt);
+                }
 
                 JSONObject requestJson = new JSONObject();
                 requestJson.put("path", CONVEX_ACTION_PATH);

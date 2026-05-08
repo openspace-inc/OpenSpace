@@ -148,6 +148,7 @@ function extractGoalSummary(
 
 export const getClaudeResponse = action({
   args: {
+    systemPrompt: v.optional(v.string()),
     messages: v.array(
       v.object({
         role: v.union(v.literal("user"), v.literal("assistant")),
@@ -169,13 +170,15 @@ export const getClaudeResponse = action({
 
     // Select system prompt based on current phase
     const systemPrompt =
-      args.context.phase === "refining"
-        ? buildRefiningPrompt(args.context.dailyMinutes, args.context.targetDays)
-        : buildGeneratingPrompt(
-            args.context.dailyMinutes,
-            args.context.targetDays,
-            extractGoalSummary(args.messages)
-          );
+      args.systemPrompt && args.systemPrompt.trim().length > 0
+        ? args.systemPrompt
+        : args.context.phase === "refining"
+          ? buildRefiningPrompt(args.context.dailyMinutes, args.context.targetDays)
+          : buildGeneratingPrompt(
+              args.context.dailyMinutes,
+              args.context.targetDays,
+              extractGoalSummary(args.messages)
+            );
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
