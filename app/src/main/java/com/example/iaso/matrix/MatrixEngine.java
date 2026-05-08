@@ -72,13 +72,16 @@ public class MatrixEngine {
                         return;
                     }
 
-                    // Validate day sum — soft fix: redistribute remainder into last milestone
+                    // Validate day sum and normalize to totalDays when possible
                     int sum = 0;
                     for (MatrixMilestone m : milestones) sum += m.getAllocatedDays();
                     if (sum != totalDays) {
                         Log.w(TAG, "Day sum mismatch: expected " + totalDays + ", got " + sum);
-                        MatrixMilestone last = milestones.get(milestones.size() - 1);
-                        last.setAllocatedDays(Math.max(1, last.getAllocatedDays() + (totalDays - sum)));
+                        boolean normalized = normalizeMilestoneDays(milestones, totalDays);
+                        if (!normalized) {
+                            callback.onError("Failed to normalize milestones to requested total days.");
+                            return;
+                        }
                     }
 
                     MatrixGoal goal = buildGoal(goalDescription, totalDays, milestones);
@@ -203,6 +206,52 @@ public class MatrixEngine {
         }
 
         return milestones;
+    }
+
+    private boolean normalizeMilestoneDays(List<MatrixMilestone> milestones, int totalDays) {
+        int sum = 0;
+        for (MatrixMilestone milestone : milestones) {
+            sum += milestone.getAllocatedDays();
+        }
+
+        if (sum == totalDays) {
+            return true;
+        }
+
+        if (sum < totalDays) {
+            MatrixMilestone last = milestones.get(milestones.size() - 1);
+            last.setAllocatedDays(last.getAllocatedDays() + (totalDays - sum));
+            recomputeStartDays(milestones);
+            return true;
+        }
+
+        int overflow = sum - totalDays;
+        for (int i = milestones.size() - 1; i >= 0 && overflow > 0; i--) {
+            MatrixMilestone milestone = milestones.get(i);
+            int reducible = milestone.getAllocatedDays() - 1;
+            if (reducible <= 0) {
+                continue;
+            }
+
+            int reduction = Math.min(reducible, overflow);
+            milestone.setAllocatedDays(milestone.getAllocatedDays() - reduction);
+            overflow -= reduction;
+        }
+
+        if (overflow > 0) {
+            return false;
+        }
+
+        recomputeStartDays(milestones);
+        return true;
+    }
+
+    private void recomputeStartDays(List<MatrixMilestone> milestones) {
+        int startDay = 1;
+        for (MatrixMilestone milestone : milestones) {
+            milestone.setStartDay(startDay);
+            startDay += milestone.getAllocatedDays();
+        }
     }
 
     // ─── Goal Assembly ───────────────────────────────────────────────────────
