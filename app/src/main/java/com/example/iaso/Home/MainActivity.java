@@ -28,8 +28,9 @@ import com.bumptech.glide.Glide;
 import com.example.iaso.BottomNavigationHelper;
 import com.example.iaso.Health.Health;
 import com.example.iaso.Introduction.WelcomeActivity;
-import com.example.iaso.Milestone;
-import com.example.iaso.MilestoneStorage;
+import com.example.iaso.matrix.MatrixGoal;
+import com.example.iaso.matrix.MatrixMilestone;
+import com.example.iaso.matrix.MatrixStorage;
 import com.example.iaso.PersonalPage.DynamicHabit;
 import com.example.iaso.PersonalPage.PersonalPage;
 import com.example.iaso.PersonalPage.dataStorage;
@@ -331,8 +332,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Load milestones for this habit
-        MilestoneStorage milestoneStorage = new MilestoneStorage(this);
-        List<Milestone> milestones = milestoneStorage.getMilestonesForHabit(habit.getName3());
+        MatrixGoal matrixGoal = MatrixStorage.getGoalByHabitName(this, habit.getName3());
+        List<MatrixMilestone> milestones = (matrixGoal != null)
+                ? MatrixStorage.getMilestones(this, matrixGoal.getGoalId())
+                : new ArrayList<>();
 
         // Set milestone text
         if (habitDetailMilestone != null) {
@@ -340,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
                 habitDetailMilestone.setText("no milestones exist, upgrade to pro to generate.");
             } else {
                 // Show first milestone
-                Milestone firstMilestone = milestones.get(0);
+                MatrixMilestone firstMilestone = milestones.get(0);
                 habitDetailMilestone.setText(firstMilestone.getName());
             }
         }
@@ -351,8 +354,8 @@ public class MainActivity extends AppCompatActivity {
             if (milestones.isEmpty()) {
                 habitDetailCompletionTime.setText("0 days");
             } else {
-                for (Milestone milestone : milestones) {
-                    totalCompletionDays += milestone.getDays();
+                for (MatrixMilestone milestone : milestones) {
+                    totalCompletionDays += milestone.getAllocatedDays();
                 }
                 habitDetailCompletionTime.setText(totalCompletionDays + " days");
             }
