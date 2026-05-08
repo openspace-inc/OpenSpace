@@ -50,14 +50,14 @@ public class MatrixEngine {
                 String.valueOf(dailyMinutes),
                 String.valueOf(totalDays)
         );
+        String prompt = system + "\n\n" + user;
 
         Log.d(TAG, "Generating timeline request: dailyMinutes=" + dailyMinutes
                 + ", totalDays=" + totalDays
-                + ", systemPromptLength=" + system.length()
-                + ", userMessageLength=" + user.length());
+                + ", promptLength=" + prompt.length());
 
         ConvexApiHelper api = new ConvexApiHelper();
-        api.sendMessageToClaude(system, user, dailyMinutes, totalDays, new ConvexApiHelper.ClaudeResponseCallback() {
+        api.sendMessageToClaude(prompt, dailyMinutes, totalDays, new ConvexApiHelper.ClaudeResponseCallback() {
 
             @Override
             public void onSuccess(String response) {
