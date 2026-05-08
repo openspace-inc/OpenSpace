@@ -2,6 +2,7 @@ package com.example.iaso;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +25,7 @@ public class ConvexApiHelper {
 
     // ==================== CONFIGURATION ====================
 
+    private static final String TAG = "ConvexApiHelper";
     private static final String CONVEX_URL = "https://neighborly-chihuahua-847.convex.cloud";
     private static final String CONVEX_ACTION_PATH = "workhorse:getClaudeResponse";
     private static final int DEFAULT_DAILY_MINUTES = 30;
@@ -124,8 +126,8 @@ public class ConvexApiHelper {
                 userMsg.put("content", userMessage);
                 messagesArray.put(userMsg);
 
-                int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES);
-                int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS);
+                int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
+                int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
 
                 JSONObject contextObj = new JSONObject();
                 contextObj.put("dailyMinutes", dailyMinutes);
@@ -261,13 +263,14 @@ public class ConvexApiHelper {
      * Extracts the first integer captured by the provided regex pattern.
      * Returns fallback when no match is found or parsing fails.
      */
-    private int extractFirstInt(String input, Pattern pattern, int fallback) {
+    private int extractFirstInt(String input, Pattern pattern, int fallback, String fieldName) {
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
             try {
                 return Integer.parseInt(matcher.group(1));
             } catch (NumberFormatException ignored) { }
         }
+        Log.w(TAG, "Falling back to default " + fieldName + "=" + fallback);
         return fallback;
     }
 
