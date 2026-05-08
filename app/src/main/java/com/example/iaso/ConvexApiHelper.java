@@ -97,58 +97,58 @@ public class ConvexApiHelper {
         });
     }
 
-// ==================== MATRIX METHOD (system + user split) ====================
+    // ==================== MATRIX METHOD (system + user split) ====================
 
-/**
- * For MatrixEngine — sends system prompt and user message separately
- * System = rules/schema, User = just the goal data
- */
-public void sendMessageToClaude(
-        String systemPrompt,
-        String userMessage,
-        ClaudeResponseCallback callback) {
+    /**
+     * For MatrixEngine — sends system prompt and user message separately
+     * System = rules/schema, User = just the goal data
+     */
+    public void sendMessageToClaude(
+            String systemPrompt,
+            String userMessage,
+            ClaudeResponseCallback callback) {
 
-    executor.execute(() -> {
-        try {
-            JSONObject argsObject = new JSONObject();
-            argsObject.put("systemPrompt", systemPrompt);
-            argsObject.put("userMessage", userMessage);
+        executor.execute(() -> {
+            try {
+                JSONObject argsObject = new JSONObject();
+                argsObject.put("systemPrompt", systemPrompt);
+                argsObject.put("userMessage", userMessage);
 
-            JSONObject requestJson = new JSONObject();
-            requestJson.put("path", CONVEX_ACTION_PATH);
-            requestJson.put("args", argsObject);
+                JSONObject requestJson = new JSONObject();
+                requestJson.put("path", CONVEX_ACTION_PATH);
+                requestJson.put("args", argsObject);
 
-            RequestBody body = RequestBody.create(requestJson.toString(), JSON);
-            Request request = new Request.Builder()
-                    .url(CONVEX_URL + "/api/action")
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
+                RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+                Request request = new Request.Builder()
+                        .url(CONVEX_URL + "/api/action")
+                        .post(body)
+                        .addHeader("Content-Type", "application/json")
+                        .build();
 
-            try (Response response = client.newCall(request).execute()) {
-                if (!response.isSuccessful()) {
-                    postError(callback, "Server error: " + response.code());
-                    return;
+                try (Response response = client.newCall(request).execute()) {
+                    if (!response.isSuccessful()) {
+                        postError(callback, "Server error: " + response.code());
+                        return;
+                    }
+
+                    String responseBody = response.body() != null ? response.body().string() : "";
+                    JSONObject jsonResponse = new JSONObject(responseBody);
+                    String status = jsonResponse.optString("status", "");
+
+                    if ("success".equals(status)) {
+                        postSuccess(callback, jsonResponse.optString("value", ""));
+                    } else {
+                        postError(callback, "Convex error: " + jsonResponse.optString("errorMessage", "Unknown error"));
+                    }
                 }
 
-                String responseBody = response.body() != null ? response.body().string() : "";
-                JSONObject jsonResponse = new JSONObject(responseBody);
-                String status = jsonResponse.optString("status", "");
-
-                if ("success".equals(status)) {
-                    postSuccess(callback, jsonResponse.optString("value", ""));
-                } else {
-                    postError(callback, "Convex error: " + jsonResponse.optString("errorMessage", "Unknown error"));
-                }
+            } catch (IOException e) {
+                postError(callback, "Network error: " + e.getMessage());
+            } catch (JSONException e) {
+                postError(callback, "Error building request: " + e.getMessage());
             }
-
-        } catch (IOException e) {
-            postError(callback, "Network error: " + e.getMessage());
-        } catch (JSONException e) {
-            postError(callback, "Error building request: " + e.getMessage());
-        }
-    });
-}
+        });
+    }
 
     // ==================== NEW METHOD (multi-turn conversation) ====================
 
