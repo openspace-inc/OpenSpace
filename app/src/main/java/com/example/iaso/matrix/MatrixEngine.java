@@ -101,13 +101,19 @@ public class MatrixEngine {
                 } catch (Exception e) {
                     Log.e(TAG, "Parse/build error: " + e.getMessage(), e);
                     callback.onError("Failed to build timeline: " + e.getMessage());
+                } finally {
+                    api.shutdown();
                 }
             }
 
             @Override
             public void onError(String errorMessage) {
-                Log.e(TAG, "ConvexApiHelper error: " + errorMessage);
-                callback.onError(errorMessage);
+                try {
+                    Log.e(TAG, "ConvexApiHelper error: " + errorMessage);
+                    callback.onError(errorMessage);
+                } finally {
+                    api.shutdown();
+                }
             }
         });
     }

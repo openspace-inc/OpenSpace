@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -110,9 +112,23 @@ public class ConvexApiHelper {
 
         executor.execute(() -> {
             try {
+                JSONArray messagesArray = new JSONArray();
+                JSONObject userMsg = new JSONObject();
+                userMsg.put("role", "user");
+                userMsg.put("content", userMessage);
+                messagesArray.put(userMsg);
+
+                int dailyMinutes = extractFirstInt(userMessage, "Daily\\s*time:\\s*(\\d+)", 30);
+                int totalDays = extractFirstInt(userMessage, "Total\\s*days:\\s*(\\d+)", 30);
+
+                JSONObject contextObj = new JSONObject();
+                contextObj.put("dailyMinutes", dailyMinutes);
+                contextObj.put("targetDays", totalDays);
+                contextObj.put("phase", "generating");
+
                 JSONObject argsObject = new JSONObject();
-                argsObject.put("systemPrompt", systemPrompt);
-                argsObject.put("userMessage", userMessage);
+                argsObject.put("messages", messagesArray);
+                argsObject.put("context", contextObj);
 
                 JSONObject requestJson = new JSONObject();
                 requestJson.put("path", CONVEX_ACTION_PATH);
@@ -233,6 +249,16 @@ public class ConvexApiHelper {
 
     private void postError(ClaudeResponseCallback callback, String errorMessage) {
         mainHandler.post(() -> callback.onError(errorMessage));
+    }
+
+    private int extractFirstInt(String input, String pattern, int fallback) {
+        Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(input);
+        if (matcher.find()) {
+            try {
+                return Integer.parseInt(matcher.group(1));
+            } catch (NumberFormatException ignored) { }
+        }
+        return fallback;
     }
 
     public void shutdown() {
