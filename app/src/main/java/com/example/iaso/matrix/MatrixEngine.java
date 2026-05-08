@@ -41,10 +41,16 @@ public class MatrixEngine {
         String system = MatrixPrompts.TIMELINE_SYSTEM;
 
         // User message — just the goal data, changes every call
-        String user = MatrixPrompts.TIMELINE_USER
-                .replace("{goalDescription}", goalDescription)
-                .replace("{dailyMinutes}", String.valueOf(dailyMinutes))
-                .replace("{totalDays}", String.valueOf(totalDays));
+        String userTemplate = MatrixPrompts.TIMELINE_USER
+                .replace("{goalDescription}", "%s")
+                .replace("{dailyMinutes}", "%s")
+                .replace("{totalDays}", "%s");
+        String user = String.format(
+                userTemplate,
+                goalDescription,
+                String.valueOf(dailyMinutes),
+                String.valueOf(totalDays)
+        );
 
         Log.d(TAG, "Generating timeline request: dailyMinutes=" + dailyMinutes
                 + ", totalDays=" + totalDays
