@@ -26,6 +26,12 @@ public class ConvexApiHelper {
 
     private static final String CONVEX_URL = "https://neighborly-chihuahua-847.convex.cloud";
     private static final String CONVEX_ACTION_PATH = "workhorse:getClaudeResponse";
+    private static final int DEFAULT_DAILY_MINUTES = 30;
+    private static final int DEFAULT_TOTAL_DAYS = 30;
+    private static final Pattern DAILY_TIME_PATTERN =
+            Pattern.compile("Daily\\s*time:\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TOTAL_DAYS_PATTERN =
+            Pattern.compile("Total\\s*days:\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
     // ==================== SETUP ====================
 
@@ -118,8 +124,8 @@ public class ConvexApiHelper {
                 userMsg.put("content", userMessage);
                 messagesArray.put(userMsg);
 
-                int dailyMinutes = extractFirstInt(userMessage, "Daily\\s*time:\\s*(\\d+)", 30);
-                int totalDays = extractFirstInt(userMessage, "Total\\s*days:\\s*(\\d+)", 30);
+                int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES);
+                int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS);
 
                 JSONObject contextObj = new JSONObject();
                 contextObj.put("dailyMinutes", dailyMinutes);
@@ -251,8 +257,12 @@ public class ConvexApiHelper {
         mainHandler.post(() -> callback.onError(errorMessage));
     }
 
-    private int extractFirstInt(String input, String pattern, int fallback) {
-        Matcher matcher = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(input);
+    /**
+     * Extracts the first integer captured by the provided regex pattern.
+     * Returns fallback when no match is found or parsing fails.
+     */
+    private int extractFirstInt(String input, Pattern pattern, int fallback) {
+        Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
             try {
                 return Integer.parseInt(matcher.group(1));
