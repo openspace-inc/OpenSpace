@@ -46,15 +46,18 @@ public class MatrixEngine {
                 .replace("{dailyMinutes}", String.valueOf(dailyMinutes))
                 .replace("{totalDays}", String.valueOf(totalDays));
 
-        Log.d(TAG, "=== SYSTEM PROMPT ===\n" + system);
-        Log.d(TAG, "=== USER MESSAGE ===\n" + user);
+        Log.d(TAG, "Generating timeline request: dailyMinutes=" + dailyMinutes
+                + ", totalDays=" + totalDays
+                + ", systemPromptLength=" + system.length()
+                + ", userMessageLength=" + user.length());
 
         ConvexApiHelper api = new ConvexApiHelper();
         api.sendMessageToClaude(system, user, new ConvexApiHelper.ClaudeResponseCallback() {
 
             @Override
             public void onSuccess(String response) {
-                Log.d(TAG, "=== RAW RESPONSE ===\n" + response);
+                Log.d(TAG, "Received timeline response: responseLength="
+                        + (response != null ? response.length() : 0));
                 try {
                     List<MatrixMilestone> milestones = parseMilestones(response);
 
