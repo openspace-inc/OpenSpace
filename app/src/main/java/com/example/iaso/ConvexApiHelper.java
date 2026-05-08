@@ -110,24 +110,23 @@ public class ConvexApiHelper {
     // ==================== MATRIX METHOD (system + user split) ====================
 
     /**
-     * For MatrixEngine — sends system prompt and user message separately
-     * System = rules/schema, User = just the goal data
+     * MatrixEngine entry point for the current Convex action contract.
+     * Sends only the user message plus timeline context derived from that message.
      */
     public void sendMessageToClaude(
-            String systemPrompt,
             String userMessage,
             ClaudeResponseCallback callback) {
         int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
         int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
-        sendMessageToClaude(systemPrompt, userMessage, dailyMinutes, totalDays, callback);
+        sendMessageToClaude(userMessage, dailyMinutes, totalDays, callback);
     }
 
     /**
      * Matrix-specific overload that forwards to the current Convex action schema:
-     * args = { messages, context } where context includes timeline params.
+     * args = { messages, context } where messages contains only the user message
+     * and context includes timeline params.
      */
     public void sendMessageToClaude(
-            String systemPrompt,
             String userMessage,
             int dailyMinutes,
             int totalDays,
