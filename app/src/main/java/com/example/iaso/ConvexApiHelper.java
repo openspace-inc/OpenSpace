@@ -2,6 +2,7 @@ package com.example.iaso;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -22,8 +25,15 @@ public class ConvexApiHelper {
 
     // ==================== CONFIGURATION ====================
 
+    private static final String TAG = "ConvexApiHelper";
     private static final String CONVEX_URL = "https://neighborly-chihuahua-847.convex.cloud";
     private static final String CONVEX_ACTION_PATH = "workhorse:getClaudeResponse";
+    private static final int DEFAULT_DAILY_MINUTES = 30;
+    private static final int DEFAULT_TOTAL_DAYS = 30;
+    private static final Pattern DAILY_TIME_PATTERN =
+            Pattern.compile("Daily\\s*time:\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TOTAL_DAYS_PATTERN =
+            Pattern.compile("Total\\s*days:\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
     // ==================== SETUP ====================
 
@@ -54,10 +64,54 @@ public class ConvexApiHelper {
      * Do NOT remove until workhorse.java is fully migrated
      */
     public void sendMessageToClaude(String userMessage, ClaudeResponseCallback callback) {
+        int dailyMinutes = extractFirstInt(userMessage, DAILY_TIME_PATTERN, DEFAULT_DAILY_MINUTES, "dailyMinutes");
+        int totalDays = extractFirstInt(userMessage, TOTAL_DAYS_PATTERN, DEFAULT_TOTAL_DAYS, "totalDays");
+        sendMessageToClaude(null, userMessage, dailyMinutes, totalDays, callback);
+    }
+
+    /**
+     * Matrix-specific overload that forwards to the current Convex action schema
+     * without a custom system prompt.
+     */
+    public void sendMessageToClaude(
+            String userMessage,
+            int dailyMinutes,
+            int totalDays,
+            ClaudeResponseCallback callback) {
+        sendMessageToClaude(null, userMessage, dailyMinutes, totalDays, callback);
+    }
+
+    /**
+     * Matrix-specific overload that forwards to the current Convex action schema:
+     * args = { messages, context } where messages contains only the user message
+     * and context includes timeline params. A custom system prompt can be passed
+     * through to Convex for prompt-control use cases (e.g. Matrix JSON schema).
+     */
+    public void sendMessageToClaude(
+            String systemPrompt,
+            String userMessage,
+            int dailyMinutes,
+            int totalDays,
+            ClaudeResponseCallback callback) {
         executor.execute(() -> {
             try {
+                JSONArray messagesArray = new JSONArray();
+                JSONObject userMsg = new JSONObject();
+                userMsg.put("role", "user");
+                userMsg.put("content", userMessage);
+                messagesArray.put(userMsg);
+
+                JSONObject contextObj = new JSONObject();
+                contextObj.put("dailyMinutes", dailyMinutes);
+                contextObj.put("targetDays", totalDays);
+                contextObj.put("phase", "generating");
+
                 JSONObject argsObject = new JSONObject();
-                argsObject.put("userMessage", userMessage);
+                argsObject.put("messages", messagesArray);
+                argsObject.put("context", contextObj);
+                if (systemPrompt != null && !systemPrompt.trim().isEmpty()) {
+                    argsObject.put("systemPrompt", systemPrompt);
+                }
 
                 JSONObject requestJson = new JSONObject();
                 requestJson.put("path", CONVEX_ACTION_PATH);
@@ -81,18 +135,16 @@ public class ConvexApiHelper {
                     String status = jsonResponse.optString("status", "");
 
                     if ("success".equals(status)) {
-                        String claudeResponse = jsonResponse.optString("value", "");
-                        postSuccess(callback, claudeResponse);
+                        postSuccess(callback, jsonResponse.optString("value", ""));
                     } else {
-                        String errorMessage = jsonResponse.optString("errorMessage", "Unknown error from Convex");
-                        postError(callback, "Convex error: " + errorMessage);
+                        postError(callback, "Convex error: " + jsonResponse.optString("errorMessage", "Unknown error"));
                     }
                 }
 
             } catch (IOException e) {
                 postError(callback, "Network error: " + e.getMessage());
             } catch (JSONException e) {
-                postError(callback, "Error parsing response: " + e.getMessage());
+                postError(callback, "Error building request: " + e.getMessage());
             }
         });
     }
@@ -180,6 +232,22 @@ public class ConvexApiHelper {
 
     private void postError(ClaudeResponseCallback callback, String errorMessage) {
         mainHandler.post(() -> callback.onError(errorMessage));
+    }
+
+    /**
+     * Extracts the first integer captured by the provided regex pattern.
+     * Returns fallback when no match is found or parsing fails.
+     */
+    private int extractFirstInt(String input, Pattern pattern, int fallback, String fieldName) {
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            try {
+                return Integer.parseInt(matcher.group(1));
+            } catch (NumberFormatException ignored) {
+                Log.w(TAG, "Failed parsing " + fieldName + " from input, using default " + fallback);
+            }
+        }
+        return fallback;
     }
 
     public void shutdown() {
