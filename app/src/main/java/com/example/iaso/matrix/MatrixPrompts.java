@@ -1,4 +1,4 @@
-ackage com.example.iaso.matrix;
+package com.example.iaso.matrix;
 
 public final class MatrixPrompts {
     private MatrixPrompts() {}
