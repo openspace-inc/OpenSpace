@@ -247,7 +247,6 @@ public class ConvexApiHelper {
                 Log.w(TAG, "Failed parsing " + fieldName + " from input, using default " + fallback);
             }
         }
-        Log.w(TAG, "Falling back to default " + fieldName + "=" + fallback);
         return fallback;
     }
 
