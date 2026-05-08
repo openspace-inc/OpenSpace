@@ -258,13 +258,17 @@ public class MatrixEngine {
 
     private MatrixGoal buildGoal(String goalDescription, int totalDays, List<MatrixMilestone> milestones) {
         MatrixGoal goal = new MatrixGoal();
-        goal.setGoalId(UUID.randomUUID().toString());
+        String goalId = UUID.randomUUID().toString();
+        goal.setGoalId(goalId);
         goal.setHabitName(goalDescription);
         goal.setGoalDescription(goalDescription);
 
         long now = System.currentTimeMillis();
         goal.setStartDate(now);
         goal.setTotalDays(totalDays);
+        for (MatrixMilestone milestone : milestones) {
+            milestone.setParentGoalId(goalId);
+        }
         goal.setMilestones(milestones);
 
         return goal;
